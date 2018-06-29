@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,7 +73,13 @@ public class TestSparkClient {
   private static final HiveConf HIVECONF = new HiveConf();
 
   static {
-    HIVECONF.set("hive.spark.client.connect.timeout", "30000ms");
+    String confDir = "../data/conf/spark/standalone/hive-site.xml";
+    try {
+      HiveConf.setHiveSiteLocation(new File(confDir).toURI().toURL());
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+    HIVECONF.setBoolVar(HiveConf.ConfVars.HIVE_IN_TEST, true);
   }
 
   private Map<String, String> createConf() {

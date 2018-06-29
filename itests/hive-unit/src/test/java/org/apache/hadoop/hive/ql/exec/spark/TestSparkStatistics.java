@@ -35,6 +35,9 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,13 +46,10 @@ public class TestSparkStatistics {
 
   @Ignore("flaky test")
   @Test
-  public void testSparkStatistics() throws CommandProcessorException {
+  public void testSparkStatistics() throws CommandProcessorException, MalformedURLException {
+    String confDir = "../../data/conf/spark/standalone/hive-site.xml";
+    HiveConf.setHiveSiteLocation(new File(confDir).toURI().toURL());
     HiveConf conf = new HiveConf();
-    conf.setVar(HiveConf.ConfVars.HIVE_AUTHORIZATION_MANAGER,
-            SQLStdHiveAuthorizerFactory.class.getName());
-    conf.setBoolVar(HiveConf.ConfVars.HIVE_SUPPORT_CONCURRENCY, false);
-    conf.setVar(HiveConf.ConfVars.HIVE_EXECUTION_ENGINE, "spark");
-    conf.set("spark.master", "local-cluster[1,2,1024]");
 
     SessionState.start(conf);
 
