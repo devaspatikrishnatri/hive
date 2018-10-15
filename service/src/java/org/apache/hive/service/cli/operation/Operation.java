@@ -37,6 +37,7 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.QueryState;
 import org.apache.hadoop.hive.ql.processors.CommandProcessorException;
 import org.apache.hadoop.hive.ql.session.OperationLog;
+import org.apache.hadoop.hive.shims.ShimLoader;
 import org.apache.hive.service.cli.FetchOrientation;
 import org.apache.hive.service.cli.HiveSQLException;
 import org.apache.hive.service.cli.OperationHandle;
@@ -241,6 +242,7 @@ public abstract class Operation {
    * Set up some preconditions, or configurations.
    */
   protected void beforeRun() {
+    ShimLoader.getHadoopShims().setHadoopQueryContext(queryState.getQueryId());
     if (!embedded) {
       createOperationLog();
       LogUtils.registerLoggingContext(queryState.getConf());
@@ -265,6 +267,8 @@ public abstract class Operation {
     if (!embedded) {
       LogUtils.unregisterLoggingContext();
     }
+    // Reset back to session context after the query is done
+    ShimLoader.getHadoopShims().setHadoopSessionContext(parentSession.getSessionState().getSessionId());
   }
 
   /**

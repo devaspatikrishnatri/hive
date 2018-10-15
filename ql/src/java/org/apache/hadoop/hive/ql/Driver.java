@@ -1189,6 +1189,7 @@ public class Driver implements IDriver {
     driverContext.setOperationId(operationId);
   }
 
+  @Override
   public QueryState getQueryState() {
     return driverContext.getQueryState();
   }
