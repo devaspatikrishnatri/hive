@@ -1586,7 +1586,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
         }
       }
     }
-    
+
     @Override
     public void create_database(final Database db)
         throws AlreadyExistsException, InvalidObjectException, MetaException {
@@ -1802,7 +1802,8 @@ public class HiveMetaStore extends ThriftHiveMetastore {
             ConfVars.BATCH_RETRIEVE_MAX);
 
         // First pass will drop the materialized views
-        List<String> materializedViewNames = get_tables_by_type(name, ".*", TableType.MATERIALIZED_VIEW.toString());
+        List<String> materializedViewNames = getTablesByTypeCore(catName, name, ".*",
+            TableType.MATERIALIZED_VIEW.toString());
         int startIndex = 0;
         // retrieve the tables from the metastore in batches to alleviate memory constraints
         while (startIndex < materializedViewNames.size()) {
@@ -5861,7 +5862,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       try {
         ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern);
         ret = FilterUtils.filterTableNamesIfEnabled(isServerFilterEnabled, filterHook,
-            parsedDbName[CAT_NAME], dbname, ret);
+            parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
       } catch (Exception e) {
         ex = e;
         if (e instanceof MetaException) {
@@ -5884,7 +5885,9 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       Exception ex = null;
       String[] parsedDbName = parseDbName(dbname, conf);
       try {
-        ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern, TableType.valueOf(tableType), -1);
+        ret = getTablesByTypeCore(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern, tableType);
+        ret = FilterUtils.filterTableNamesIfEnabled(isServerFilterEnabled, filterHook,
+            parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
       } catch (Exception e) {
         ex = e;
         if (e instanceof MetaException) {
@@ -5894,6 +5897,27 @@ public class HiveMetaStore extends ThriftHiveMetastore {
         }
       } finally {
         endFunction("get_tables_by_type", ret != null, ex);
+      }
+      return ret;
+    }
+
+    private List<String> getTablesByTypeCore(final String catName, final String dbname,
+        final String pattern, final String tableType) throws MetaException {
+      startFunction("getTablesByTypeCore", ": catName=" + catName +
+          ": db=" + dbname + " pat=" + pattern + ",type=" + tableType);
+
+      List<String> ret = null;
+      Exception ex = null;
+      try {
+        ret = getMS().getTables(catName, dbname, pattern, TableType.valueOf(tableType), -1);
+      } catch (MetaException e) {
+        ex = e;
+        throw e;
+      } catch (Exception e) {
+        ex = e;
+        throw newMetaException(e);
+      } finally {
+        endFunction("getTablesByTypeCore", ret != null, ex);
       }
       return ret;
     }
@@ -5988,6 +6012,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       try {
         try {
           tbl = get_table_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], base_table_name);
+          firePreEvent(new PreReadTableEvent(tbl, this));
         } catch (NoSuchObjectException e) {
           throw new UnknownTableException(e.getMessage());
         }
@@ -7009,7 +7034,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
 	  String parsedDbName = dbNameParts[DB_NAME];
 	  List<Partition> ret = null;
       Exception ex = null;
-      
+
       startTableFunction("get_partitions_by_names", parsedCatName, parsedDbName,
               tblName);
       boolean success = false;
