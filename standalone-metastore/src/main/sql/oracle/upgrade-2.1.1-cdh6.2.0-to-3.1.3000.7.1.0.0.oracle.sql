@@ -19,6 +19,9 @@ SELECT 'Finished upgrading MetaStore schema from 2.1.1000 to 2.1.2000' AS Status
 -- upgrading to 3.0.0
 SELECT 'Upgrading MetaStore schema from 2.1.2000 to 3.0.0' AS Status from dual;
 
+-- HIVE-21336 safeguards from failures from indices being too long
+ALTER SESSION SET NLS_LENGTH_SEMANTICS=BYTE;
+
 --@037-HIVE-14496.oracle.sql;
 -- Step 1: Add the column allowing null
 ALTER TABLE TBLS ADD IS_REWRITE_ENABLED NUMBER(1) NULL;
