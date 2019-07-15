@@ -21,7 +21,7 @@ package org.apache.hadoop.hive.ql.security;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+
 
 import org.apache.hadoop.hive.cli.CliSessionState;
 import org.apache.hadoop.hive.conf.HiveConf;
@@ -36,12 +36,19 @@ import org.apache.hadoop.hive.ql.security.authorization.DefaultHiveAuthorization
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.shims.Utils;
 import org.apache.hadoop.security.UserGroupInformation;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 /**
  * TestClientSideAuthorizationProvider : Simple base test for client side
  * Authorization Providers. By default, tests DefaultHiveAuthorizationProvider
  */
-public class TestClientSideAuthorizationProvider extends TestCase {
+public class TestClientSideAuthorizationProvider {
   protected HiveConf clientHiveConf;
   protected HiveMetaStoreClient msc;
   protected IDriver driver;
@@ -53,10 +60,10 @@ public class TestClientSideAuthorizationProvider extends TestCase {
   }
 
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
 
-    super.setUp();
+
 
     // Turn off metastore-side authorization
     System.setProperty(HiveConf.ConfVars.METASTORE_PRE_EVENT_LISTENERS.varname,
@@ -88,9 +95,9 @@ public class TestClientSideAuthorizationProvider extends TestCase {
     driver = DriverFactory.newDriver(clientHiveConf);
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @After
+  public void tearDown() throws Exception {
+
   }
 
   private void validateCreateDb(Database expectedDb, String dbName) {
@@ -111,6 +118,7 @@ public class TestClientSideAuthorizationProvider extends TestCase {
     return "smp_cl_tbl";
   }
 
+  @Test
   public void testSimplePrivileges() throws Exception {
     String dbName = getTestDbName();
     String tblName = getTestTableName();

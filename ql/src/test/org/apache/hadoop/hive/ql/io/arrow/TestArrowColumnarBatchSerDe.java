@@ -1007,6 +1007,7 @@ public class TestArrowColumnarBatchSerDe {
     }
   }
 
+  @Test
   public void testMapDecimal() throws SerDeException {
     String[][] schema = {
         {"decimal_map", "map<string,decimal(38,10)>"},
@@ -1015,6 +1016,7 @@ public class TestArrowColumnarBatchSerDe {
     initAndSerializeAndDeserialize(schema, toMap(DECIMAL_ROWS));
   }
 
+  @Test
   public void testListDecimal() throws SerDeException {
     String[][] schema = {
         {"decimal_list", "array<decimal(38,10)>"},

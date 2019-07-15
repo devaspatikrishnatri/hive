@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import junit.framework.TestCase;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +50,16 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.util.ReflectionUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 /**
  * Unittest for SymlinkTextInputFormat.
  */
-public class TestSymlinkTextInputFormat extends TestCase {
+public class TestSymlinkTextInputFormat {
   private static final Logger log =
       LoggerFactory.getLogger(TestSymlinkTextInputFormat.class);
 
@@ -68,8 +73,8 @@ public class TestSymlinkTextInputFormat extends TestCase {
   private Path dataDir2;
   private Path symlinkDir;
 
-  @Override
-  protected void setUp() throws IOException {
+  @Before
+  public void setUp() throws IOException {
     conf = new Configuration();
     job = new JobConf(conf);
 
@@ -93,8 +98,8 @@ public class TestSymlinkTextInputFormat extends TestCase {
     symlinkDir = new Path(testDir, "symlinkdir");
   }
 
-  @Override
-  protected void tearDown() throws IOException {
+  @After
+  public void tearDown() throws IOException {
     fileSystem.delete(testDir, true);
   }
 
@@ -103,6 +108,7 @@ public class TestSymlinkTextInputFormat extends TestCase {
    * file, and then create one symlink file containing these 2 files. Normally
    * without combine, it will return at least 2 splits
    */
+  @Test
   public void testCombine() throws Exception {
     JobConf newJob = new JobConf(job);
     FileSystem fs = dataDir1.getFileSystem(newJob);
@@ -191,6 +197,7 @@ public class TestSymlinkTextInputFormat extends TestCase {
    * Test scenario: Two data directories, one symlink file that contains two
    * paths each point to a file in one of data directories.
    */
+  @Test
   public void testAccuracy1() throws IOException {
     // First data dir, contains 2 files.
 
@@ -272,6 +279,7 @@ public class TestSymlinkTextInputFormat extends TestCase {
    *
    * Expected: Should return empty result set without any exception.
    */
+  @Test
   public void testAccuracy2() throws IOException {
     fileSystem.mkdirs(symlinkDir);
 
@@ -312,6 +320,7 @@ public class TestSymlinkTextInputFormat extends TestCase {
    * Scenario: No job input paths.
    * Expected: IOException with proper message.
    */
+  @Test
   public void testFailure() {
     SymlinkTextInputFormat inputFormat = new SymlinkTextInputFormat();
 

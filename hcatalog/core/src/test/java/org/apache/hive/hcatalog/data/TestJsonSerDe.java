@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.type.Date;
 import org.apache.hadoop.hive.common.type.HiveChar;
@@ -43,7 +41,14 @@ import org.apache.hadoop.io.Writable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestJsonSerDe extends TestCase {
+
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+/**
+ * TestJsonSerDe.
+ */
+public class TestJsonSerDe {
 
   private static final Logger LOG = LoggerFactory.getLogger(TestJsonSerDe.class);
 
@@ -139,6 +144,7 @@ public class TestJsonSerDe extends TestCase {
     return data;
   }
 
+  @Test
   public void testRW() throws Exception {
 
     Configuration conf = new Configuration();
@@ -174,6 +180,7 @@ public class TestJsonSerDe extends TestCase {
 
   }
 
+  @Test
   public void testRobustRead() throws Exception {
     /**
      *  This test has been added to account for HCATALOG-436
@@ -264,6 +271,7 @@ public class TestJsonSerDe extends TestCase {
    * Then it should still work, and ignore the "x" and "t" field and "c" subfield of "s", and it
    * should read k as null.
    */
+  @Test
   public void testLooseJsonReadability() throws Exception {
     Configuration conf = new Configuration();
     Properties props = new Properties();
@@ -291,6 +299,7 @@ public class TestJsonSerDe extends TestCase {
 
   }
 
+  @Test
   public void testUpperCaseKey() throws Exception {
     Configuration conf = new Configuration();
     Properties props = new Properties();
@@ -320,6 +329,7 @@ public class TestJsonSerDe extends TestCase {
     return retval;
   }
 
+  @Test
   public void testMapValues() throws Exception {
     Configuration conf = new Configuration();
     Properties props = new Properties();

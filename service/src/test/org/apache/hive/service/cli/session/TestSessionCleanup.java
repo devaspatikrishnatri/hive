@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
+
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
@@ -37,7 +37,10 @@ import org.apache.hive.service.cli.thrift.ThriftCLIServiceClient;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestSessionCleanup extends TestCase {
+/**
+ * TestSessionCleanup.
+ */
+public class TestSessionCleanup {
   // Create subclass of EmbeddedThriftBinaryCLIService, just so we can get an accessor to the CLIService.
   // Needed for access to the OperationManager.
   private class MyEmbeddedThriftBinaryCLIService extends EmbeddedThriftBinaryCLIService {

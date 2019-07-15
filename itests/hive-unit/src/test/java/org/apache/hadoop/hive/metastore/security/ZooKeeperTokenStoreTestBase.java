@@ -35,6 +35,7 @@ import org.apache.zookeeper.data.ACL;
 import org.junit.AfterClass;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -44,7 +45,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 /**
- * TestZooKeeperTokenStore.
+ * ZooKeeperTokenStoreTestBase.
  */
 public abstract class ZooKeeperTokenStoreTestBase {
 
@@ -101,6 +102,7 @@ public abstract class ZooKeeperTokenStoreTestBase {
     return conf;
   }
 
+  @Test
   public void testTokenStorage() throws Exception {
     String ZK_PATH = "/zktokenstore-testTokenStorage";
     ts = new ZooKeeperTokenStore();
@@ -152,6 +154,7 @@ public abstract class ZooKeeperTokenStoreTestBase {
     assertNull(ts.getToken(tokenId));
   }
 
+  @Test
   public void testAclNoAuth() throws Exception {
     String ZK_PATH = "/zktokenstore-testAclNoAuth";
     Configuration conf = createConf(ZK_PATH);
@@ -169,6 +172,7 @@ public abstract class ZooKeeperTokenStoreTestBase {
     }
   }
 
+  @Test
   public void testAclInvalid() throws Exception {
     String ZK_PATH = "/zktokenstore-testAclInvalid";
     String aclString = "sasl:hive/host@TEST.DOMAIN:cdrwa, fail-parse-ignored";
@@ -190,6 +194,7 @@ public abstract class ZooKeeperTokenStoreTestBase {
     }
   }
 
+  @Test
   public void testAclPositive() throws Exception {
     String ZK_PATH = "/zktokenstore-testAcl";
     Configuration conf = createConf(ZK_PATH);

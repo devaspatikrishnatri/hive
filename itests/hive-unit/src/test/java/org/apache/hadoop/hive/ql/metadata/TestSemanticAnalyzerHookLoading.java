@@ -20,6 +20,8 @@ package org.apache.hadoop.hive.ql.metadata;
 
 import java.util.Map;
 
+
+
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 import org.apache.hadoop.hive.metastore.Warehouse;
@@ -27,14 +29,16 @@ import org.apache.hadoop.hive.ql.DriverFactory;
 import org.apache.hadoop.hive.ql.IDriver;
 import org.apache.hadoop.hive.ql.processors.CommandProcessorException;
 import org.apache.hadoop.hive.ql.session.SessionState;
-
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
+/**
+ * TestSemanticAnalyzerHookLoading.
+ */
 public class TestSemanticAnalyzerHookLoading {
 
   @Test
-  public void testHookLoading() throws Exception {
+  public void testHookLoading() throws Exception{
 
     HiveConf conf = new HiveConf(this.getClass());
     conf.set(ConfVars.SEMANTIC_ANALYZER_HOOK.varname, DummySemanticAnalyzerHook.class.getName());

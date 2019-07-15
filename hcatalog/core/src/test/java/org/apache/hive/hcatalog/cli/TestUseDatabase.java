@@ -31,6 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 /* Unit test for GitHub Howl issue #3 */
+/**
+ * TestUseDatabase.
+ */
 public class TestUseDatabase {
 
   private IDriver hcatDriver;
