@@ -1864,7 +1864,7 @@ public class SessionHiveMetaStoreClient extends HiveMetaStoreClient implements I
             throw new MetaException("Unable to delete partition at " + location);
           }
           path = path.getParent();
-        } while (getWh().isEmpty(path));
+        } while (getWh().isEmptyDir(path));
       } catch (IOException e) {
         throw new MetaException("Unable to delete partition at " + path.toString());
       }
