@@ -219,12 +219,12 @@ public class QTestUtil {
 
     sem = new SemanticAnalyzer(queryState);
 
-    datasetHandler = new QTestDatasetHandler(this, conf);
+    datasetHandler = new QTestDatasetHandler(conf);
     testFiles = datasetHandler.getDataDir(conf);
     conf.set("test.data.dir", datasetHandler.getDataDir(conf));
 
     conf.setVar(ConfVars.HIVE_QUERY_RESULTS_CACHE_DIRECTORY, "/tmp/hive/_resultscache_" + ProcessUtils.getPid());
-    dispatcher.register("dataset", new FakeDatasetHandler());
+    dispatcher.register("dataset", datasetHandler);
     dispatcher.register("replace", replaceHandler);
     dispatcher.register("sysdb", new QTestSysDbHandler());
     dispatcher.register("scheduledqueryservice", new QTestScheduledQueryServiceProvider(conf));
@@ -696,7 +696,6 @@ public class QTestUtil {
   public String cliInit(File file) throws Exception {
     String fileName = file.getName();
 
-    datasetHandler.initDataSetForTest(file, getCliDriver());
     dispatcher.process(file);
     dispatcher.beforeTest(this);
 
