@@ -430,6 +430,7 @@ PREHOOK: Output: default@analyze_part_table
 POSTHOOK: query: insert into analyze_part_table select * from tmp_table
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@tmp_table
+POSTHOOK: Output: default@analyze_part_table
 PREHOOK: query: explain analyze insert into analyze_part_table select * from tmp_table
 PREHOOK: type: QUERY
 PREHOOK: Input: default@tmp_table
@@ -437,6 +438,7 @@ PREHOOK: Output: default@analyze_part_table
 POSTHOOK: query: explain analyze insert into analyze_part_table select * from tmp_table
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@tmp_table
+POSTHOOK: Output: default@analyze_part_table
 STAGE DEPENDENCIES:
   Stage-1 is a root stage
   Stage-2 depends on stages: Stage-1
@@ -488,7 +490,7 @@ STAGE PLANS:
                           Statistics: Num rows: 3/3 Data size: 1284 Basic stats: COMPLETE Column stats: COMPLETE
                           value expressions: _col1 (type: struct<columntype:string,min:bigint,max:bigint,countnulls:bigint,bitvector:binary>)
             Execution mode: llap
-            LLAP IO: all inputs
+            LLAP IO: no inputs
         Reducer 2 
             Execution mode: llap
             Reduce Operator Tree:
@@ -555,6 +557,7 @@ PREHOOK: Output: default@analyze_part_table
 POSTHOOK: query: insert into analyze_part_table select * from tmp_table
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@tmp_table
+POSTHOOK: Output: default@analyze_part_table
 POSTHOOK: Output: default@analyze_part_table@b=1
 POSTHOOK: Output: default@analyze_part_table@b=2
 POSTHOOK: Output: default@analyze_part_table@b=3
@@ -1306,6 +1309,7 @@ PREHOOK: Output: default@analyze_part_table
 POSTHOOK: query: insert into analyze_part_table select * from tmp_table
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@tmp_table
+POSTHOOK: Output: default@analyze_part_table
 PREHOOK: query: explain analyze insert into analyze_part_table select * from tmp_table
 PREHOOK: type: QUERY
 PREHOOK: Input: default@tmp_table
@@ -1313,6 +1317,7 @@ PREHOOK: Output: default@analyze_part_table
 POSTHOOK: query: explain analyze insert into analyze_part_table select * from tmp_table
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@tmp_table
+POSTHOOK: Output: default@analyze_part_table
 STAGE DEPENDENCIES:
   Stage-1 is a root stage
   Stage-2 depends on stages: Stage-1
@@ -1364,7 +1369,7 @@ STAGE PLANS:
                           Statistics: Num rows: 3/3 Data size: 1284 Basic stats: COMPLETE Column stats: COMPLETE
                           value expressions: _col1 (type: struct<columntype:string,min:bigint,max:bigint,countnulls:bigint,bitvector:binary>)
             Execution mode: llap
-            LLAP IO: all inputs
+            LLAP IO: no inputs
         Reducer 2 
             Execution mode: llap
             Reduce Operator Tree:
@@ -1431,6 +1436,7 @@ PREHOOK: Output: default@analyze_part_table
 POSTHOOK: query: insert into analyze_part_table select * from tmp_table
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@tmp_table
+POSTHOOK: Output: default@analyze_part_table
 POSTHOOK: Output: default@analyze_part_table@b=1
 POSTHOOK: Output: default@analyze_part_table@b=2
 POSTHOOK: Output: default@analyze_part_table@b=3
