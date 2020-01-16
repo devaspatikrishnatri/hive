@@ -175,7 +175,7 @@ public class UnparseTranslator {
    * @param node
    *          source node (which must be an identifier) to be replaced
    */
-  void addIdentifierTranslation(ASTNode identifier) {
+  public void addIdentifierTranslation(ASTNode identifier) {
     if (!enabled) {
       return;
     }
@@ -211,7 +211,7 @@ public class UnparseTranslator {
    * @param sourceNode the node providing the replacement text
    *
    */
-  void addCopyTranslation(ASTNode targetNode, ASTNode sourceNode) {
+  public void addCopyTranslation(ASTNode targetNode, ASTNode sourceNode) {
     if (!enabled) {
       return;
     }

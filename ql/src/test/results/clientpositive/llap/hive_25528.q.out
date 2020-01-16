@@ -64,7 +64,7 @@ POSTHOOK: type: QUERY
 POSTHOOK: Input: default@dwd_fib_bond_info_di
 POSTHOOK: Input: default@dwd_fib_bond_info_di@p_dt=hello
 #### A masked pattern was here ####
-100.0000	6.44300000	15.520720
+100.0000	6.44300000	15.520720161
 PREHOOK: query: select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc!=0.00000000 order by total_int limit 3
 PREHOOK: type: QUERY
 PREHOOK: Input: default@dwd_fib_bond_info_di

@@ -69,6 +69,7 @@ import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveToDateSqlOpe
 import org.apache.hadoop.hive.ql.parse.ParseUtils;
 import org.apache.hadoop.hive.ql.parse.RowResolver;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
+import org.apache.hadoop.hive.ql.parse.type.ExprNodeTypeCheck;
 import org.apache.hadoop.hive.ql.plan.ExprNodeColumnDesc;
 import org.apache.hadoop.hive.ql.plan.ExprNodeConstantDesc;
 import org.apache.hadoop.hive.ql.plan.ExprNodeDesc;
@@ -76,6 +77,7 @@ import org.apache.hadoop.hive.ql.plan.ExprNodeDescUtils;
 import org.apache.hadoop.hive.ql.plan.ExprNodeFieldDesc;
 import org.apache.hadoop.hive.ql.plan.ExprNodeGenericFuncDesc;
 import org.apache.hadoop.hive.ql.plan.ExprNodeSubQueryDesc;
+import org.apache.hadoop.hive.ql.plan.SubqueryType;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBaseBinary;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBaseCompare;
@@ -191,7 +193,7 @@ public class RexNodeConverter {
   }
 
   private RexNode convert(final ExprNodeSubQueryDesc subQueryDesc) throws  SemanticException {
-    if(subQueryDesc.getType() == ExprNodeSubQueryDesc.SubqueryType.IN ) {
+    if(subQueryDesc.getType() == SubqueryType.IN ) {
      /*
       * Check.5.h :: For In and Not In the SubQuery must implicitly or
       * explicitly only contain one select item.
@@ -208,11 +210,11 @@ public class RexNodeConverter {
                                               ImmutableList.<RexNode>of(rexNodeLhs) );
       return  rexSubQuery;
     }
-    else if( subQueryDesc.getType() == ExprNodeSubQueryDesc.SubqueryType.EXISTS) {
+    else if( subQueryDesc.getType() == SubqueryType.EXISTS) {
       RexNode subQueryNode = RexSubQuery.exists(subQueryDesc.getRexSubQuery());
       return subQueryNode;
     }
-    else if( subQueryDesc.getType() == ExprNodeSubQueryDesc.SubqueryType.SCALAR){
+    else if( subQueryDesc.getType() == SubqueryType.SCALAR){
       if(subQueryDesc.getRexSubQuery().getRowType().getFieldCount() > 1) {
         throw new CalciteSubquerySemanticException(ErrorMsg.INVALID_SUBQUERY_EXPRESSION.getMsg(
                 "SubQuery can contain only 1 item in Select List."));
@@ -306,13 +308,15 @@ public class RexNodeConverter {
           // For compare, we will convert requisite children
           // For BETWEEN skip the first child (the revert boolean)
           if (!isBetween || i > 0) {
-            tmpExprNode = ParseUtils.createConversionCast(childExpr, (PrimitiveTypeInfo) tgtDT);
+            tmpExprNode = ExprNodeTypeCheck.getExprNodeDefaultExprProcessor()
+                .createConversionCast(childExpr, (PrimitiveTypeInfo) tgtDT);
           }
         } else if (isNumeric) {
           // For numeric, we'll do minimum necessary cast - if we cast to the type
           // of expression, bad things will happen.
           PrimitiveTypeInfo minArgType = ExprNodeDescUtils.deriveMinArgumentCast(childExpr, tgtDT);
-          tmpExprNode = ParseUtils.createConversionCast(childExpr, minArgType);
+          tmpExprNode = ExprNodeTypeCheck.getExprNodeDefaultExprProcessor()
+              .createConversionCast(childExpr, minArgType);
         } else {
           throw new AssertionError("Unexpected " + tgtDT + " - not a numeric op or compare");
         }
