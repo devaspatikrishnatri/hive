@@ -60,6 +60,10 @@ STAGE PLANS:
                       Statistics: Num rows: 100 Data size: 11999 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
+<<<<<<< HEAD
+=======
+                        null sort order: z
+>>>>>>> 0ec98e515ca (HIVE-22489: Reduce Sink operator should order nulls by parameter (Krisztian Kasa, reviewed by Jesus Camacho Rodriguez))
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Reduce Sink Vectorization:

@@ -62,7 +62,7 @@ STAGE PLANS:
                         Statistics: Num rows: 3072 Data size: 9176 Basic stats: COMPLETE Column stats: COMPLETE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Reduce Sink Vectorization:
@@ -227,7 +227,7 @@ STAGE PLANS:
                       Statistics: Num rows: 3053 Data size: 9120 Basic stats: COMPLETE Column stats: COMPLETE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Reduce Sink Vectorization:
@@ -400,7 +400,7 @@ STAGE PLANS:
                         Statistics: Num rows: 3072 Data size: 9176 Basic stats: COMPLETE Column stats: COMPLETE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Reduce Sink Vectorization:
@@ -573,7 +573,7 @@ STAGE PLANS:
                         Statistics: Num rows: 3072 Data size: 9176 Basic stats: COMPLETE Column stats: COMPLETE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Reduce Sink Vectorization:

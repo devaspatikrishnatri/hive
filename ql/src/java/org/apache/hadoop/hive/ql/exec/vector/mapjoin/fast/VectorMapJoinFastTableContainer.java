@@ -113,21 +113,21 @@ public class VectorMapJoinFastTableContainer implements VectorMapJoinTableContai
             isFullOuter,
             minMaxEnabled,
             hashTableKeyType,
-            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount);
+            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount, desc.getKeyTblDesc());
         break;
       case HASH_MULTISET:
         hashTable = new VectorMapJoinFastLongHashMultiSet(
             isFullOuter,
             minMaxEnabled,
             hashTableKeyType,
-            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount);
+            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount, desc.getKeyTblDesc());
         break;
       case HASH_SET:
         hashTable = new VectorMapJoinFastLongHashSet(
             isFullOuter,
             minMaxEnabled,
             hashTableKeyType,
-            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount);
+            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount, desc.getKeyTblDesc());
         break;
       }
       break;
@@ -137,17 +137,17 @@ public class VectorMapJoinFastTableContainer implements VectorMapJoinTableContai
       case HASH_MAP:
         hashTable = new VectorMapJoinFastStringHashMap(
             isFullOuter,
-            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount);
+            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount, desc.getKeyTblDesc());
         break;
       case HASH_MULTISET:
         hashTable = new VectorMapJoinFastStringHashMultiSet(
             isFullOuter,
-            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount);
+            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount, desc.getKeyTblDesc());
         break;
       case HASH_SET:
         hashTable = new VectorMapJoinFastStringHashSet(
             isFullOuter,
-            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount);
+            newThreshold, loadFactor, writeBufferSize, estimatedKeyCount, desc.getKeyTblDesc());
         break;
       }
       break;

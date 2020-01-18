@@ -271,11 +271,11 @@ Table Type:         	MANAGED_TABLE
 Table Parameters:	 	 
 	COLUMN_STATS_ACCURATE	{\"BASIC_STATS\":\"true\"}
 	bucketing_version   	2                   
-	numFiles            	5                   
+	numFiles            	6                   
 	numPartitions       	3                   
 	numRows             	6                   
 	rawDataSize         	0                   
-	totalSize           	3714                
+	totalSize           	4387                
 	transactional       	true                
 	transactional_properties	default             
 #### A masked pattern was here ####
@@ -368,11 +368,11 @@ Table Type:         	MANAGED_TABLE
 Table Parameters:	 	 
 	COLUMN_STATS_ACCURATE	{\"BASIC_STATS\":\"true\"}
 	bucketing_version   	2                   
-	numFiles            	6                   
+	numFiles            	8                   
 	numPartitions       	3                   
 	numRows             	8                   
 	rawDataSize         	0                   
-	totalSize           	4505                
+	totalSize           	5850                
 	transactional       	true                
 	transactional_properties	default             
 #### A masked pattern was here ####
@@ -526,7 +526,7 @@ Partition Parameters:
 	numFiles            	2                   
 	numRows             	2                   
 	rawDataSize         	0                   
-	totalSize           	1458                
+	totalSize           	1459                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 
@@ -593,10 +593,10 @@ Table:              	stats_part
 #### A masked pattern was here ####
 Partition Parameters:	 	 
 	COLUMN_STATS_ACCURATE	{\"BASIC_STATS\":\"true\",\"COLUMN_STATS\":{\"key\":\"true\",\"value\":\"true\"}}
-	numFiles            	2                   
+	numFiles            	4                   
 	numRows             	4                   
 	rawDataSize         	0                   
-	totalSize           	1583                
+	totalSize           	2927                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 
@@ -727,7 +727,7 @@ Partition Parameters:
 	numFiles            	2                   
 	numRows             	2                   
 	rawDataSize         	0                   
-	totalSize           	1458                
+	totalSize           	1459                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 
@@ -794,10 +794,10 @@ Table:              	stats_part
 #### A masked pattern was here ####
 Partition Parameters:	 	 
 	COLUMN_STATS_ACCURATE	{\"BASIC_STATS\":\"true\",\"COLUMN_STATS\":{\"key\":\"true\",\"value\":\"true\"}}
-	numFiles            	2                   
+	numFiles            	4                   
 	numRows             	4                   
 	rawDataSize         	0                   
-	totalSize           	1583                
+	totalSize           	2927                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 
@@ -861,7 +861,7 @@ Partition Parameters:
 	numFiles            	2                   
 	numRows             	2                   
 	rawDataSize         	0                   
-	totalSize           	1458                
+	totalSize           	1459                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 
@@ -928,10 +928,10 @@ Table:              	stats_part
 #### A masked pattern was here ####
 Partition Parameters:	 	 
 	COLUMN_STATS_ACCURATE	{\"BASIC_STATS\":\"true\",\"COLUMN_STATS\":{\"key\":\"true\",\"value\":\"true\"}}
-	numFiles            	2                   
+	numFiles            	4                   
 	numRows             	4                   
 	rawDataSize         	0                   
-	totalSize           	1583                
+	totalSize           	2927                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 
@@ -999,7 +999,7 @@ Partition Parameters:
 	numFiles            	3                   
 	numRows             	1                   
 	rawDataSize         	0                   
-	totalSize           	2155                
+	totalSize           	2163                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 
@@ -1066,10 +1066,10 @@ Table:              	stats_part
 #### A masked pattern was here ####
 Partition Parameters:	 	 
 	COLUMN_STATS_ACCURATE	{\"BASIC_STATS\":\"true\",\"COLUMN_STATS\":{\"key\":\"true\",\"value\":\"true\"}}
-	numFiles            	2                   
+	numFiles            	4                   
 	numRows             	4                   
 	rawDataSize         	0                   
-	totalSize           	1583                
+	totalSize           	2927                
 #### A masked pattern was here ####
 	 	 
 # Storage Information	 	 

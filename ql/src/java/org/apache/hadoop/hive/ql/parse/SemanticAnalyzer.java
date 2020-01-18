@@ -418,6 +418,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
   private String invalidResultCacheReason;
   private String invalidAutomaticRewritingMaterializationReason;
 
+  private final NullOrdering defaultNullOrder;
+
   private static final CommonToken SELECTDI_TOKEN =
       new ImmutableCommonToken(HiveParser.TOK_SELECTDI, "TOK_SELECTDI");
   private static final CommonToken SELEXPR_TOKEN =
@@ -476,6 +478,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     tabNameToTabObject = new HashMap<>();
     defaultJoinMerge = false == HiveConf.getBoolVar(conf, HiveConf.ConfVars.HIVE_MERGE_NWAY_JOINS);
     disableJoinMerge = defaultJoinMerge;
+    defaultNullOrder = NullOrdering.defaultNullOrder(conf);
   }
 
   @Override
@@ -5710,7 +5713,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
                 groupingSetsPresent ? keyLength + 1 : keyLength,
                 reduceValues, distinctColIndices,
                 outputKeyColumnNames, outputValueColumnNames, true, -1, numPartitionFields,
-                numReducers, AcidUtils.Operation.NOT_ACID),
+                numReducers, AcidUtils.Operation.NOT_ACID, defaultNullOrder),
             new RowSchema(reduceSinkOutputRowResolver.getColumnInfos()), inputOperatorInfo),
         reduceSinkOutputRowResolver);
     rsOp.setColumnExprMap(colExprMap);
@@ -5912,7 +5915,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     }
     ReduceSinkDesc rsDesc = PlanUtils.getReduceSinkDesc(reduceKeys, keyLength, reduceValues,
         distinctColIndices, outputKeyColumnNames, outputValueColumnNames,
-        true, -1, keyLength, numReducers, AcidUtils.Operation.NOT_ACID);
+        true, -1, keyLength, numReducers, AcidUtils.Operation.NOT_ACID, defaultNullOrder);
 
     ReduceSinkOperator rsOp = (ReduceSinkOperator) putOpInsertMap(
         OperatorFactory.getAndMakeChild(rsDesc, new RowSchema(reduceSinkOutputRowResolver
@@ -6026,7 +6029,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     ReduceSinkOperator rsOp = (ReduceSinkOperator) putOpInsertMap(
         OperatorFactory.getAndMakeChild(PlanUtils.getReduceSinkDesc(reduceKeys,
             reduceValues, outputColumnNames, true, -1, numPartitionFields,
-            numReducers, AcidUtils.Operation.NOT_ACID),
+            numReducers, AcidUtils.Operation.NOT_ACID, defaultNullOrder),
             new RowSchema(reduceSinkOutputRowResolver2.getColumnInfos()), groupByOperatorInfo),
         reduceSinkOutputRowResolver2);
 
@@ -9069,7 +9072,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     dummy.setParentOperators(null);
 
     ReduceSinkDesc rsdesc = PlanUtils.getReduceSinkDesc(newSortCols, valueCols, outputColumns,
-        false, -1, partitionCols, newSortOrder.toString(), newNullOrder.toString(),
+        false, -1, partitionCols, newSortOrder.toString(), newNullOrder.toString(), defaultNullOrder,
         numReducers, acidOp, isCompaction);
     Operator interim = putOpInsertMap(OperatorFactory.getAndMakeChild(rsdesc,
         new RowSchema(rsRR.getColumnInfos()), input), rsRR);
@@ -9395,7 +9398,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
 
     ReduceSinkDesc rsDesc = PlanUtils.getReduceSinkDesc(reduceKeys,
         reduceValues, outputColumns, false, tag,
-        reduceKeys.size(), numReds, AcidUtils.Operation.NOT_ACID);
+        reduceKeys.size(), numReds, AcidUtils.Operation.NOT_ACID, defaultNullOrder);
 
     ReduceSinkOperator rsOp = (ReduceSinkOperator) putOpInsertMap(
         OperatorFactory.getAndMakeChild(rsDesc, new RowSchema(outputRR.getColumnInfos()),
@@ -15839,5 +15842,4 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
   protected void executeUnparseTranlations() {
     unparseTranslator.applyTranslations(ctx.getTokenRewriteStream());
   }
-
 }

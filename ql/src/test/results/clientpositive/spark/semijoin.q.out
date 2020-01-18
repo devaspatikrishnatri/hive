@@ -153,7 +153,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -179,7 +179,7 @@ STAGE PLANS:
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -267,7 +267,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -293,7 +293,7 @@ STAGE PLANS:
                         Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -383,7 +383,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -409,7 +409,7 @@ STAGE PLANS:
                         Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
@@ -491,7 +491,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -517,7 +517,7 @@ STAGE PLANS:
                         Statistics: Num rows: 7 Data size: 51 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col1 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col1 (type: int)
                           Statistics: Num rows: 7 Data size: 51 Basic stats: COMPLETE Column stats: NONE
@@ -614,7 +614,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -640,7 +640,7 @@ STAGE PLANS:
                         Statistics: Num rows: 3 Data size: 22 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 3 Data size: 22 Basic stats: COMPLETE Column stats: NONE
@@ -755,7 +755,7 @@ STAGE PLANS:
                         Statistics: Num rows: 7 Data size: 51 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 7 Data size: 51 Basic stats: COMPLETE Column stats: NONE
@@ -770,7 +770,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -890,7 +890,7 @@ STAGE PLANS:
                         Statistics: Num rows: 1 Data size: 7 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 1 Data size: 7 Basic stats: COMPLETE Column stats: NONE
@@ -905,7 +905,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -1022,7 +1022,7 @@ STAGE PLANS:
                         Statistics: Num rows: 3 Data size: 21 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 3 Data size: 21 Basic stats: COMPLETE Column stats: NONE
@@ -1037,7 +1037,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -1273,7 +1273,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -1299,7 +1299,7 @@ STAGE PLANS:
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: (2 * _col0) (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: (2 * _col0) (type: int)
                           Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -1387,7 +1387,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -1403,7 +1403,7 @@ STAGE PLANS:
                     Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -1429,7 +1429,7 @@ STAGE PLANS:
                         Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -1530,7 +1530,7 @@ STAGE PLANS:
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int), value (type: string)
-                      null sort order: aa
+                      null sort order: zz
                       sort order: ++
                       Map-reduce partition columns: key (type: int), value (type: string)
                       Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -1555,7 +1555,7 @@ STAGE PLANS:
                         Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int), _col1 (type: string)
-                          null sort order: aa
+                          null sort order: zz
                           sort order: ++
                           Map-reduce partition columns: _col0 (type: int), _col1 (type: string)
                           Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -1825,7 +1825,7 @@ STAGE PLANS:
                   Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -1836,7 +1836,7 @@ STAGE PLANS:
                   Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -1857,7 +1857,7 @@ STAGE PLANS:
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -1967,7 +1967,7 @@ STAGE PLANS:
                   Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -1978,7 +1978,7 @@ STAGE PLANS:
                   Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -1999,7 +1999,7 @@ STAGE PLANS:
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -2112,7 +2112,7 @@ STAGE PLANS:
                   Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -2123,7 +2123,7 @@ STAGE PLANS:
                   Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -2144,7 +2144,7 @@ STAGE PLANS:
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -2257,7 +2257,7 @@ STAGE PLANS:
                   Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -2278,7 +2278,7 @@ STAGE PLANS:
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -2289,7 +2289,7 @@ STAGE PLANS:
                   Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -2402,7 +2402,7 @@ STAGE PLANS:
                   Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -2423,7 +2423,7 @@ STAGE PLANS:
                       Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -2434,7 +2434,7 @@ STAGE PLANS:
                   Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -2549,7 +2549,7 @@ STAGE PLANS:
                   Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -2570,7 +2570,7 @@ STAGE PLANS:
                       Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: int)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: int)
                         Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -2581,7 +2581,7 @@ STAGE PLANS:
                   Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: key (type: int)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: key (type: int)
                     Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -2712,7 +2712,7 @@ STAGE PLANS:
                     Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
                     Reduce Output Operator
                       key expressions: key (type: int)
-                      null sort order: a
+                      null sort order: z
                       sort order: +
                       Map-reduce partition columns: key (type: int)
                       Statistics: Num rows: 22 Data size: 163 Basic stats: COMPLETE Column stats: NONE
@@ -2738,7 +2738,7 @@ STAGE PLANS:
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: int)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: int)
                           Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -2749,7 +2749,7 @@ STAGE PLANS:
                   Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
                   Reduce Output Operator
                     key expressions: value (type: string)
-                    null sort order: a
+                    null sort order: z
                     sort order: +
                     Map-reduce partition columns: value (type: string)
                     Statistics: Num rows: 11 Data size: 79 Basic stats: COMPLETE Column stats: NONE
@@ -2765,7 +2765,7 @@ STAGE PLANS:
                 Statistics: Num rows: 24 Data size: 179 Basic stats: COMPLETE Column stats: NONE
                 Reduce Output Operator
                   key expressions: _col1 (type: string)
-                  null sort order: a
+                  null sort order: z
                   sort order: +
                   Map-reduce partition columns: _col1 (type: string)
                   Statistics: Num rows: 24 Data size: 179 Basic stats: COMPLETE Column stats: NONE
@@ -2888,7 +2888,7 @@ STAGE PLANS:
                       Statistics: Num rows: 7 Data size: 51 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col1 (type: string)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col1 (type: string)
                         Statistics: Num rows: 7 Data size: 51 Basic stats: COMPLETE Column stats: NONE
@@ -2914,7 +2914,7 @@ STAGE PLANS:
                         Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
                         Reduce Output Operator
                           key expressions: _col0 (type: string)
-                          null sort order: a
+                          null sort order: z
                           sort order: +
                           Map-reduce partition columns: _col0 (type: string)
                           Statistics: Num rows: 11 Data size: 84 Basic stats: COMPLETE Column stats: NONE
@@ -2993,7 +2993,7 @@ STAGE PLANS:
                       Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: string), _col1 (type: string)
-                        null sort order: aa
+                        null sort order: zz
                         sort order: ++
                         Map-reduce partition columns: _col0 (type: string), _col1 (type: string)
                         Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
@@ -3032,7 +3032,7 @@ STAGE PLANS:
                       Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: string)
-                        null sort order: a
+                        null sort order: z
                         sort order: +
                         Map-reduce partition columns: _col0 (type: string)
                         Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
@@ -3078,7 +3078,7 @@ STAGE PLANS:
                       Statistics: Num rows: 41666 Data size: 926985 Basic stats: COMPLETE Column stats: NONE
                       Reduce Output Operator
                         key expressions: _col0 (type: string), _col1 (type: string)
-                        null sort order: aa
+                        null sort order: zz
                         sort order: ++
                         Map-reduce partition columns: _col0 (type: string), _col1 (type: string)
                         Statistics: Num rows: 41666 Data size: 926985 Basic stats: COMPLETE Column stats: NONE
