@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.calcite.rel.RelNode;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.hadoop.hive.common.type.Date;
@@ -36,12 +37,15 @@ import org.apache.hadoop.hive.common.type.TimestampTZ;
 import org.apache.hadoop.hive.common.type.TimestampTZUtil;
 import org.apache.hadoop.hive.ql.ErrorMsg;
 import org.apache.hadoop.hive.ql.exec.ColumnInfo;
+import org.apache.hadoop.hive.ql.exec.Description;
+import org.apache.hadoop.hive.ql.exec.FunctionInfo;
 import org.apache.hadoop.hive.ql.exec.FunctionRegistry;
 import org.apache.hadoop.hive.ql.exec.UDFArgumentException;
 import org.apache.hadoop.hive.ql.optimizer.ConstantPropagateProcFactory;
 import org.apache.hadoop.hive.ql.optimizer.calcite.CalciteSubquerySemanticException;
 import org.apache.hadoop.hive.ql.optimizer.calcite.translator.TypeConverter;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
+import org.apache.hadoop.hive.ql.parse.RowResolver;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
 import org.apache.hadoop.hive.ql.plan.ExprNodeColumnDesc;
 import org.apache.hadoop.hive.ql.plan.ExprNodeColumnListDesc;
@@ -52,7 +56,17 @@ import org.apache.hadoop.hive.ql.plan.ExprNodeFieldDesc;
 import org.apache.hadoop.hive.ql.plan.ExprNodeGenericFuncDesc;
 import org.apache.hadoop.hive.ql.plan.ExprNodeSubQueryDesc;
 import org.apache.hadoop.hive.ql.plan.SubqueryType;
+import org.apache.hadoop.hive.ql.udf.SettableUDF;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBaseCompare;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFCoalesce;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFIn;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPAnd;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqual;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqualNS;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPNot;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPOr;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFStruct;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFWhen;
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.hive.serde2.objectinspector.ConstantObjectInspector;
@@ -67,6 +81,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectIn
 import org.apache.hadoop.hive.serde2.typeinfo.CharTypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.DecimalTypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.PrimitiveTypeInfo;
+import org.apache.hadoop.hive.serde2.typeinfo.StructTypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoFactory;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoUtils;
@@ -94,7 +109,8 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
-  protected ExprNodeDesc toExpr(ColumnInfo colInfo) {
+  protected ExprNodeDesc toExpr(ColumnInfo colInfo, RowResolver rowResolver, int offset)
+      throws SemanticException {
     ObjectInspector inspector = colInfo.getObjectInspector();
     if (inspector instanceof ConstantObjectInspector && inspector instanceof PrimitiveObjectInspector) {
       return toPrimitiveConstDesc(colInfo, inspector);
@@ -188,7 +204,15 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
-  protected ExprNodeColumnDesc createColumnRefExpr(ColumnInfo colInfo) {
+  protected ExprNodeColumnDesc createColumnRefExpr(ColumnInfo colInfo, RowResolver rowResolver, int offset) {
+    return new ExprNodeColumnDesc(colInfo);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ExprNodeColumnDesc createColumnRefExpr(ColumnInfo colInfo, List<RowResolver> rowResolverList) {
     return new ExprNodeColumnDesc(colInfo);
   }
 
@@ -305,31 +329,27 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
   @Override
   protected Object interpretConstantAsPrimitive(PrimitiveTypeInfo targetType, Object constantValue,
       PrimitiveTypeInfo sourceType) {
-
-    String constTypeInfoName = sourceType.getTypeName();
     if (constantValue instanceof Number || constantValue instanceof String) {
       try {
         PrimitiveTypeEntry primitiveTypeEntry = targetType.getPrimitiveTypeEntry();
         if (PrimitiveObjectInspectorUtils.intTypeEntry.equals(primitiveTypeEntry)) {
-          return (new Integer(constantValue.toString()));
+          return toBigDecimal(constantValue.toString()).intValueExact();
         } else if (PrimitiveObjectInspectorUtils.longTypeEntry.equals(primitiveTypeEntry)) {
-          return (new Long(constantValue.toString()));
+          return toBigDecimal(constantValue.toString()).longValueExact();
         } else if (PrimitiveObjectInspectorUtils.doubleTypeEntry.equals(primitiveTypeEntry)) {
-          return (new Double(constantValue.toString()));
+          return Double.valueOf(constantValue.toString());
         } else if (PrimitiveObjectInspectorUtils.floatTypeEntry.equals(primitiveTypeEntry)) {
-          return (new Float(constantValue.toString()));
+          return Float.valueOf(constantValue.toString());
         } else if (PrimitiveObjectInspectorUtils.byteTypeEntry.equals(primitiveTypeEntry)) {
-          return (new Byte(constantValue.toString()));
+          return toBigDecimal(constantValue.toString()).byteValueExact();
         } else if (PrimitiveObjectInspectorUtils.shortTypeEntry.equals(primitiveTypeEntry)) {
-          return (new Short(constantValue.toString()));
+          return toBigDecimal(constantValue.toString()).shortValueExact();
         } else if (PrimitiveObjectInspectorUtils.decimalTypeEntry.equals(primitiveTypeEntry)) {
           return HiveDecimal.create(constantValue.toString());
         }
-      } catch (NumberFormatException nfe) {
+      }  catch (NumberFormatException | ArithmeticException nfe) {
         LOG.trace("Failed to narrow type of constant", nfe);
-        if (!NumberUtils.isNumber(constantValue.toString())) {
           return null;
-        }
       }
     }
 
@@ -346,23 +366,44 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
       return hiveDecimal;
     }
 
-    // TODO : Char and string comparison happens in char. But, varchar and string comparison happens in String.
-
-    // if column type is char and constant type is string, then convert the constant to char
-    // type with padded spaces.
-    if (constTypeInfoName.equalsIgnoreCase(serdeConstants.STRING_TYPE_NAME) && targetType instanceof CharTypeInfo) {
-      final String constValue = constantValue.toString();
-      final int length = TypeInfoUtils.getCharacterLengthForType(targetType);
-      HiveChar newValue = new HiveChar(constValue, length);
-      HiveChar maxCharConst = new HiveChar(constValue, HiveChar.MAX_CHAR_LENGTH);
-      if (maxCharConst.equals(newValue)) {
-        return newValue;
-      } else {
-        return null;
+    String constTypeInfoName = sourceType.getTypeName();
+    if (constTypeInfoName.equalsIgnoreCase(serdeConstants.STRING_TYPE_NAME)) {
+      // because a comparison against a "string" will happen in "string" type.
+      // to avoid unintentional comparisons in "string"
+      // constants which are representing char/varchar values must be converted to the
+      // appropriate type.
+      if (targetType instanceof CharTypeInfo) {
+        final String constValue = constantValue.toString();
+        final int length = TypeInfoUtils.getCharacterLengthForType(targetType);
+        HiveChar newValue = new HiveChar(constValue, length);
+        HiveChar maxCharConst = new HiveChar(constValue, HiveChar.MAX_CHAR_LENGTH);
+        if (maxCharConst.equals(newValue)) {
+          return newValue;
+        } else {
+          return null;
+        }
+      }
+      if (targetType instanceof VarcharTypeInfo) {
+        final String constValue = constantValue.toString();
+        final int length = TypeInfoUtils.getCharacterLengthForType(targetType);
+        HiveVarchar newValue = new HiveVarchar(constValue, length);
+        HiveVarchar maxCharConst = new HiveVarchar(constValue, HiveVarchar.MAX_VARCHAR_LENGTH);
+        if (maxCharConst.equals(newValue)) {
+          return newValue;
+        } else {
+          return null;
+        }
       }
     }
 
     return constantValue;
+  }
+
+  private BigDecimal toBigDecimal(String val) {
+    if (!NumberUtils.isNumber(val)) {
+      throw new NumberFormatException("The given string is not a valid number: " + val);
+    }
+    return new BigDecimal(val.replaceAll("[dDfFlL]$", ""));
   }
 
   /**
@@ -480,6 +521,25 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
+  protected ExprNodeDesc createStructExpr(TypeInfo typeInfo, List<ExprNodeDesc> operands)
+      throws SemanticException {
+    assert typeInfo instanceof StructTypeInfo;
+    if (isAllConstants(operands)) {
+      return createConstantExpr(typeInfo,
+          operands.stream()
+              .map(this::getConstantValue)
+              .collect(Collectors.toList()));
+    }
+    return ExprNodeGenericFuncDesc.newInstance(
+        new GenericUDFStruct(),
+        GenericUDFStruct.class.getAnnotation(Description.class).name(),
+        operands);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected ExprNodeConstantDesc createConstantExpr(TypeInfo typeInfo, Object constantValue) {
     return new ExprNodeConstantDesc(typeInfo, constantValue);
   }
@@ -497,17 +557,12 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
-  protected ExprNodeGenericFuncDesc createFuncCallExpr(TypeInfo typeInfo, GenericUDF genericUDF,
-      List<ExprNodeDesc> inputs) {
-    return new ExprNodeGenericFuncDesc(typeInfo, genericUDF, inputs);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ExprNodeGenericFuncDesc createFuncCallExpr(GenericUDF genericUDF,
+  protected ExprNodeGenericFuncDesc createFuncCallExpr(TypeInfo typeInfo, FunctionInfo fi,
       String funcText, List<ExprNodeDesc> inputs) throws UDFArgumentException {
+    GenericUDF genericUDF = fi.getGenericUDF();
+    if (genericUDF instanceof SettableUDF) {
+      ((SettableUDF) genericUDF).setTypeInfo(typeInfo);
+    }
     return ExprNodeGenericFuncDesc.newInstance(genericUDF, funcText, inputs);
   }
 
@@ -523,10 +578,9 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
-  protected ExprNodeColumnListDesc addExprToExprsList(ExprNodeDesc columnList, ExprNodeDesc expr) {
+  protected void addExprToExprsList(ExprNodeDesc columnList, ExprNodeDesc expr) {
     ExprNodeColumnListDesc l = (ExprNodeColumnListDesc) columnList;
     l.addColumn(expr);
-    return l;
   }
 
   /**
@@ -557,6 +611,14 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
+  protected String getConstantValueAsString(ExprNodeDesc expr) {
+    return ((ExprNodeConstantDesc) expr).getValue().toString();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected boolean isColumnRefExpr(Object o) {
     return o instanceof ExprNodeColumnDesc;
   }
@@ -565,7 +627,7 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
-  protected String getColumnName(ExprNodeDesc expr) {
+  protected String getColumnName(ExprNodeDesc expr, RowResolver rowResolver) {
     return ((ExprNodeColumnDesc) expr).getColumn();
   }
 
@@ -597,8 +659,18 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
-  protected List<ExprNodeDesc> rewriteINIntoORFuncCallExpr(List<ExprNodeDesc> inOperands) throws SemanticException {
-    return TypeCheckProcFactoryUtils.rewriteInToOR(inOperands);
+  protected List<TypeInfo> getStructTypeInfoList(ExprNodeDesc expr) {
+    StructTypeInfo structTypeInfo = (StructTypeInfo) expr.getTypeInfo();
+    return structTypeInfo.getAllStructFieldTypeInfos();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected List<String> getStructNameList(ExprNodeDesc expr) {
+    StructTypeInfo structTypeInfo = (StructTypeInfo) expr.getTypeInfo();
+    return structTypeInfo.getAllStructFieldNames();
   }
 
   /**
@@ -629,6 +701,71 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
+  protected boolean isNEGATIVEFuncCallExpr(ExprNodeDesc expr) {
+    return FunctionRegistry.isOpNegative(expr);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isAndFunction(FunctionInfo fi) {
+    return fi.getGenericUDF() instanceof GenericUDFOPAnd;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isOrFunction(FunctionInfo fi) {
+    return fi.getGenericUDF() instanceof GenericUDFOPOr;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isInFunction(FunctionInfo fi) {
+    return fi.getGenericUDF() instanceof GenericUDFIn;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isCompareFunction(FunctionInfo fi) {
+    return fi.getGenericUDF() instanceof GenericUDFBaseCompare;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isEqualFunction(FunctionInfo fi) {
+    return fi.getGenericUDF() instanceof GenericUDFOPEqual
+        && !(fi.getGenericUDF() instanceof GenericUDFOPEqualNS);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isConsistentWithinQuery(FunctionInfo fi) {
+    return FunctionRegistry.isConsistentWithinQuery(fi.getGenericUDF());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected boolean isStateful(FunctionInfo fi) {
+    return FunctionRegistry.isStateful(fi.getGenericUDF());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected ExprNodeDesc setTypeInfo(ExprNodeDesc expr, TypeInfo type) {
     expr.setTypeInfo(type);
     return expr;
@@ -638,7 +775,8 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
    * {@inheritDoc}
    */
   @Override
-  protected boolean canConvertCASEIntoCOALESCEFuncCallExpr(GenericUDF genericUDF, List<ExprNodeDesc> inputs) {
+  protected boolean convertCASEIntoCOALESCEFuncCallExpr(FunctionInfo fi, List<ExprNodeDesc> inputs) {
+    GenericUDF genericUDF = fi.getGenericUDF();
     if (genericUDF instanceof GenericUDFWhen && inputs.size() == 3 &&
         inputs.get(1) instanceof ExprNodeConstantDesc &&
         inputs.get(2) instanceof ExprNodeConstantDesc) {
@@ -654,7 +792,8 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
   }
 
   @Override
-  protected boolean convertCASEIntoIFFuncCallExpr(GenericUDF genericUDF, List<ExprNodeDesc> inputs) {
+  protected boolean convertCASEIntoIFFuncCallExpr(FunctionInfo fi, List<ExprNodeDesc> inputs) {
+    GenericUDF genericUDF = fi.getGenericUDF();
     return genericUDF instanceof GenericUDFWhen && inputs.size() == 3
         && TypeInfoFactory.booleanTypeInfo.equals(inputs.get(0).getTypeInfo());
   }
@@ -733,4 +872,11 @@ public class ExprNodeDescExprFactory extends ExprFactory<ExprNodeDesc> {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected FunctionInfo getFunctionInfo(String funcName) throws SemanticException {
+    return FunctionRegistry.getFunctionInfo(funcName);
+  }
 }

@@ -1180,10 +1180,10 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: srcpart_date_hour_n2
-                  filterExpr: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                  filterExpr: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                   Statistics: Num rows: 4 Data size: 1440 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                    predicate: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                     Statistics: Num rows: 1 Data size: 360 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: ds (type: string), hr (type: string)
@@ -1375,10 +1375,10 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: srcpart_date_hour_n2
-                  filterExpr: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                  filterExpr: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                   Statistics: Num rows: 4 Data size: 1440 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                    predicate: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                     Statistics: Num rows: 1 Data size: 360 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: ds (type: string), hr (type: string)
@@ -2920,10 +2920,10 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: srcpart_date_hour_n2
-                  filterExpr: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08')) (type: boolean)
+                  filterExpr: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D)) (type: boolean)
                   Statistics: Num rows: 4 Data size: 1440 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08')) (type: boolean)
+                    predicate: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D)) (type: boolean)
                     Statistics: Num rows: 1 Data size: 360 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: ds (type: string), hr (type: string)
@@ -3086,10 +3086,10 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: srcpart_date_hour_n2
-                  filterExpr: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                  filterExpr: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                   Statistics: Num rows: 4 Data size: 1440 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                    predicate: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                     Statistics: Num rows: 1 Data size: 360 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: ds (type: string), hr (type: string)
@@ -5596,10 +5596,10 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: srcpart_date_hour_n2
-                  filterExpr: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                  filterExpr: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                   Statistics: Num rows: 4 Data size: 1440 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((UDFToDouble(hour) = 11.0D) and (date = '2008-04-08') and ds is not null and hr is not null) (type: boolean)
+                    predicate: ((date = '2008-04-08') and (UDFToDouble(hour) = 11.0D) and ds is not null and hr is not null) (type: boolean)
                     Statistics: Num rows: 1 Data size: 360 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: ds (type: string), hr (type: string)

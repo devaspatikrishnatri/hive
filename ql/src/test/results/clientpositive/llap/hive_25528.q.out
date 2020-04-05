@@ -37,7 +37,7 @@ CBO PLAN:
 HiveProject(issue_prc=[$0], per_100y_acr_int_fc=[CAST(6.443:DECIMAL(28, 8)):DECIMAL(28, 8)], total_int=[$1])
   HiveSortLimit(sort0=[$1], dir0=[ASC], fetch=[3])
     HiveProject(issue_prc=[$0], total_int=[/($0, 6.443:DECIMAL(28, 8))])
-      HiveFilter(condition=[AND(=($2, _UTF-16LE'20220512'), =($1, 6.443:DECIMAL(4, 3)), IS NOT NULL($0))])
+      HiveFilter(condition=[AND(=($2, _UTF-16LE'20220512'), =($1, 6.443), IS NOT NULL($0))])
         HiveTableScan(table=[[default, dwd_fib_bond_info_di]], table:alias=[dwd_fib_bond_info_di])
 
 PREHOOK: query: explain cbo select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where p_dt='20220512' and issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc!=6.44300000 order by total_int limit 3
@@ -51,7 +51,7 @@ POSTHOOK: Input: default@dwd_fib_bond_info_di
 CBO PLAN:
 HiveSortLimit(sort0=[$2], dir0=[ASC], fetch=[3])
   HiveProject(issue_prc=[$0], per_100y_acr_int_fc=[$1], total_int=[/($0, $1)])
-    HiveFilter(condition=[AND(=($2, _UTF-16LE'20220512'), <>($1, 6.443:DECIMAL(4, 3)), IS NOT NULL($0))])
+    HiveFilter(condition=[AND(=($2, _UTF-16LE'20220512'), <>($1, 6.443), IS NOT NULL($0))])
       HiveTableScan(table=[[default, dwd_fib_bond_info_di]], table:alias=[dwd_fib_bond_info_di])
 
 PREHOOK: query: select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc=6.44300000 order by total_int limit 3

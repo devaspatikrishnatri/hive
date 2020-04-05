@@ -64,10 +64,10 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: src
-                  filterExpr: ((((value = 'val_400') or (value = 'val_500')) and ((key = 400) or (key = 450))) or (((value = 'val_100') or (value = 'val_200') or (value = 'val_300')) and ((key = 100) or (key = 150) or (key = 200)))) (type: boolean)
+                  filterExpr: (((value) IN ('val_400', 'val_500') and (key) IN (400, 450)) or ((value) IN ('val_100', 'val_200', 'val_300') and (key) IN (100, 150, 200))) (type: boolean)
                   Statistics: Num rows: 500 Data size: 89000 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((((value = 'val_400') or (value = 'val_500')) and ((key = 400) or (key = 450))) or (((value = 'val_100') or (value = 'val_200') or (value = 'val_300')) and ((key = 100) or (key = 150) or (key = 200)))) (type: boolean)
+                    predicate: (((value) IN ('val_400', 'val_500') and (key) IN (400, 450)) or ((value) IN ('val_100', 'val_200', 'val_300') and (key) IN (100, 150, 200))) (type: boolean)
                     Statistics: Num rows: 5 Data size: 890 Basic stats: COMPLETE Column stats: COMPLETE
                     Reduce Output Operator
                       key expressions: key (type: string)
@@ -76,7 +76,7 @@ STAGE PLANS:
                       Map-reduce partition columns: key (type: string)
                       Statistics: Num rows: 5 Data size: 890 Basic stats: COMPLETE Column stats: COMPLETE
                       value expressions: value (type: string)
-            Execution mode: vectorized, llap
+            Execution mode: llap
             LLAP IO: no inputs
         Reducer 2 
             Execution mode: llap
@@ -84,7 +84,7 @@ STAGE PLANS:
               Forward
                 Statistics: Num rows: 5 Data size: 890 Basic stats: COMPLETE Column stats: COMPLETE
                 Filter Operator
-                  predicate: (((VALUE._col0 = 'val_100') or (VALUE._col0 = 'val_200') or (VALUE._col0 = 'val_300')) and ((KEY._col0 = 100) or (KEY._col0 = 150) or (KEY._col0 = 200))) (type: boolean)
+                  predicate: ((VALUE._col0) IN ('val_100', 'val_200', 'val_300') and (KEY._col0) IN (100, 150, 200)) (type: boolean)
                   Statistics: Num rows: 3 Data size: 534 Basic stats: COMPLETE Column stats: COMPLETE
                   Group By Operator
                     aggregations: count()
@@ -120,7 +120,7 @@ STAGE PLANS:
                             Statistics: Num rows: 1 Data size: 864 Basic stats: COMPLETE Column stats: COMPLETE
                             value expressions: _col0 (type: struct<columntype:string,maxlength:bigint,sumlength:bigint,count:bigint,countnulls:bigint,bitvector:binary>), _col1 (type: struct<columntype:string,min:bigint,max:bigint,countnulls:bigint,bitvector:binary>)
                 Filter Operator
-                  predicate: (((VALUE._col0 = 'val_400') or (VALUE._col0 = 'val_500')) and ((KEY._col0 = 400) or (KEY._col0 = 450))) (type: boolean)
+                  predicate: ((VALUE._col0) IN ('val_400', 'val_500') and (KEY._col0) IN (400, 450)) (type: boolean)
                   Statistics: Num rows: 2 Data size: 356 Basic stats: COMPLETE Column stats: COMPLETE
                   Group By Operator
                     aggregations: count()
@@ -586,7 +586,7 @@ STAGE PLANS:
                   alias: src
                   Statistics: Num rows: 500 Data size: 89000 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((((value = 'val_400') or (value = 'val_500')) and ((key = 400) or (key = 450))) or (((value = 'val_100') or (value = 'val_200') or (value = 'val_300')) and ((key = 100) or (key = 150) or (key = 200)))) (type: boolean)
+                    predicate: (((value) IN ('val_400', 'val_500') and (key) IN (400, 450)) or ((value) IN ('val_100', 'val_200', 'val_300') and (key) IN (100, 150, 200))) (type: boolean)
                     Statistics: Num rows: 5 Data size: 890 Basic stats: COMPLETE Column stats: COMPLETE
                     Reduce Output Operator
                       key expressions: key (type: string)
@@ -595,7 +595,7 @@ STAGE PLANS:
                       Map-reduce partition columns: key (type: string)
                       Statistics: Num rows: 5 Data size: 890 Basic stats: COMPLETE Column stats: COMPLETE
                       value expressions: value (type: string)
-            Execution mode: vectorized, llap
+            Execution mode: llap
             LLAP IO: no inputs
         Reducer 2 
             Execution mode: llap
@@ -603,7 +603,7 @@ STAGE PLANS:
               Forward
                 Statistics: Num rows: 5 Data size: 890 Basic stats: COMPLETE Column stats: COMPLETE
                 Filter Operator
-                  predicate: (((VALUE._col0 = 'val_100') or (VALUE._col0 = 'val_200') or (VALUE._col0 = 'val_300')) and ((KEY._col0 = 100) or (KEY._col0 = 150) or (KEY._col0 = 200))) (type: boolean)
+                  predicate: ((VALUE._col0) IN ('val_100', 'val_200', 'val_300') and (KEY._col0) IN (100, 150, 200)) (type: boolean)
                   Statistics: Num rows: 3 Data size: 534 Basic stats: COMPLETE Column stats: COMPLETE
                   Group By Operator
                     aggregations: count()
@@ -639,7 +639,7 @@ STAGE PLANS:
                             Statistics: Num rows: 1 Data size: 864 Basic stats: COMPLETE Column stats: COMPLETE
                             value expressions: _col0 (type: struct<columntype:string,maxlength:bigint,sumlength:bigint,count:bigint,countnulls:bigint,bitvector:binary>), _col1 (type: struct<columntype:string,min:bigint,max:bigint,countnulls:bigint,bitvector:binary>)
                 Filter Operator
-                  predicate: (((VALUE._col0 = 'val_400') or (VALUE._col0 = 'val_500')) and ((KEY._col0 = 400) or (KEY._col0 = 450))) (type: boolean)
+                  predicate: ((VALUE._col0) IN ('val_400', 'val_500') and (KEY._col0) IN (400, 450)) (type: boolean)
                   Statistics: Num rows: 2 Data size: 356 Basic stats: COMPLETE Column stats: COMPLETE
                   Group By Operator
                     aggregations: count()

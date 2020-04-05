@@ -1583,7 +1583,7 @@ EXPLAIN CBO select key1 from dest_g21 where value1 > 1 group by key1, value1;
 
 EXPLAIN VECTORIZED select key1 from dest_g21 where value1 > 1 group by key1, value1;
 CBO PLAN:HiveProject(key1=[$0])
-  HiveFilter(condition=[>($1, 1.0E0)])
+  HiveFilter(condition=[>($1, 1E0)])
     HiveTableScan(table=[[default, dest_g21]], table:alias=[dest_g21])
 
 PLAN VECTORIZATION:
@@ -1843,7 +1843,7 @@ EXPLAIN CBO select count(key1) from dest_g21 where value1 > 1 group by key1, val
 EXPLAIN VECTORIZED select count(key1) from dest_g21 where value1 > 1 group by key1, value1;
 CBO PLAN:HiveProject(_o__c0=[$1])
   HiveAggregate(group=[{0}], agg#0=[count()])
-    HiveFilter(condition=[>($1, 1.0E0)])
+    HiveFilter(condition=[>($1, 1E0)])
       HiveTableScan(table=[[default, dest_g21]], table:alias=[dest_g21])
 
 PLAN VECTORIZATION:
@@ -1980,7 +1980,7 @@ CBO PLAN:HiveProject(key1=[$0])
     HiveProject(key1=[$0], value1=[$1])
       HiveTableScan(table=[[default, dest_g21]], table:alias=[t1])
     HiveProject(key1=[$0])
-      HiveFilter(condition=[>($1, 2.0E0)])
+      HiveFilter(condition=[>($1, 2E0)])
         HiveTableScan(table=[[default, dest_g21]], table:alias=[t2])
 
 PLAN VECTORIZATION:
@@ -2128,7 +2128,7 @@ CBO PLAN:HiveProject(_o__c0=[$1])
       HiveProject(key1=[$0], value1=[$1])
         HiveTableScan(table=[[default, dest_g21]], table:alias=[t1])
       HiveProject(key1=[$0])
-        HiveFilter(condition=[>($1, 2.0E0)])
+        HiveFilter(condition=[>($1, 2E0)])
           HiveTableScan(table=[[default, dest_g21]], table:alias=[t2])
 
 PLAN VECTORIZATION:
@@ -5296,7 +5296,7 @@ CBO PLAN:HiveSortLimit(sort0=[$0], dir0=[ASC], fetch=[100])
                 HiveFilter(condition=[AND(=($6, 2002), IS NOT NULL($0))])
                   HiveTableScan(table=[[default, date_dim]], table:alias=[date_dim])
       HiveProject(customer_id=[$0])
-        HiveFilter(condition=[>($1, 0:DECIMAL(1, 0))])
+        HiveFilter(condition=[>($1, 0)])
           HiveAggregate(group=[{1}], agg#0=[sum($10)])
             HiveJoin(condition=[=($0, $9)], joinType=[inner], algorithm=[none], cost=[not available])
               HiveProject(c_customer_sk=[$0], c_customer_id=[$1], c_first_name=[$8], c_last_name=[$9], c_preferred_cust_flag=[$10], c_birth_country=[$14], c_login=[$15], c_email_address=[$16])

@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -228,6 +229,10 @@ public class ExprNodeConverter extends RexVisitorImpl<ExprNodeDesc> {
 
   @Override
   public ExprNodeDesc visitLiteral(RexLiteral literal) {
+    return toExprNodeConstantDesc(literal);
+  }
+
+  public static ExprNodeConstantDesc toExprNodeConstantDesc(RexLiteral literal) {
     RelDataType lType = literal.getType();
 
     if (RexLiteral.value(literal) == null) {
@@ -260,12 +265,12 @@ public class ExprNodeConverter extends RexVisitorImpl<ExprNodeDesc> {
           throw new RuntimeException(e);
         }
         return new ExprNodeConstantDesc(
-                TypeInfoFactory.getTimestampTZTypeInfo(conf.getLocalTimeZone()), null);
+            TypeInfoFactory.getTimestampTZTypeInfo(conf.getLocalTimeZone()), null);
       case BINARY:
         return new ExprNodeConstantDesc(TypeInfoFactory.binaryTypeInfo, null);
       case DECIMAL:
         return new ExprNodeConstantDesc(
-                TypeInfoFactory.getDecimalTypeInfo(lType.getPrecision(), lType.getScale()), null);
+            TypeInfoFactory.getDecimalTypeInfo(lType.getPrecision(), lType.getScale()), null);
       case VARCHAR:
       case CHAR:
         return new ExprNodeConstantDesc(TypeInfoFactory.stringTypeInfo, null);
@@ -332,7 +337,8 @@ public class ExprNodeConverter extends RexVisitorImpl<ExprNodeDesc> {
         return new ExprNodeConstantDesc(TypeInfoFactory.getTimestampTZTypeInfo(conf.getLocalTimeZone()),
             TimestampTZUtil.parse(literal.getValueAs(TimestampString.class).toString() + " UTC"));
       case BINARY:
-        return new ExprNodeConstantDesc(TypeInfoFactory.binaryTypeInfo, literal.getValue3());
+        return new ExprNodeConstantDesc(TypeInfoFactory.binaryTypeInfo,
+            literal.getValueAs(ByteString.class).getBytes());
       case DECIMAL:
         return new ExprNodeConstantDesc(TypeInfoFactory.getDecimalTypeInfo(lType.getPrecision(),
             lType.getScale()), HiveDecimal.create((BigDecimal)literal.getValue3()));
@@ -358,7 +364,7 @@ public class ExprNodeConverter extends RexVisitorImpl<ExprNodeDesc> {
       case INTERVAL_YEAR_MONTH: {
         BigDecimal monthsBd = (BigDecimal) literal.getValue();
         return new ExprNodeConstantDesc(TypeInfoFactory.intervalYearMonthTypeInfo,
-                new HiveIntervalYearMonth(monthsBd.intValue()));
+            new HiveIntervalYearMonth(monthsBd.intValue()));
       }
       case INTERVAL_DAY:
       case INTERVAL_DAY_HOUR:
@@ -374,7 +380,7 @@ public class ExprNodeConverter extends RexVisitorImpl<ExprNodeDesc> {
         // Calcite literal is in millis, we need to convert to seconds
         BigDecimal secsBd = millisBd.divide(BigDecimal.valueOf(1000));
         return new ExprNodeConstantDesc(TypeInfoFactory.intervalDayTimeTypeInfo,
-                new HiveIntervalDayTime(secsBd));
+            new HiveIntervalDayTime(secsBd));
       }
       default:
         return new ExprNodeConstantDesc(TypeInfoFactory.voidTypeInfo, literal.getValue3());
