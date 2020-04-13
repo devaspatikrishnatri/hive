@@ -1,0 +1,1042 @@
+PREHOOK: query: CREATE TABLE add_part_test (key STRING, value STRING) PARTITIONED BY (ds STRING)
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:default
+PREHOOK: Output: default@add_part_test
+POSTHOOK: query: CREATE TABLE add_part_test (key STRING, value STRING) PARTITIONED BY (ds STRING)
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:default
+POSTHOOK: Output: default@add_part_test
+PREHOOK: query: explain ddl select * from add_part_test
+PREHOOK: type: QUERY
+PREHOOK: Input: default@add_part_test
+#### A masked pattern was here ####
+POSTHOOK: query: explain ddl select * from add_part_test
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@add_part_test
+#### A masked pattern was here ####
+
+CREATE TABLE `default`.`add_part_test`(
+  `key` string, 
+  `value` string)
+PARTITIONED BY ( 
+  `ds` string)
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+#### A masked pattern was here ####
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+#### A masked pattern was here ####
+ALTER TABLE default.add_part_test UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+
+
+
+EXPLAIN select * from add_part_test;
+
+EXPLAIN CBO select * from add_part_test;
+
+EXPLAIN VECTORIZED select * from add_part_test;
+CBO PLAN:HiveProject(key=[$0], value=[$1], ds=[$2])
+  HiveTableScan(table=[[default, add_part_test]], table:alias=[add_part_test])
+
+PLAN VECTORIZATION:
+  enabled: true
+  enabledConditionsMet: [hive.vectorized.execution.enabled IS true]
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: add_part_test
+          Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
+          Select Operator
+            expressions: key (type: string), value (type: string), ds (type: string)
+            outputColumnNames: _col0, _col1, _col2
+            Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
+            ListSink
+
+PREHOOK: query: ALTER TABLE add_part_test ADD PARTITION (ds='2010-01-01')
+PREHOOK: type: ALTERTABLE_ADDPARTS
+PREHOOK: Output: default@add_part_test
+POSTHOOK: query: ALTER TABLE add_part_test ADD PARTITION (ds='2010-01-01')
+POSTHOOK: type: ALTERTABLE_ADDPARTS
+POSTHOOK: Output: default@add_part_test
+POSTHOOK: Output: default@add_part_test@ds=2010-01-01
+PREHOOK: query: insert into add_part_test partition(ds='2010-01-01') values ('key_1','value_1'),
+('key_2','value_2'),
+('key_3','value_3'),
+('key_4','value_4'),
+('key_5','value_5'),
+('key_6','value_6'),
+('key_7','value_7'),
+('key_8','value_8'),
+('key_9','value_9'),
+('key_10','value_10'),
+('key_11','value_11'),
+('key_12','value_12'),
+('key_13','value_13'),
+('key_14','value_14'),
+('key_15','value_15'),
+('key_16','value_16'),
+('key_17','value_17'),
+('key_18','value_18'),
+('key_19','value_19')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+PREHOOK: Output: default@add_part_test@ds=2010-01-01
+POSTHOOK: query: insert into add_part_test partition(ds='2010-01-01') values ('key_1','value_1'),
+('key_2','value_2'),
+('key_3','value_3'),
+('key_4','value_4'),
+('key_5','value_5'),
+('key_6','value_6'),
+('key_7','value_7'),
+('key_8','value_8'),
+('key_9','value_9'),
+('key_10','value_10'),
+('key_11','value_11'),
+('key_12','value_12'),
+('key_13','value_13'),
+('key_14','value_14'),
+('key_15','value_15'),
+('key_16','value_16'),
+('key_17','value_17'),
+('key_18','value_18'),
+('key_19','value_19')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+POSTHOOK: Output: default@add_part_test@ds=2010-01-01
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-01).key SCRIPT []
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-01).value SCRIPT []
+PREHOOK: query: explain ddl select * from add_part_test where ds='2010-01-01'
+PREHOOK: type: QUERY
+PREHOOK: Input: default@add_part_test
+PREHOOK: Input: default@add_part_test@ds=2010-01-01
+#### A masked pattern was here ####
+POSTHOOK: query: explain ddl select * from add_part_test where ds='2010-01-01'
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@add_part_test
+POSTHOOK: Input: default@add_part_test@ds=2010-01-01
+#### A masked pattern was here ####
+
+CREATE TABLE `default`.`add_part_test`(
+  `key` string, 
+  `value` string)
+PARTITIONED BY ( 
+  `ds` string)
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+#### A masked pattern was here ####
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+#### A masked pattern was here ####
+ALTER TABLE default.add_part_test UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE default.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01');
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS SET('numRows'='19','rawDataSize'='267' );
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='5.526315789473684','maxColLen'='6','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR default.add_part_test PARTITION ds='2010-01-01' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZXdNICf8TvAo4ELgLO2SMXF/BS72uELgOLCnwGAj9Y4wJOCQMKT9CX+vqIBw+fKPr3LlKsBwIHHF8DX2CmF7e4T/JG0AYKY6Bb+o9oQ 
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='7.526315789473684','maxColLen'='8','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR default.add_part_test PARTITION ds='2010-01-01' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZnEIYCNq4gBgKCIGoD61AHBjs4N/7WjogGBquoE/9ScS4HyxCf/keJOxMnVP4GwwUn7+oEgwNzHBsCeqgOAmb1QguH/Cb7p83LA3Z9B 
+
+
+
+
+EXPLAIN select * from add_part_test where ds='2010-01-01';
+
+
+
+EXPLAIN CBO select * from add_part_test where ds='2010-01-01';
+
+
+
+EXPLAIN VECTORIZED select * from add_part_test where ds='2010-01-01';
+CBO PLAN:HiveProject(key=[$0], value=[$1], ds=[CAST(_UTF-16LE'2010-01-01':VARCHAR(2147483647) CHARACTER SET "UTF-16LE"):VARCHAR(2147483647) CHARACTER SET "UTF-16LE"])
+  HiveFilter(condition=[=($2, _UTF-16LE'2010-01-01')])
+    HiveTableScan(table=[[default, add_part_test]], table:alias=[add_part_test])
+
+PLAN VECTORIZATION:
+  enabled: true
+  enabledConditionsMet: [hive.vectorized.execution.enabled IS true]
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: add_part_test
+          filterExpr: (ds = '2010-01-01') (type: boolean)
+          Statistics: Num rows: 19 Data size: 267 Basic stats: COMPLETE Column stats: NONE
+          Select Operator
+            expressions: key (type: string), value (type: string), '2010-01-01' (type: string)
+            outputColumnNames: _col0, _col1, _col2
+            Statistics: Num rows: 19 Data size: 267 Basic stats: COMPLETE Column stats: NONE
+            ListSink
+
+PREHOOK: query: ALTER TABLE add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01') PARTITION (ds='2010-01-02') PARTITION (ds='2010-01-03')
+PREHOOK: type: ALTERTABLE_ADDPARTS
+PREHOOK: Output: default@add_part_test
+POSTHOOK: query: ALTER TABLE add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01') PARTITION (ds='2010-01-02') PARTITION (ds='2010-01-03')
+POSTHOOK: type: ALTERTABLE_ADDPARTS
+POSTHOOK: Output: default@add_part_test
+POSTHOOK: Output: default@add_part_test@ds=2010-01-02
+POSTHOOK: Output: default@add_part_test@ds=2010-01-03
+PREHOOK: query: insert into add_part_test partition(ds='2010-01-03')  values ('key_20','value_20'),
+('key_21','value_21'),
+('key_22','value_22'),
+('key_23','value_23'),
+('key_24','value_24'),
+('key_25','value_25'),
+('key_26','value_26'),
+('key_32','value_32'),
+('key_33','value_33'),
+('key_34','value_34'),
+('key_35','value_35'),
+('key_36','value_36'),
+('key_37','value_37'),
+('key_38','value_38'),
+('key_39','value_39')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+PREHOOK: Output: default@add_part_test@ds=2010-01-03
+POSTHOOK: query: insert into add_part_test partition(ds='2010-01-03')  values ('key_20','value_20'),
+('key_21','value_21'),
+('key_22','value_22'),
+('key_23','value_23'),
+('key_24','value_24'),
+('key_25','value_25'),
+('key_26','value_26'),
+('key_32','value_32'),
+('key_33','value_33'),
+('key_34','value_34'),
+('key_35','value_35'),
+('key_36','value_36'),
+('key_37','value_37'),
+('key_38','value_38'),
+('key_39','value_39')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+POSTHOOK: Output: default@add_part_test@ds=2010-01-03
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-03).key SCRIPT []
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-03).value SCRIPT []
+PREHOOK: query: explain ddl select * from add_part_test where ds>='2010-01-01'
+PREHOOK: type: QUERY
+PREHOOK: Input: default@add_part_test
+PREHOOK: Input: default@add_part_test@ds=2010-01-01
+PREHOOK: Input: default@add_part_test@ds=2010-01-02
+PREHOOK: Input: default@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+POSTHOOK: query: explain ddl select * from add_part_test where ds>='2010-01-01'
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@add_part_test
+POSTHOOK: Input: default@add_part_test@ds=2010-01-01
+POSTHOOK: Input: default@add_part_test@ds=2010-01-02
+POSTHOOK: Input: default@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+
+CREATE TABLE `default`.`add_part_test`(
+  `key` string, 
+  `value` string)
+PARTITIONED BY ( 
+  `ds` string)
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+#### A masked pattern was here ####
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+#### A masked pattern was here ####
+ALTER TABLE default.add_part_test UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE default.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01');
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS SET('numRows'='19','rawDataSize'='267' );
+ALTER TABLE default.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-02');
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-02') UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE default.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-03');
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS SET('numRows'='15','rawDataSize'='225' );
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='7.526315789473684','maxColLen'='8','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR default.add_part_test PARTITION ds='2010-01-01' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZnEIYCNq4gBgKCIGoD61AHBjs4N/7WjogGBquoE/9ScS4HyxCf/keJOxMnVP4GwwUn7+oEgwNzHBsCeqgOAmb1QguH/Cb7p83LA3Z9B 
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='5.526315789473684','maxColLen'='6','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR default.add_part_test PARTITION ds='2010-01-01' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZXdNICf8TvAo4ELgLO2SMXF/BS72uELgOLCnwGAj9Y4wJOCQMKT9CX+vqIBw+fKPr3LlKsBwIHHF8DX2CmF7e4T/JG0AYKY6Bb+o9oQ 
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='8.0','maxColLen'='8','numNulls'='0','numDVs'='15' );
+-- BIT VECTORS PRESENT FOR default.add_part_test PARTITION ds='2010-01-03' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoA8PxruDCfvd++EBgJbAswHAj9hcgOSPEcGP0Tf/ouVYhPfkDfzUm17AgIcTgOP5KIGsqm3Am/Ii/6epDYDf+AQ= 
+ALTER TABLE default.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='6.0','maxColLen'='6','numNulls'='0','numDVs'='15' );
+-- BIT VECTORS PRESENT FOR default.add_part_test PARTITION ds='2010-01-03' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoA8Pwoy4S4DjsC2Cy/cxvYTEDsGjtQqBy7Yi/8DaQb+/pBPAjbjoAYHXgA2/h9yDAcKsjyi+usGNAcHK9T/CzrU/ 
+
+
+
+EXPLAIN select * from add_part_test where ds>='2010-01-01';
+
+
+EXPLAIN CBO select * from add_part_test where ds>='2010-01-01';
+
+
+EXPLAIN VECTORIZED select * from add_part_test where ds>='2010-01-01';
+CBO PLAN:HiveProject(key=[$0], value=[$1], ds=[$2])
+  HiveFilter(condition=[>=($2, _UTF-16LE'2010-01-01')])
+    HiveTableScan(table=[[default, add_part_test]], table:alias=[add_part_test])
+
+PLAN VECTORIZATION:
+  enabled: true
+  enabledConditionsMet: [hive.vectorized.execution.enabled IS true]
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: add_part_test
+          filterExpr: (ds >= '2010-01-01') (type: boolean)
+          Statistics: Num rows: 34 Data size: 492 Basic stats: PARTIAL Column stats: NONE
+          Select Operator
+            expressions: key (type: string), value (type: string), ds (type: string)
+            outputColumnNames: _col0, _col1, _col2
+            Statistics: Num rows: 34 Data size: 492 Basic stats: PARTIAL Column stats: NONE
+            ListSink
+
+PREHOOK: query: DROP TABLE add_part_test
+PREHOOK: type: DROPTABLE
+PREHOOK: Input: default@add_part_test
+PREHOOK: Output: default@add_part_test
+POSTHOOK: query: DROP TABLE add_part_test
+POSTHOOK: type: DROPTABLE
+POSTHOOK: Input: default@add_part_test
+POSTHOOK: Output: default@add_part_test
+PREHOOK: query: CREATE DATABASE add_part_test_db
+PREHOOK: type: CREATEDATABASE
+PREHOOK: Output: database:add_part_test_db
+POSTHOOK: query: CREATE DATABASE add_part_test_db
+POSTHOOK: type: CREATEDATABASE
+POSTHOOK: Output: database:add_part_test_db
+PREHOOK: query: CREATE TABLE add_part_test_db.add_part_test (key STRING, value STRING) PARTITIONED BY (ds STRING)
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: add_part_test_db@add_part_test
+PREHOOK: Output: database:add_part_test_db
+POSTHOOK: query: CREATE TABLE add_part_test_db.add_part_test (key STRING, value STRING) PARTITIONED BY (ds STRING)
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: add_part_test_db@add_part_test
+POSTHOOK: Output: database:add_part_test_db
+PREHOOK: query: ALTER TABLE add_part_test_db.add_part_test ADD PARTITION (ds='2010-01-01')
+PREHOOK: type: ALTERTABLE_ADDPARTS
+PREHOOK: Output: add_part_test_db@add_part_test
+POSTHOOK: query: ALTER TABLE add_part_test_db.add_part_test ADD PARTITION (ds='2010-01-01')
+POSTHOOK: type: ALTERTABLE_ADDPARTS
+POSTHOOK: Output: add_part_test_db@add_part_test
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-01
+PREHOOK: query: insert into add_part_test_db.add_part_test partition(ds='2010-01-01') values ('key_1','value_1'),
+('key_2','value_2'),
+('key_3','value_3'),
+('key_4','value_4'),
+('key_5','value_5'),
+('key_6','value_6'),
+('key_7','value_7'),
+('key_8','value_8'),
+('key_9','value_9'),
+('key_10','value_10'),
+('key_11','value_11'),
+('key_12','value_12'),
+('key_13','value_13'),
+('key_14','value_14'),
+('key_15','value_15'),
+('key_16','value_16'),
+('key_17','value_17'),
+('key_18','value_18'),
+('key_19','value_19')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+PREHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-01
+POSTHOOK: query: insert into add_part_test_db.add_part_test partition(ds='2010-01-01') values ('key_1','value_1'),
+('key_2','value_2'),
+('key_3','value_3'),
+('key_4','value_4'),
+('key_5','value_5'),
+('key_6','value_6'),
+('key_7','value_7'),
+('key_8','value_8'),
+('key_9','value_9'),
+('key_10','value_10'),
+('key_11','value_11'),
+('key_12','value_12'),
+('key_13','value_13'),
+('key_14','value_14'),
+('key_15','value_15'),
+('key_16','value_16'),
+('key_17','value_17'),
+('key_18','value_18'),
+('key_19','value_19')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-01
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-01).key SCRIPT []
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-01).value SCRIPT []
+PREHOOK: query: explain ddl select * from add_part_test_db.add_part_test where ds='2010-01-01'
+PREHOOK: type: QUERY
+PREHOOK: Input: add_part_test_db@add_part_test
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+#### A masked pattern was here ####
+POSTHOOK: query: explain ddl select * from add_part_test_db.add_part_test where ds='2010-01-01'
+POSTHOOK: type: QUERY
+POSTHOOK: Input: add_part_test_db@add_part_test
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+#### A masked pattern was here ####
+CREATE DATABASE IF NOT EXISTS add_part_test_db;
+CREATE TABLE `add_part_test_db`.`add_part_test`(
+  `key` string, 
+  `value` string)
+PARTITIONED BY ( 
+  `ds` string)
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+#### A masked pattern was here ####
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+#### A masked pattern was here ####
+ALTER TABLE add_part_test_db.add_part_test UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01');
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS SET('numRows'='19','rawDataSize'='267' );
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='5.526315789473684','maxColLen'='6','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-01' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZXdNICf8TvAo4ELgLO2SMXF/BS72uELgOLCnwGAj9Y4wJOCQMKT9CX+vqIBw+fKPr3LlKsBwIHHF8DX2CmF7e4T/JG0AYKY6Bb+o9oQ 
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='7.526315789473684','maxColLen'='8','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-01' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZnEIYCNq4gBgKCIGoD61AHBjs4N/7WjogGBquoE/9ScS4HyxCf/keJOxMnVP4GwwUn7+oEgwNzHBsCeqgOAmb1QguH/Cb7p83LA3Z9B 
+
+
+
+
+EXPLAIN select * from add_part_test_db.add_part_test where ds='2010-01-01';
+
+
+
+EXPLAIN CBO select * from add_part_test_db.add_part_test where ds='2010-01-01';
+
+
+
+EXPLAIN VECTORIZED select * from add_part_test_db.add_part_test where ds='2010-01-01';
+CBO PLAN:HiveProject(key=[$0], value=[$1], ds=[CAST(_UTF-16LE'2010-01-01':VARCHAR(2147483647) CHARACTER SET "UTF-16LE"):VARCHAR(2147483647) CHARACTER SET "UTF-16LE"])
+  HiveFilter(condition=[=($2, _UTF-16LE'2010-01-01')])
+    HiveTableScan(table=[[add_part_test_db, add_part_test]], table:alias=[add_part_test])
+
+PLAN VECTORIZATION:
+  enabled: true
+  enabledConditionsMet: [hive.vectorized.execution.enabled IS true]
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: add_part_test
+          filterExpr: (ds = '2010-01-01') (type: boolean)
+          Statistics: Num rows: 19 Data size: 267 Basic stats: COMPLETE Column stats: NONE
+          Select Operator
+            expressions: key (type: string), value (type: string), '2010-01-01' (type: string)
+            outputColumnNames: _col0, _col1, _col2
+            Statistics: Num rows: 19 Data size: 267 Basic stats: COMPLETE Column stats: NONE
+            ListSink
+
+PREHOOK: query: ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01') PARTITION (ds='2010-01-02') PARTITION (ds='2010-01-03')
+PREHOOK: type: ALTERTABLE_ADDPARTS
+PREHOOK: Output: add_part_test_db@add_part_test
+POSTHOOK: query: ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01') PARTITION (ds='2010-01-02') PARTITION (ds='2010-01-03')
+POSTHOOK: type: ALTERTABLE_ADDPARTS
+POSTHOOK: Output: add_part_test_db@add_part_test
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-02
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-03
+PREHOOK: query: insert into add_part_test_db.add_part_test partition(ds='2010-01-03')  values ('key_20','value_20'),
+('key_21','value_21'),
+('key_22','value_22'),
+('key_23','value_23'),
+('key_24','value_24'),
+('key_25','value_25'),
+('key_26','value_26'),
+('key_32','value_32'),
+('key_33','value_33'),
+('key_34','value_34'),
+('key_35','value_35'),
+('key_36','value_36'),
+('key_37','value_37'),
+('key_38','value_38'),
+('key_39','value_39')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+PREHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-03
+POSTHOOK: query: insert into add_part_test_db.add_part_test partition(ds='2010-01-03')  values ('key_20','value_20'),
+('key_21','value_21'),
+('key_22','value_22'),
+('key_23','value_23'),
+('key_24','value_24'),
+('key_25','value_25'),
+('key_26','value_26'),
+('key_32','value_32'),
+('key_33','value_33'),
+('key_34','value_34'),
+('key_35','value_35'),
+('key_36','value_36'),
+('key_37','value_37'),
+('key_38','value_38'),
+('key_39','value_39')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-03
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-03).key SCRIPT []
+POSTHOOK: Lineage: add_part_test PARTITION(ds=2010-01-03).value SCRIPT []
+PREHOOK: query: explain ddl select * from add_part_test_db.add_part_test where ds>='2010-01-01'
+PREHOOK: type: QUERY
+PREHOOK: Input: add_part_test_db@add_part_test
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-02
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+POSTHOOK: query: explain ddl select * from add_part_test_db.add_part_test where ds>='2010-01-01'
+POSTHOOK: type: QUERY
+POSTHOOK: Input: add_part_test_db@add_part_test
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-02
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+CREATE DATABASE IF NOT EXISTS add_part_test_db;
+CREATE TABLE `add_part_test_db`.`add_part_test`(
+  `key` string, 
+  `value` string)
+PARTITIONED BY ( 
+  `ds` string)
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+#### A masked pattern was here ####
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+#### A masked pattern was here ####
+ALTER TABLE add_part_test_db.add_part_test UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01');
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS SET('numRows'='19','rawDataSize'='267' );
+ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-02');
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-02') UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-03');
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS SET('numRows'='15','rawDataSize'='225' );
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='7.526315789473684','maxColLen'='8','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-01' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZnEIYCNq4gBgKCIGoD61AHBjs4N/7WjogGBquoE/9ScS4HyxCf/keJOxMnVP4GwwUn7+oEgwNzHBsCeqgOAmb1QguH/Cb7p83LA3Z9B 
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='5.526315789473684','maxColLen'='6','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-01' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZXdNICf8TvAo4ELgLO2SMXF/BS72uELgOLCnwGAj9Y4wJOCQMKT9CX+vqIBw+fKPr3LlKsBwIHHF8DX2CmF7e4T/JG0AYKY6Bb+o9oQ 
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='8.0','maxColLen'='8','numNulls'='0','numDVs'='15' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-03' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoA8PxruDCfvd++EBgJbAswHAj9hcgOSPEcGP0Tf/ouVYhPfkDfzUm17AgIcTgOP5KIGsqm3Am/Ii/6epDYDf+AQ= 
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='6.0','maxColLen'='6','numNulls'='0','numDVs'='15' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-03' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoA8Pwoy4S4DjsC2Cy/cxvYTEDsGjtQqBy7Yi/8DaQb+/pBPAjbjoAYHXgA2/h9yDAcKsjyi+usGNAcHK9T/CzrU/ 
+
+
+
+EXPLAIN select * from add_part_test_db.add_part_test where ds>='2010-01-01';
+
+
+EXPLAIN CBO select * from add_part_test_db.add_part_test where ds>='2010-01-01';
+
+
+EXPLAIN VECTORIZED select * from add_part_test_db.add_part_test where ds>='2010-01-01';
+CBO PLAN:HiveProject(key=[$0], value=[$1], ds=[$2])
+  HiveFilter(condition=[>=($2, _UTF-16LE'2010-01-01')])
+    HiveTableScan(table=[[add_part_test_db, add_part_test]], table:alias=[add_part_test])
+
+PLAN VECTORIZATION:
+  enabled: true
+  enabledConditionsMet: [hive.vectorized.execution.enabled IS true]
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: add_part_test
+          filterExpr: (ds >= '2010-01-01') (type: boolean)
+          Statistics: Num rows: 34 Data size: 492 Basic stats: PARTIAL Column stats: NONE
+          Select Operator
+            expressions: key (type: string), value (type: string), ds (type: string)
+            outputColumnNames: _col0, _col1, _col2
+            Statistics: Num rows: 34 Data size: 492 Basic stats: PARTIAL Column stats: NONE
+            ListSink
+
+PREHOOK: query: analyze table  add_part_test_db.add_part_test compute statistics for columns
+PREHOOK: type: ANALYZE_TABLE
+PREHOOK: Input: add_part_test_db@add_part_test
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-02
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-03
+PREHOOK: Output: add_part_test_db@add_part_test
+PREHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-01
+PREHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-02
+PREHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+POSTHOOK: query: analyze table  add_part_test_db.add_part_test compute statistics for columns
+POSTHOOK: type: ANALYZE_TABLE
+POSTHOOK: Input: add_part_test_db@add_part_test
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-02
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-03
+POSTHOOK: Output: add_part_test_db@add_part_test
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-01
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-02
+POSTHOOK: Output: add_part_test_db@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+PREHOOK: query: explain ddl select * from add_part_test_db.add_part_test
+PREHOOK: type: QUERY
+PREHOOK: Input: add_part_test_db@add_part_test
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-02
+PREHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+POSTHOOK: query: explain ddl select * from add_part_test_db.add_part_test
+POSTHOOK: type: QUERY
+POSTHOOK: Input: add_part_test_db@add_part_test
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-01
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-02
+POSTHOOK: Input: add_part_test_db@add_part_test@ds=2010-01-03
+#### A masked pattern was here ####
+CREATE DATABASE IF NOT EXISTS add_part_test_db;
+CREATE TABLE `add_part_test_db`.`add_part_test`(
+  `key` string, 
+  `value` string)
+PARTITIONED BY ( 
+  `ds` string)
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+#### A masked pattern was here ####
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+#### A masked pattern was here ####
+ALTER TABLE add_part_test_db.add_part_test UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-01');
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS SET('numRows'='19','rawDataSize'='267' );
+ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-02');
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-02') UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE add_part_test_db.add_part_test ADD IF NOT EXISTS PARTITION (ds='2010-01-03');
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS SET('numRows'='15','rawDataSize'='225' );
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='7.526315789473684','maxColLen'='8','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-01' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZnEIYCNq4gBgKCIGoD61AHBjs4N/7WjogGBquoE/9ScS4HyxCf/keJOxMnVP4GwwUn7+oEgwNzHBsCeqgOAmb1QguH/Cb7p83LA3Z9B 
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-01') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='5.526315789473684','maxColLen'='6','numNulls'='0','numDVs'='19' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-01' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBMTgZXdNICf8TvAo4ELgLO2SMXF/BS72uELgOLCnwGAj9Y4wJOCQMKT9CX+vqIBw+fKPr3LlKsBwIHHF8DX2CmF7e4T/JG0AYKY6Bb+o9oQ 
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS FOR COLUMN value SET('avgColLen'='8.0','maxColLen'='8','numNulls'='0','numDVs'='34' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-03' FOR COLUMN value BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoCIixruDCbvdwBiAjauIAYCgiBqA+tQBwY7ODf/K5BeA676KAYGq6gT/gJckgNSFJ4HyxCe/yY0OgOSPEcDkxC+Bq4wIw57JN7yEnCGE9+QNwbTAGvv6gSDA3McGwJ6qA8Cq5xnAgIcTgO7OI4D1qgWC7NQE/7/VaL+pngqB8tMY/6epDYDf+ATA5KkW 
+ALTER TABLE add_part_test_db.add_part_test PARTITION (ds='2010-01-03') UPDATE STATISTICS FOR COLUMN key SET('avgColLen'='6.0','maxColLen'='6','numNulls'='0','numDVs'='34' );
+-- BIT VECTORS PRESENT FOR add_part_test_db.add_part_test PARTITION ds='2010-01-03' FOR COLUMN key BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoCIigZXdNMH32ha/p5YlwbuaCP/n5gKD45AvvYTEDsGjtQr/pyzFxfwUu9rhC4KDrAH/wNpBv7+kE8Del0mAj9Y4wJOCQMKT9CX++FOAxk6BkbIMwtaYMv2ww1HCrI8o/u3BMcCBxxfA19gphe3uE/yRtAG/9LwFw6OrEf6j2hCAg/Adws61Pw== 
+
+
+
+EXPLAIN select * from add_part_test_db.add_part_test;
+
+
+EXPLAIN CBO select * from add_part_test_db.add_part_test;
+
+
+EXPLAIN VECTORIZED select * from add_part_test_db.add_part_test;
+CBO PLAN:HiveProject(key=[$0], value=[$1], ds=[$2])
+  HiveTableScan(table=[[add_part_test_db, add_part_test]], table:alias=[add_part_test])
+
+PLAN VECTORIZATION:
+  enabled: true
+  enabledConditionsMet: [hive.vectorized.execution.enabled IS true]
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: add_part_test
+          Statistics: Num rows: 34 Data size: 492 Basic stats: PARTIAL Column stats: NONE
+          Select Operator
+            expressions: key (type: string), value (type: string), ds (type: string)
+            outputColumnNames: _col0, _col1, _col2
+            Statistics: Num rows: 34 Data size: 492 Basic stats: PARTIAL Column stats: NONE
+            ListSink
+
+PREHOOK: query: DROP DATABASE add_part_test_db cascade
+PREHOOK: type: DROPDATABASE
+PREHOOK: Input: database:add_part_test_db
+PREHOOK: Output: add_part_test_db@add_part_test
+PREHOOK: Output: database:add_part_test_db
+POSTHOOK: query: DROP DATABASE add_part_test_db cascade
+POSTHOOK: type: DROPDATABASE
+POSTHOOK: Input: database:add_part_test_db
+POSTHOOK: Output: add_part_test_db@add_part_test
+POSTHOOK: Output: database:add_part_test_db
+PREHOOK: query: create database db_bdpbase
+PREHOOK: type: CREATEDATABASE
+PREHOOK: Output: database:db_bdpbase
+POSTHOOK: query: create database db_bdpbase
+POSTHOOK: type: CREATEDATABASE
+POSTHOOK: Output: database:db_bdpbase
+PREHOOK: query: CREATE TABLE db_bdpbase.emp_sports(
+  id INT,
+  firstname STRING,
+  lastname STRING,
+  sports STRING,
+  city STRING,
+  country STRING
+) ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+TBLPROPERTIES("skip.header.line.count"="1")
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:db_bdpbase
+PREHOOK: Output: db_bdpbase@emp_sports
+POSTHOOK: query: CREATE TABLE db_bdpbase.emp_sports(
+  id INT,
+  firstname STRING,
+  lastname STRING,
+  sports STRING,
+  city STRING,
+  country STRING
+) ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+TBLPROPERTIES("skip.header.line.count"="1")
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:db_bdpbase
+POSTHOOK: Output: db_bdpbase@emp_sports
+PREHOOK: query: LOAD DATA LOCAL INPATH '../../data/files/part_data_explain_ddl.csv' INTO table db_bdpbase.emp_sports
+PREHOOK: type: LOAD
+#### A masked pattern was here ####
+PREHOOK: Output: db_bdpbase@emp_sports
+POSTHOOK: query: LOAD DATA LOCAL INPATH '../../data/files/part_data_explain_ddl.csv' INTO table db_bdpbase.emp_sports
+POSTHOOK: type: LOAD
+#### A masked pattern was here ####
+POSTHOOK: Output: db_bdpbase@emp_sports
+PREHOOK: query: CREATE TABLE DB_BDPBASE.DEFAULT_PARTITION_TEST(
+  ID    INT,
+  FIRSTNAME   STRING,
+  LASTNAME STRING,
+  CITY STRING,
+  COUNTRY  STRING
+) PARTITIONED BY (
+  SPORTS STRING
+) ROW FORMAT DELIMITED
+FIELDS TERMINATED  BY  ','
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: DB_BDPBASE@DEFAULT_PARTITION_TEST
+PREHOOK: Output: database:db_bdpbase
+POSTHOOK: query: CREATE TABLE DB_BDPBASE.DEFAULT_PARTITION_TEST(
+  ID    INT,
+  FIRSTNAME   STRING,
+  LASTNAME STRING,
+  CITY STRING,
+  COUNTRY  STRING
+) PARTITIONED BY (
+  SPORTS STRING
+) ROW FORMAT DELIMITED
+FIELDS TERMINATED  BY  ','
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: DB_BDPBASE@DEFAULT_PARTITION_TEST
+POSTHOOK: Output: database:db_bdpbase
+PREHOOK: query: INSERT OVERWRITE TABLE DB_BDPBASE.DEFAULT_PARTITION_TEST PARTITION (SPORTS)
+  SELECT ID, FIRSTNAME, LASTNAME, CITY, COUNTRY, SPORTS FROM DB_BDPBASE.EMP_SPORTS
+PREHOOK: type: QUERY
+PREHOOK: Input: db_bdpbase@emp_sports
+PREHOOK: Output: db_bdpbase@default_partition_test
+POSTHOOK: query: INSERT OVERWRITE TABLE DB_BDPBASE.DEFAULT_PARTITION_TEST PARTITION (SPORTS)
+  SELECT ID, FIRSTNAME, LASTNAME, CITY, COUNTRY, SPORTS FROM DB_BDPBASE.EMP_SPORTS
+POSTHOOK: type: QUERY
+POSTHOOK: Input: db_bdpbase@emp_sports
+POSTHOOK: Output: db_bdpbase@default_partition_test
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Badminton
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Basketball
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Cricket
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Football
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Sports
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Tennis
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=__HIVE_DEFAULT_PARTITION__
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Badminton).city SIMPLE [(emp_sports)emp_sports.FieldSchema(name:city, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Badminton).country SIMPLE [(emp_sports)emp_sports.FieldSchema(name:country, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Badminton).firstname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:firstname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Badminton).id SIMPLE [(emp_sports)emp_sports.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Badminton).lastname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:lastname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Basketball).city SIMPLE [(emp_sports)emp_sports.FieldSchema(name:city, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Basketball).country SIMPLE [(emp_sports)emp_sports.FieldSchema(name:country, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Basketball).firstname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:firstname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Basketball).id SIMPLE [(emp_sports)emp_sports.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Basketball).lastname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:lastname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Cricket).city SIMPLE [(emp_sports)emp_sports.FieldSchema(name:city, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Cricket).country SIMPLE [(emp_sports)emp_sports.FieldSchema(name:country, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Cricket).firstname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:firstname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Cricket).id SIMPLE [(emp_sports)emp_sports.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Cricket).lastname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:lastname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Football).city SIMPLE [(emp_sports)emp_sports.FieldSchema(name:city, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Football).country SIMPLE [(emp_sports)emp_sports.FieldSchema(name:country, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Football).firstname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:firstname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Football).id SIMPLE [(emp_sports)emp_sports.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Football).lastname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:lastname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Sports).city SIMPLE [(emp_sports)emp_sports.FieldSchema(name:city, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Sports).country SIMPLE [(emp_sports)emp_sports.FieldSchema(name:country, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Sports).firstname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:firstname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Sports).id SIMPLE [(emp_sports)emp_sports.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Sports).lastname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:lastname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Tennis).city SIMPLE [(emp_sports)emp_sports.FieldSchema(name:city, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Tennis).country SIMPLE [(emp_sports)emp_sports.FieldSchema(name:country, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Tennis).firstname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:firstname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Tennis).id SIMPLE [(emp_sports)emp_sports.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=Tennis).lastname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:lastname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=__HIVE_DEFAULT_PARTITION__).city SIMPLE [(emp_sports)emp_sports.FieldSchema(name:city, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=__HIVE_DEFAULT_PARTITION__).country SIMPLE [(emp_sports)emp_sports.FieldSchema(name:country, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=__HIVE_DEFAULT_PARTITION__).firstname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:firstname, type:string, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=__HIVE_DEFAULT_PARTITION__).id SIMPLE [(emp_sports)emp_sports.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: default_partition_test PARTITION(sports=__HIVE_DEFAULT_PARTITION__).lastname SIMPLE [(emp_sports)emp_sports.FieldSchema(name:lastname, type:string, comment:null), ]
+PREHOOK: query: analyze table db_bdpbase.default_partition_test compute statistics for columns
+PREHOOK: type: ANALYZE_TABLE
+PREHOOK: Input: db_bdpbase@default_partition_test
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Badminton
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Basketball
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Cricket
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Football
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Sports
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Tennis
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=__HIVE_DEFAULT_PARTITION__
+PREHOOK: Output: db_bdpbase@default_partition_test
+PREHOOK: Output: db_bdpbase@default_partition_test@sports=Badminton
+PREHOOK: Output: db_bdpbase@default_partition_test@sports=Basketball
+PREHOOK: Output: db_bdpbase@default_partition_test@sports=Cricket
+PREHOOK: Output: db_bdpbase@default_partition_test@sports=Football
+PREHOOK: Output: db_bdpbase@default_partition_test@sports=Sports
+PREHOOK: Output: db_bdpbase@default_partition_test@sports=Tennis
+PREHOOK: Output: db_bdpbase@default_partition_test@sports=__HIVE_DEFAULT_PARTITION__
+#### A masked pattern was here ####
+POSTHOOK: query: analyze table db_bdpbase.default_partition_test compute statistics for columns
+POSTHOOK: type: ANALYZE_TABLE
+POSTHOOK: Input: db_bdpbase@default_partition_test
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Badminton
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Basketball
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Cricket
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Football
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Sports
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Tennis
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=__HIVE_DEFAULT_PARTITION__
+POSTHOOK: Output: db_bdpbase@default_partition_test
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Badminton
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Basketball
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Cricket
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Football
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Sports
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=Tennis
+POSTHOOK: Output: db_bdpbase@default_partition_test@sports=__HIVE_DEFAULT_PARTITION__
+#### A masked pattern was here ####
+PREHOOK: query: explain ddl select * from db_bdpbase.default_partition_test
+PREHOOK: type: QUERY
+PREHOOK: Input: db_bdpbase@default_partition_test
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Badminton
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Basketball
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Cricket
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Football
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Sports
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=Tennis
+PREHOOK: Input: db_bdpbase@default_partition_test@sports=__HIVE_DEFAULT_PARTITION__
+#### A masked pattern was here ####
+POSTHOOK: query: explain ddl select * from db_bdpbase.default_partition_test
+POSTHOOK: type: QUERY
+POSTHOOK: Input: db_bdpbase@default_partition_test
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Badminton
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Basketball
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Cricket
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Football
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Sports
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=Tennis
+POSTHOOK: Input: db_bdpbase@default_partition_test@sports=__HIVE_DEFAULT_PARTITION__
+#### A masked pattern was here ####
+CREATE DATABASE IF NOT EXISTS db_bdpbase;
+CREATE TABLE `db_bdpbase`.`default_partition_test`(
+  `id` int, 
+  `firstname` string, 
+  `lastname` string, 
+  `city` string, 
+  `country` string)
+PARTITIONED BY ( 
+  `sports` string)
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ( 
+  'field.delim'=',', 
+  'serialization.format'=',') 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+#### A masked pattern was here ####
+TBLPROPERTIES (
+  'bucketing_version'='2', 
+#### A masked pattern was here ####
+ALTER TABLE db_bdpbase.default_partition_test UPDATE STATISTICS SET('numRows'='0','rawDataSize'='0' );
+ALTER TABLE db_bdpbase.default_partition_test ADD IF NOT EXISTS PARTITION (sports='Badminton');
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Badminton') UPDATE STATISTICS SET('numRows'='26','rawDataSize'='985' );
+ALTER TABLE db_bdpbase.default_partition_test ADD IF NOT EXISTS PARTITION (sports='Basketball');
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Basketball') UPDATE STATISTICS SET('numRows'='15','rawDataSize'='588' );
+ALTER TABLE db_bdpbase.default_partition_test ADD IF NOT EXISTS PARTITION (sports='Cricket');
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Cricket') UPDATE STATISTICS SET('numRows'='14','rawDataSize'='550' );
+ALTER TABLE db_bdpbase.default_partition_test ADD IF NOT EXISTS PARTITION (sports='Football');
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Football') UPDATE STATISTICS SET('numRows'='23','rawDataSize'='898' );
+ALTER TABLE db_bdpbase.default_partition_test ADD IF NOT EXISTS PARTITION (sports='Sports');
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Sports') UPDATE STATISTICS SET('numRows'='1','rawDataSize'='34' );
+ALTER TABLE db_bdpbase.default_partition_test ADD IF NOT EXISTS PARTITION (sports='Tennis');
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Tennis') UPDATE STATISTICS SET('numRows'='16','rawDataSize'='635' );
+-- ALTER TABLE db_bdpbase.default_partition_test ADD IF NOT EXISTS PARTITION (sports='__HIVE_DEFAULT_PARTITION__');
+-- ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='__HIVE_DEFAULT_PARTITION__') UPDATE STATISTICS SET('numRows'='6','rawDataSize'='247' );
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Sports') UPDATE STATISTICS FOR COLUMN country SET('avgColLen'='7.0','maxColLen'='7','numNulls'='0','numDVs'='72' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Sports' FOR COLUMN country BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoEhIhOSiAr2WowTA89gKw5aCB/2t5guC74kF/uaaCsKaJr/M2RW/p4gNgPvBB4HVwyH/ha0kgPbPAcDX1QuA0MEIgZjcP/+WgwjAquEEwPfGAsDohwHB8osBhL8Z+/iBHMDu0AGE/+wL/LfSE8G50xP/5+QKxp+2A/vi9RyB/JcVvprdFIHp6QG/0bwFwbs0w+33E/zS/AHExAO86e0BgoiDFMDa3wbCwrEU/5veGv3mU8CczxDDuZ4dvZoEgcaxDP/NtDPAzpkEgP32F8Dh9gKA5YEMwdaSBP/ogiiAudsNhNT5CLyQNYLgnAfAv54WwejvJ/3hhQWB+JIDwYbZBICMwBS+o/kTgeaLFv/MLcCgwRrA7weAh/AJ 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Sports') UPDATE STATISTICS FOR COLUMN city SET('avgColLen'='4.0','maxColLen'='4','numNulls'='0','numDVs'='79' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Sports' FOR COLUMN city BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoE9PgrWZAsKchyr9l/UDwMm3IMGz7QG/naILwcOeCv+c5BDA/DyCqfUMv7eWBYHnqg3+4EHC5twD/tjyBIHxthLA/PwUwN/RDL+pjAOA3cUngdvNA4GpiQW+y+MJgYvFBf/46wGAq8QegZPNEr/flSPB7ju/zNkagPbQDcDllgbB0Y0UwYz2B/6n7w7A+NwCgcPMDoHiiRT+orsMwP/QG4CnNoDe0BDBsKMPv4D7B8XU3Qb7uZUPwK2tBYDUsQ7B/NIggreYA72tgwLA7oEMgsCKJf/gqBaAm6EIv9P5LcDfgBPAqZ8CxN3sBIHcvieB9oAV+onMAYGC+wj/zoscwKuKGsLJMf/QuAGAlcIOv+2JLMDUxwHA5jrB0aQEv+c4weDVAoD9/gPAwM8D//odxPKMBv+jHA== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Sports') UPDATE STATISTICS FOR COLUMN lastname SET('avgColLen'='8.0','maxColLen'='8','numNulls'='0','numDVs'='78' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Sports' FOR COLUMN lastname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoE5OgoXoAsG66wK+9zmA0dEBweL6BP/HnDCBqtMOgbqnD4H+7wT+1/gIv8bNAcTZmlr+pZAOvqDFBIGc8QKFiPkD+oDcC4Cf9gfAkZgDw660G/2CxwjBj/EE/7e7EcGa9Qr/h40CgNWdFMG5hgb/kZIFwLugA4DViAOA3tAZgJupOILl4Q2/k+cK/9itCMCy7gaD9IwG//3uAb7NhQTA75YFgMaRA4L8kQXC9LAM//PhEL7ZlgXBxLcbvrX7C4DYoTaC6uINv/fIGMDisAu/x7IUwJ6PIsCaogPA6cYGwP2mAsHsugzA7sEF/7WKBsCAoAHA+LIKgObEFcCKgQOAy9gEgbuVEb/WiQaAmagMgdILwZeKFb7lyQSB454D/8aiEcDRgQKAmZYhwN6AEYLeuQy+1ZslgdrNEQ== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Sports') UPDATE STATISTICS FOR COLUMN firstname SET('avgColLen'='9.0','maxColLen'='9','numNulls'='0','numDVs'='76' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Sports' FOR COLUMN firstname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoExMwYD+FsDL+AOC+7wFv7z3DP+I8grC5JQF/9W4KsD7nQPA7b8B/4CVAoHvzQHA/Y0GgICSBP+89B6CitEG/t7MF8DJ0QyAme8cwcH6DP/kjAjAj6AJgISSB4HaogLBz5UBv/D5AoDl0BLDs+gB/Opph5PTIfmcziKE+fQPvOqrBIDq0AjDl+IuvZGrBsDucMHEnQKAxo4Owu24Cf2pGYCLqgGA5uYKgKqBKsKjxA6/orUZ/7u8CoDQqhKCz+EJ/tjFJYD4V8CW2AGA1IAIhK68HPzC6giAy88Tg77iIr263wyA6s4VwMzXAcClmQLA/Z4iwPzQEsD2pgGCg/oRgPqCJP784B6A0JkJwI+PAsCy0gOA/zXC1uwRvsf0C4Dw7wOC4ZoLvtTMDcCMrgM= 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Sports') UPDATE STATISTICS FOR COLUMN id SET('lowValue'='0','highValue'='0','numNulls'='1','numDVs'='1' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Sports' FOR COLUMN id BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoAEA 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Tennis') UPDATE STATISTICS FOR COLUMN country SET('avgColLen'='9.5625','maxColLen'='27','numNulls'='0','numDVs'='84' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Tennis' FOR COLUMN country BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoFRUhOSiAr2WowTA89gKw5aCB/2t5guC74kF/uaaCsKaJr/M2RW/p4gNgPvBB8OCrB6+0pcDgMihDv+9ixaA9s8BwNfVC4DQwQiBmNw//5aDCMCq4QTA98YCwOiHAcHyiwGEvxn7+IEcwO7QAYT/7Au9jocSv6nLAcG50xP/5+QKxp+2A/vi9RyB/JcVvprdFIHp6QG/0bwFwbs0w+33E/zS/AHExAO86e0BgoiDFMDa3wbCwrEU/5veGv3mU4Gbgw6/gcwCgMqSBID13gGAqu8Vw9C9Ab2aBIHGsQy/tfYWwJi+HMDOmQTA2pYBwKLgFsDh9gKA5YEMwdaSBMGoKb7A2SeAudsNhNT5CLyQNYLgnAfAv54WwejvJ/3hhQWB+JIDwYbZBICMwBS+o/kTgeaLFv/MLcD/7gKAodIXwO8HgIfwCYGQmkE= 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Tennis') UPDATE STATISTICS FOR COLUMN city SET('avgColLen'='9.5625','maxColLen'='18','numNulls'='0','numDVs'='95' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Tennis' FOR COLUMN city BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoF9fgrWZAr+39h6D5ZAL/Zf1A4ChlxnA+bAFgK/vAcGz7QG/naILwcOeCv/Y0QuAxJIFwPw8gqn1DL+3lgWB56oN/uBBwubcA/7Y8gTA6eoNwYfMBMD8/BTA39EMv6mMA4HN0wb/j/IggdvNA4GpiQW+y+MJgYvFBf/46wGAq8QegZPNEr/flSPB7ju/zNkagPbQDcDllgbB0Y0UwYz2B/6n7w7A+NwCwNHrBsHx4AeB4okU/qK7DMD/0BuApzaA3tAQwYgjgKiAD7+A+wfF1N0Gu5LLCMCnygaAj40FwJ4ggNSxDsDD7wmBueMWgreYA72tgwLA7oEMgsCKJf/gqBb/1p0GgcSDAsGy9SD+oIQNwN+AE8CpnwLE3ewEvfr5Cr+s8gOFtdIYgfaAFfqJzAGBgvsI/86LHMCrihrCyTH/0LgBgJXCDv/ZqQbAk+AlwNTHAcDmOsHRpAS/5zjB4NUCgP3+A8DAzwP/+h3E8owG/6Mc 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Tennis') UPDATE STATISTICS FOR COLUMN lastname SET('avgColLen'='6.625','maxColLen'='10','numNulls'='0','numDVs'='93' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Tennis' FOR COLUMN lastname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoF1dgoXoAsG66wK+9zmA0dEBweL6BIC2vyf/kd0IgarTDoG6pw++q3TD0vsD/tf4CL/GzQHCuokEgp+RVv6lkA7/rJcDv/OtAYGc8QKFiPkD+oDcC4Cf9gfAkZgDw660G/2CxwjBj/EE//2rEYC6D8Ga9Qr/h40CgNWdFMG5hgb/kZIFwLugA4DViAOA3tAZw6ycKr2g+gaAzpIHxJbQC77OkQK/k+cK/9itCMCy7gaD9IwG//3uAb7NhQTA75YFgMaRA4L8kQXC9LAM//PhEL7ZlgXBxLcbvrX7C8H7uhi/3OYdgoeCCYDj4AS/98gYwOKwC7/HshTDzIMU/dGLDsCaogPA6cYGwP2mAoDv8APB/ckIwO7BBf+1igbAgKABwPiyCoDmxBXAioEDgMvYBIG7lRG/1okGgJmoDIHSC8GXihXA3F/+iOoDgeOeA//GohHA0YECgJmWIcDegBGA9dUEgunjB8SZkg36u4kYgdrNEQ== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Tennis') UPDATE STATISTICS FOR COLUMN firstname SET('avgColLen'='5.875','maxColLen'='10','numNulls'='0','numDVs'='92' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Tennis' FOR COLUMN firstname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoFxcgs6IDL+y9QrAy/gDgvu8Bb/KpwuA8s8B/4jyCsLklAX/1bgqwPudA8DtvwH/gJUCge/NAcD9jQaAgJIE/7z0HoKK0Qb+3swXwMnRDICZ7xzBwfoM/+SMCMCPoAmAhJIHgdqiAsHPlQG/xcoCgKsvgOXQEsOz6AH86mnCqKYHxeqsGrn6/B/AotECg5bTDIHjoQO86qsEgOrQCMDtrRGDqrQdvZGrBsDucIGZOsCr4wG/oMIJwaXMBMLtuAn9qRmAi6oBgObmCoCqgSrCo8QOv6K1Gf+7vAqA0KoSgs/hCYD5oQf+36MegPhXwJbYAYDUgAiErrwc/MLqCIDLzxOAlsoXwNH0BcCP4wODx8ABvbrfDMaQwwH65pICwPL4EcDM1wHApZkCwP2eIsD80BLA9qYBgoP6EYD6giT+/OAegNCZCcCPjwLAstIDgP81geflDsHvhgO+x/QLgPDvA4Lhmgu+1MwNwIyuAw== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Tennis') UPDATE STATISTICS FOR COLUMN id SET('lowValue'='1007','highValue'='1086','numNulls'='0','numDVs'='16' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Tennis' FOR COLUMN id BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBAQgsirL7/48YUBwInYJYLsnAq+rqJAwuW8X77azDPAtbA6wI+oAsSgqUz8v41KwIuXPIGM9zK/tfErgbSuJv/R0gg= 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Basketball') UPDATE STATISTICS FOR COLUMN country SET('avgColLen'='8.666666666666666','maxColLen'='16','numNulls'='0','numDVs'='38' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Basketball' FOR COLUMN country BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoCYmhOSiAr3O5CGA1qQPgef/Fb+niA2A+8EHgdXDIf+FrSTAzaUNgeidSL/B5AzA98YCwIGAIIT/7Av8t9ITwbnTE8DqkCu/lvUpwLqmB4SprBTAl4ACwI6CMfyCshuD1u0tvZoEgJTmP8DOmQTA3u0agOWBDMC/lSyAudsNhNT5CP6v8B3B6O8nv+DxDL6vuSiB5osW/8wt 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Basketball') UPDATE STATISTICS FOR COLUMN city SET('avgColLen'='9.733333333333333','maxColLen'='26','numNulls'='0','numDVs'='41' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Basketball' FOR COLUMN city BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoCkpgrWZAv/9s07Bs+0B//2kJsD8PIKp9QzAnsESwMeeBP7Y8gSB8bYSgNzOIb+G0irBkf1Kv9+VI8CW/S7A/s8tgcPMDv+ExSDA/9AbwbWqIL+A+wfF1N0Gu+fCFIDUsQ7B/NIggreYA72tgwLBj7VHgJuhCL/cmUPE3ewEgdy+J4H2gBX6icwBgNGGJcCrihrBmuoBv4LMOoD03wbB4NUCgs+VDg== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Basketball') UPDATE STATISTICS FOR COLUMN lastname SET('avgColLen'='6.2','maxColLen'='8','numNulls'='0','numDVs'='41' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Basketball' FOR COLUMN lastname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoCkpw7/TBb7IiwLAqpc1garTDoG6pw+B/u8E/tf4CIOg6Fv+pZAOvsWLF8CptkXA958hwbmGBv+RkgXA7vkfgoCLRoGTkCC9y/QFwLWoCIL8kQXC9LAM/pGwMb61+wuCwoREvqGsOIC5sSXA6cYGwP2mAsHsugy/pMwLwICgAcDe9x/AioEDgMvYBIG7lRG/1okGgOiHJsD7whaAmZYhwN6AEcGNo0M= 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Basketball') UPDATE STATISTICS FOR COLUMN firstname SET('avgColLen'='6.466666666666667','maxColLen'='9','numNulls'='0','numDVs'='40' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Basketball' FOR COLUMN firstname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoCgowYD+FsDL+AOC+7wFvsXpF8GjqzT/gJUCge/NAb+jskfAydEMgJnvHMHB+gzA0uEagKXgFsaxpST9lcMy/+veO72RqwaBs44DwrPHF/20wwGAkOg0gNLgRICopy+A+FfAltgBgNSACIDxpiWAy88Tg77iIr263wzAtqYXwJ+JN8D2pgGA+t1UgNCZCcCPjwLAstIDgP81gu/rLL7UzA0= 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Basketball') UPDATE STATISTICS FOR COLUMN id SET('lowValue'='1001','highValue'='1097','numNulls'='0','numDVs'='15' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Basketball' FOR COLUMN id BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoA8PgdqlYcDMpyaAzclyhImqVPydRcDlhnaB4u0Zv/vMLIC25x2GqtMQvsDAWrzYkyaApdafAcKXpUfAxuFQ 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Football') UPDATE STATISTICS FOR COLUMN country SET('avgColLen'='10.826086956521738','maxColLen'='33','numNulls'='0','numDVs'='71' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Football' FOR COLUMN country BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoEdHhOSiAr2WowTA89gKw5aCB/2t5guC74kF/uaaCsKaJr/M2RW/p4gNgPvBB4HVwyH/ha0kgPbPAcDX1QuA0MEIgZjcP/+WgwjAquEEwPfGAsDohwHB8osBhL8Z+/iBHMDu0AGE/+wL/LfSE8G50xP/5+QKxp+2A/vi9RyB/JcVvprdFIHp6QG/0bwFwbs0w+33E/zS/AHExAO86e0BgoiDFMDa3wbCwrEU/5veGv3mU4PW7S29mgSBxrEM/820M8DOmQSA/fYXwOH2AoDlgQzB1pIE/+iCKIC52w2E1PkIvJA1guCcB8C/nhbB6O8n/eGFBYH4kgPBhtkEgIzAFL6j+ROB5osW/8wtwKDBGsDvB4CH8Ak= 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Football') UPDATE STATISTICS FOR COLUMN city SET('avgColLen'='8.782608695652174','maxColLen'='20','numNulls'='0','numDVs'='78' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Football' FOR COLUMN city BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoE5OgrWZAsKchyr9l/UDwMm3IMGz7QG/naILwcOeCv+c5BDA/DyCqfUMv7eWBYHnqg3+4EHC5twD/tjyBIHxthLA/PwUwN/RDL+pjAOA3cUngdvNA4GpiQW+y+MJgYvFBf/46wGAq8QegZPNEr/flSPB7ju/zNkagPbQDcDllgbB0Y0UwYz2B/6n7w7A+NwCgcPMDv+ExSDA/9AbgKc2gN7QEMGwow+/gPsHxdTdBvu5lQ/Ara0FgNSxDsH80iCCt5gDva2DAsDugQyCwIol/+CoFoCboQi/0/ktwN+AE8CpnwLE3ewEgdy+J4H2gBX6icwBgYL7CP/OixzAq4oawskx/9C4AYCVwg6/7YkswNTHAcDmOsHRpAS/5zjB4NUCgP3+A8DAzwP/+h3E8owG/6Mc 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Football') UPDATE STATISTICS FOR COLUMN lastname SET('avgColLen'='5.6521739130434785','maxColLen'='8','numNulls'='0','numDVs'='77' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Football' FOR COLUMN lastname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoE1NgoXoAsG66wK+9zmA0dEBweL6BP/HnDCBqtMOgbqnD4H+7wT+1/gIv8bNAcTZmlr+pZAOvqDFBIGc8QKFiPkD+oDcC4Cf9gfAkZgDw660G/2CxwjAx6wWwZr1Cv+HjQKA1Z0UwbmGBv+RkgXAu6ADgNWIA4De0BmAm6k4guXhDb+T5wr/2K0IwLLuBoP0jAb//e4Bvs2FBMDvlgWAxpEDgvyRBcL0sAz/8+EQvtmWBcHEtxu+tfsLgNihNoLq4g2/98gYwOKwC7/HshTAno8iwJqiA8DpxgbA/aYCwey6DMDuwQX/tYoGwICgAcD4sgqA5sQVwIqBA4DL2ASBu5URv9aJBoCZqAyB0gvBl4oVvuXJBIHjngP/xqIRwNGBAoCZliHA3oARgt65DL7VmyWB2s0R 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Football') UPDATE STATISTICS FOR COLUMN firstname SET('avgColLen'='5.782608695652174','maxColLen'='9','numNulls'='0','numDVs'='75' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Football' FOR COLUMN firstname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoEtLwYD+FsDL+AOC+7wFv7z3DP+I8grC5JQF/9W4KsD7nQPA7b8B/4CVAoHvzQHA/Y0GgICSBP+89B6CitEG/t7MF8DJ0QyAme8cwcH6DP/kjAjAj6AJgd60CcHPlQG/8PkCgOXQEsOz6AH86mmHk9Mh+ZzOIoT59A+86qsEgOrQCMOX4i69kasGwO5wwcSdAoDGjg7C7bgJ/akZgIuqAYDm5gqAqoEqwqPEDr+itRn/u7wKgNCqEoLP4Qn+2MUlgPhXwJbYAYDUgAiErrwc/MLqCIDLzxODvuIivbrfDIDqzhXAzNcBwKWZAsD9niLA/NASwPamAYKD+hGA+oIk/vzgHoDQmQnAj48CwLLSA4D/NcLW7BG+x/QLgPDvA4Lhmgu+1MwNwIyuAw== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Football') UPDATE STATISTICS FOR COLUMN id SET('lowValue'='1006','highValue'='1100','numNulls'='0','numDVs'='23' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Football' FOR COLUMN id BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBcXwaGOJcCG/geAndhQwOWwJoKHvAL+pZRUgJ2xH8P2iwn9oMwKgK7oGYC3z0iAl6UNwdOdQYL29i69zrZ5wJ+NIMHylbkBgIivKcSpmBO9wrAGv7r5DL+c8TXAzbEZ 
+-- ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='__HIVE_DEFAULT_PARTITION__') UPDATE STATISTICS FOR COLUMN country SET('avgColLen'='9.333333333333334','maxColLen'='15','numNulls'='0','numDVs'='88' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='__HIVE_DEFAULT_PARTITION__' FOR COLUMN country BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoFhYhOSiAr2WowTA89gKw5aCB/2t5guC74kF/uaaCsKaJr/M2RW/p4gNgPvBB8OCrB6+0pcDgMihDv+9ixaA9s8BwNfVC4DQwQiBmNw//5aDCMCq4QTA98YCwOiHAcHyiwGEvxn7+IEcwO7QAYT/7Au9jocSv6nLAcG50xP/5+QKxp+2A7v05gnA7o4TgfyXFb6a3RSB6ekBv9G8BcG7NMPt9xP80vwBxMQDvOntAYKIgxTA2t8GwsKxFL61zQTB5pAW/eZTgZuDDr+BzAKAypIEgPXeAYCq7xXD0L0BvZoEgcaxDL+19hbAmL4cwM6ZBMDalgHAouAWwOH2AoDlgQzB1pIEwagpvsDZJ4C52w2E1PkIvJA1guCcB8C/nhbB6O8n/eGFBYH4kgPBhtkEgIzAFP+DhQ2/n/QGgL+BBYGnihH/zC3A/+4CgKHSF8DvB4CH8AmBkJpB 
+-- ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='__HIVE_DEFAULT_PARTITION__') UPDATE STATISTICS FOR COLUMN city SET('avgColLen'='10.5','maxColLen'='17','numNulls'='0','numDVs'='101' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='__HIVE_DEFAULT_PARTITION__' FOR COLUMN city BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoGVlgrWZAr+39h6D5ZAL/Zf1A4ChlxnA+bAFgK/vAcGz7QG/naILwcOeCv/Y0QuAxJIFwPw8gqn1DP6z2gHBg7wDgeeqDf7gQcLm3AP+2PIEwOnqDcGHzATA/PwUwN/RDL+pjAOBzdMG/4/yIIHbzQOBqYkFvsvjCYGLxQX/+OsBgKvEHsCGuRDBjJQCv9+VI8HuO7/M2RqA9tANwOWWBsHRjRTBjPYHgPTCC/6zrAPA+NwCwNHrBsHx4AeB4okU/qK7DICB1wbA/vkUgKc2gN7QEMGII4CogA+/gPsHxdTdBruSywjAp8oGgI+NBcCeIIDUsQ7Aw+8JgKSJFIGV2gKCt5gDva2DAsDugQyCwIol/+CoFv/WnQaBxIMCwbL1IP/X2AX/yKsHwN+AE8CpnwLE3ewEvfr5Cr+s8gOFtdIYgfaAFfqJzAGBgvsI/86LHMCrihrCyTH/0LgBgJXCDv/ZqQbAk+AlwNTHAcDmOsHRpAS/5zjB4NUCgP3+A8DAzwP/+h3E8owG/6Mc 
+-- ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='__HIVE_DEFAULT_PARTITION__') UPDATE STATISTICS FOR COLUMN lastname SET('avgColLen'='6.333333333333333','maxColLen'='8','numNulls'='0','numDVs'='99' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='__HIVE_DEFAULT_PARTITION__' FOR COLUMN lastname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoGNjgoXoAsG66wK+9zmA0dEBweL6BIDD/gyA88Aa/5HdCIGq0w6BuqcPvqt0w9L7A/7X+Ai/xs0BwrqJBIKfkVb+pZAO/6yXA7/zrQGBnPEChYj5A/qA3AuAn/YHwJGYA4DAsAXD7oMW/YLHCMGP8QT//asRgLoPwZr1Cv+HjQKA1Z0UwbmGBv+RkgXAu6ADgNWIA4De0BnA5ccCg8fUJ72g+gaAzpIHxJbQC77OkQK/k+cK/9itCMCy7gaD9IwG//3uAb7NhQTA75YFgMaRA4L8kQXC9LAM//PhEL7ZlgWAys8MwfrnDr61+wvB+7oYv9zmHYKHggmA4+AEv/fIGMDisAu/x7IUxIilAf/D3hL90YsOwJqiA8DpxgbA/aYCgO/wA8H9yQjA7sEF/7WKBsCAoAHA+LIKgObEFcCKgQOAy9gEgbuVEb/WiQaAmagMgdILwZeKFcDcX/6I6gOB454D/8aiEcDRgQKAmZYhwN6AEYD11QTA7YIEwvvgA8SZkg36u4kYgdrNEQ== 
+-- ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='__HIVE_DEFAULT_PARTITION__') UPDATE STATISTICS FOR COLUMN firstname SET('avgColLen'='7.0','maxColLen'='9','numNulls'='0','numDVs'='98' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='__HIVE_DEFAULT_PARTITION__' FOR COLUMN firstname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoGJigs6IDL+fvgqAkzfAy/gDwPF3wonFBL/KpwuA8s8B/4jyCsLklAX/1bgqwPudA8DtvwH/gJUCge/NAcD9jQaAgJIE/7z0HoKK0Qa/s4kLv6vDDMDJ0QyAme8cgfjqA8DJjwn/5IwIwI+gCYCEkgeB2qICwc+VAb/FygKAqy/B2eYEv4vqDcOz6AH86mnCqKYHxeqsGrn6/B/AotECg5bTDIHjoQO86qsEgOrQCMDtrRGDqrQdvZGrBsDucIGZOsCr4wG/oMIJwaXMBMLtuAn9qRmAi6oBgObmCoCqgSrCo8QOv6K1Gf+7vAqA0KoSgs/hCYD5oQf+36MegPhXwJbYAYDUgAiErrwc/MLqCIDLzxOAlsoXwNH0BcCP4wODx8ABvbrfDMaQwwH65pICwPL4EcDM1wHApZkCwP2eIsD80BLA9qYBgoP6EYD6giS/1YYWv6faCIDQmQnAj48CwLLSA4D/NYHn5Q7B74YDvsf0C4Dw7wOC4ZoLvtTMDcCMrgM= 
+-- ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='__HIVE_DEFAULT_PARTITION__') UPDATE STATISTICS FOR COLUMN id SET('lowValue'='1005','highValue'='1098','numNulls'='0','numDVs'='6' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='__HIVE_DEFAULT_PARTITION__' FOR COLUMN id BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoAYGwpjJWP/R3EDA+qZ5gKng4AHAzIc9wIH6KQ== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Cricket') UPDATE STATISTICS FOR COLUMN country SET('avgColLen'='9.714285714285714','maxColLen'='18','numNulls'='0','numDVs'='51' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Cricket' FOR COLUMN country BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoDMzhOSiAv2J/A7AxOgSgNakD8KaJr/M2RW/p4gNgPvBB4HVwyH/ha0kgPbPAcDX1QuB6J1Iv8HkDMD3xgKFmq0Cu+fSHYT/7Av8t9ITwbnTE8WHmw774vUcgfyXFb6a3RSB6ekBv9G8BYSprBT80vwBxMQDwI6CMfyCshuD1u0tvZoEgJTmP8DOmQSA/fYXwOH2AoDlgQzB1pIE/+iCKIC52w2E1PkIvJA1wp+7HcHo7ye/4PEMvq+5KIHmixb/zC2AkMkagIfwCQ== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Cricket') UPDATE STATISTICS FOR COLUMN city SET('avgColLen'='9.5','maxColLen'='18','numNulls'='0','numDVs'='55' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Cricket' FOR COLUMN city BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoDc3grWZAsKchyr9l/UDwMm3IMGz7QGA4cAV/5zkEMD8PIKp9Qy/t5YFgeeqDf7gQcLm3AP+2PIEgfG2EoDcziG/htIqgdvNA7/4nRaAq8QegZPNEr/flSPAlv0uwP7PLYHDzA7/hMUgwP/QG4CFhxHBsKMPv4D7B8XU3Qb7uZUPwK2tBYDUsQ7B/NIggreYA72tgwLBj7VHgJuhCL/cmUPE3ewEgdy+J4H2gBX6icwBgNGGJcCrihrBmuoBgJXCDr/tiSyA9N8GweDVAoD9/gO/u+0DxPKMBv+jHA== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Cricket') UPDATE STATISTICS FOR COLUMN lastname SET('avgColLen'='6.642857142857143','maxColLen'='10','numNulls'='0','numDVs'='55' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Cricket' FOR COLUMN lastname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoDc3goXoAsG66wK+yIsCwKqXNYGq0w6BuqcPgf7vBP7X+Ai/xs0BxNmaWv6lkA6/vLYHhYj5A/qA3AuD38ImvcrzHsCigg2A1Z0UwbmGBv+RkgXAkKkGgN7QGYCbqTiC5eENgZOQIP/97gG+zYUEwLWoCIL8kQXC9LAM/pGwMb61+wuCwoRE/9n5I7/HshTAno8iwJqiA8DpxgbA/aYCwey6DMDuwQX/tYoGwICgAcDe9x/AioEDgMvYBIG7lRG/1okGgOiHJsD7whaAmZYhwN6AEYLeuQy+1ZslgdrNEQ== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Cricket') UPDATE STATISTICS FOR COLUMN firstname SET('avgColLen'='5.285714285714286','maxColLen'='9','numNulls'='0','numDVs'='54' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Cricket' FOR COLUMN firstname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoDY2wYD+FsDL+AOC+7wFvsXpF8LklAX/vpYv/4CVAoHvzQHA/Y0GgICSBP+lkj3AydEMgJnvHMHB+gzA0uEawc+VAb/VyhXDs+gBg/68Iv2VwzK86qsEgOrQCMOX4i69kasGgbOOA8Kzxxf9qRmAi6oBgObmCoCqgSqBxvkn/4vnHILP4Qn+2MUlgPhXwJbYAYDUgAiErrwc/MLqCIDLzxODvuIivbrfDMC2phfApZkCgPrvNMD2pgGA+t1UgNCZCcCPjwLAstIDgP81gJ7hHYLRig++1MwN 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Cricket') UPDATE STATISTICS FOR COLUMN id SET('lowValue'='1002','highValue'='1099','numNulls'='0','numDVs'='14' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Cricket' FOR COLUMN id BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoA4OgqC6QMDhgB6/5MkWgaCkT8Gl6hHBqJC3Af3zgdcBgOWQKcHygjGAqr9J/7b9BYCB5gaA81HAr65J 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Badminton') UPDATE STATISTICS FOR COLUMN country SET('avgColLen'='10.038461538461538','maxColLen'='44','numNulls'='0','numDVs'='26' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Badminton' FOR COLUMN country BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBoahOSiAr6LiUe/p4gNgNayTcDNpQ2B6J1Iv8HkDMD3xgLAuL8/wLrZaMTj0hvAl4ACwI6CMf/Yn0m9mgSAlOY/gK2HH4DlgQzAv5UshI3VFv6v8B3B6O8nv+DxDL6vuSiB5osW/8wt 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Badminton') UPDATE STATISTICS FOR COLUMN city SET('avgColLen'='7.961538461538462','maxColLen'='15','numNulls'='0','numDVs'='26' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Badminton' FOR COLUMN city BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBoagrWZAv/9s07Bs+0B//2kJsD8PIKP1SP+2PIEgfG2EoDcziH/jeLHAcD+zy2Bw8wOgLrAXL+8myOA1LEOwfzSIIK3mAO9rYMCwY+1R4PVp1CB3L4ngfaAFfqJzAHA/JA/wZrqAb/2q0E= 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Badminton') UPDATE STATISTICS FOR COLUMN lastname SET('avgColLen'='6.269230769230769','maxColLen'='9','numNulls'='0','numDVs'='26' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Badminton' FOR COLUMN lastname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBoaw7/TBb7IiwLAqpc1guT6HYH+7wT+1/gIg6DoW7zrmyXAqbZFgMO4LMLuhGa+3oQmwLWoCIL8kQXAhuE9wPf/T77a3V3A6cYGwP2mAsCRpxmA6fgigMvYBIG7lRG/1okGgOiHJsGA/YsB 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Badminton') UPDATE STATISTICS FOR COLUMN firstname SET('avgColLen'='5.615384615384615','maxColLen'='8','numNulls'='0','numDVs'='25' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Badminton' FOR COLUMN firstname BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBkZwYydOMGjqzT/gJUCge/NAcDH7X2GqedV/IGibr2RqwaBs44DwrPHF/20wwGAkOg0gNLgRICg/y/A6tgJgPGmJYDLzxODvuIivbrfDIDWr07A9qYBgPrdVIDQmQmAwuEFwMLuOg== 
+ALTER TABLE db_bdpbase.default_partition_test PARTITION (sports='Badminton') UPDATE STATISTICS FOR COLUMN id SET('lowValue'='1004','highValue'='1094','numNulls'='0','numDVs'='26' );
+-- BIT VECTORS PRESENT FOR db_bdpbase.default_partition_test PARTITION sports='Badminton' FOR COLUMN id BUT THEY ARE NOT SUPPORTED YET.THE BASE64 VALUE FOR THE BITVECTOR IS SExMoBoawr/bO7+AhAiEneMx/PeySYK5/AmAnf4mwOW/Q/7Z9AvA9phvgPvRGoDSpBmA9PAPgYHVL7/QhBPAhbctgJXQFYDTmASAyqgkgL2uL4GK9Rq/mcwugLSoHMDChBWA54k2gKmhGoHCmzg= 
+
+
+
+EXPLAIN select * from db_bdpbase.default_partition_test;
+
+
+EXPLAIN CBO select * from db_bdpbase.default_partition_test;
+
+
+EXPLAIN VECTORIZED select * from db_bdpbase.default_partition_test;
+CBO PLAN:HiveProject(id=[$0], firstname=[$1], lastname=[$2], city=[$3], country=[$4], sports=[$5])
+  HiveTableScan(table=[[db_bdpbase, default_partition_test]], table:alias=[default_partition_test])
+
+PLAN VECTORIZATION:
+  enabled: true
+  enabledConditionsMet: [hive.vectorized.execution.enabled IS true]
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: default_partition_test
+          Statistics: Num rows: 101 Data size: 3937 Basic stats: COMPLETE Column stats: NONE
+          Select Operator
+            expressions: id (type: int), firstname (type: string), lastname (type: string), city (type: string), country (type: string), sports (type: string)
+            outputColumnNames: _col0, _col1, _col2, _col3, _col4, _col5
+            Statistics: Num rows: 101 Data size: 3937 Basic stats: COMPLETE Column stats: NONE
+            ListSink
+
+PREHOOK: query: drop database db_bdpbase cascade
+PREHOOK: type: DROPDATABASE
+PREHOOK: Input: database:db_bdpbase
+PREHOOK: Output: database:db_bdpbase
+PREHOOK: Output: db_bdpbase@default_partition_test
+PREHOOK: Output: db_bdpbase@emp_sports
+POSTHOOK: query: drop database db_bdpbase cascade
+POSTHOOK: type: DROPDATABASE
+POSTHOOK: Input: database:db_bdpbase
+POSTHOOK: Output: database:db_bdpbase
+POSTHOOK: Output: db_bdpbase@default_partition_test
+POSTHOOK: Output: db_bdpbase@emp_sports
