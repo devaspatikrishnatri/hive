@@ -1079,7 +1079,17 @@ public class Context {
   }
 
   public String getCalcitePlan() {
-    return this.calcitePlan;
+    if (this.calcitePlan != null) {
+      return this.calcitePlan;
+    }
+
+    for (Context context : subContexts) {
+      if (context.calcitePlan != null) {
+        return context.calcitePlan;
+      }
+    }
+
+    return null;
   }
 
   public void setCalcitePlan(String calcitePlan) {
