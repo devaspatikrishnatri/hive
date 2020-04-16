@@ -207,7 +207,7 @@ public class AcidUtils {
       return !name.startsWith("_") && !name.startsWith(".");
     }
   };
-  
+
   public static final PathFilter acidHiddenFileFilter = new PathFilter() {
     @Override
     public boolean accept(Path p) {
@@ -223,7 +223,7 @@ public class AcidUtils {
       return !name.startsWith("_") && !name.startsWith(".");
     }
   };
-  
+
   public static final PathFilter acidTempDirFilter = new PathFilter() {
     @Override
     public boolean accept(Path dirPath) {
@@ -239,7 +239,7 @@ public class AcidUtils {
       }
     }
   };
-  
+
   public static final String VISIBILITY_PREFIX = "_v";
   public static final Pattern VISIBILITY_PATTERN = Pattern.compile(VISIBILITY_PREFIX + "\\d+");
 
@@ -609,7 +609,7 @@ public class AcidUtils {
     public List<Path> getAbortedDirectories() {
       return abortedDirectories;
     }
-    
+
     @Override
     public String toString() {
       return "Aborted Directories: " + abortedDirectories + "; isBaseInRawFormat: " + isBaseInRawFormat + "; original: "
@@ -1319,7 +1319,7 @@ public class AcidUtils {
       original.clear();
       originalDirectories.clear();
     } else {
-      // Okay, we're going to need these originals.  
+      // Okay, we're going to need these originals.
       // Recurse through them and figure out what we really need.
       // If we already have the original list, do nothing
       // If dirSnapshots != null, we would have already populated "original"
@@ -1426,7 +1426,7 @@ public class AcidUtils {
     return new DirectoryImpl(abortedDirectories, isBaseInRawFormat, original,
         obsolete, deltas, base);
   }
-  
+
   public static Map<Path, HdfsDirSnapshot> getHdfsDirSnapshots(final FileSystem fs,
       final Path path) throws IOException {
     try {
@@ -1473,9 +1473,9 @@ public class AcidUtils {
       throw new IOException(e);
     }
   }
-  
+
   /**
-   * DFS dir listing. 
+   * DFS dir listing.
    * Captures a dir and the corresponding list of files it contains,
    * with additional properties about the dir (like isBase etc)
    *
@@ -1522,7 +1522,7 @@ public class AcidUtils {
 
     boolean contains(Path path);
   }
-  
+
   public static class HdfsDirSnapshotImpl implements HdfsDirSnapshot {
     private Path dirPath;
     private FileStatus fStatus;
@@ -1540,22 +1540,22 @@ public class AcidUtils {
       this.fStatus = fStatus;
       this.files = files;
     }
-    
+
     public HdfsDirSnapshotImpl(Path path, FileStatus fStatus) {
       this.dirPath = path;
       this.fStatus = fStatus;
     }
-    
+
     @Override
     public Path getPath() {
       return dirPath;
     }
-    
+
     @Override
     public FileStatus getFileStatus() {
       return fStatus;
     }
-    
+
     @Override
     public void setFileStatus(FileStatus fStatus) {
       this.fStatus = fStatus;
@@ -1565,7 +1565,7 @@ public class AcidUtils {
     public List<FileStatus> getFiles() {
       return files;
     }
-    
+
     @Override
     public void addFile(FileStatus file) {
       files.add(file);
@@ -1580,7 +1580,7 @@ public class AcidUtils {
     public Boolean isRawFormat() {
       return isRawFormat;
     }
-    
+
     @Override
     public void setIsRawFormat(boolean isRawFormat) {
        this.isRawFormat = isRawFormat;
@@ -1603,7 +1603,7 @@ public class AcidUtils {
 
     @Override
     public void setIsBase(boolean isBase) {
-      this.isBase = isBase;  
+      this.isBase = isBase;
     }
 
     @Override
@@ -1613,14 +1613,14 @@ public class AcidUtils {
 
     @Override
     public void setIsCompactedBase(boolean isCompactedBase) {
-      this.isCompactedBase = isCompactedBase;     
+      this.isCompactedBase = isCompactedBase;
     }
 
     @Override
     public void addOrcAcidFormatFile(FileStatus fStatus) {
       this.orcAcidFormatFStatus = fStatus;
     }
-    
+
     @Override
     public FileStatus getOrcAcidFormatFile() {
       return orcAcidFormatFStatus;
@@ -1660,7 +1660,7 @@ public class AcidUtils {
       return sb.toString();
     }
   }
-  
+
   /**
    * We can only use a 'base' if it doesn't have an open txn (from specific reader's point of view)
    * A 'base' with open txn in its range doesn't have 'enough history' info to produce a correct
@@ -1687,7 +1687,7 @@ public class AcidUtils {
     //if here, it's a result of IOW
     return writeIdList.isWriteIdValid(parsedBase.getWriteId());
   }
-  
+
   private static boolean isValidBase(HdfsDirSnapshot dirSnapshot, ParsedBase parsedBase, ValidWriteIdList writeIdList,
       FileSystem fs) throws IOException {
     boolean isValidBase;
@@ -1703,7 +1703,7 @@ public class AcidUtils {
     }
     return isValidBase;
   }
-  
+
   /**
    * Returns {@code true} if {@code parsedBase} was created by compaction.
    * As of Hive 4.0 we can tell if a directory is a result of compaction based on the
@@ -1719,7 +1719,7 @@ public class AcidUtils {
       HdfsDirSnapshot snapshot) throws IOException {
     return parsedBase.getVisibilityTxnId() > 0 || MetaDataFile.isCompacted(parsedBase.getBaseDirPath(), fs, snapshot);
   }
-  
+
   private static void getChildState(FileStatus child, HdfsFileStatusWithId childWithId,
       ValidWriteIdList writeIdList, List<ParsedDelta> working, List<Path> originalDirectories,
       List<HdfsFileStatusWithId> original, List<Path> obsolete, TxnBase bestBase,
@@ -1780,7 +1780,7 @@ public class AcidUtils {
       originalDirectories.add(child.getPath());
     }
   }
-  
+
   private static void getChildState(Path candidateDirectory, Map<Path, HdfsDirSnapshot> dirSnapshots,
       ValidWriteIdList writeIdList, List<ParsedDelta> working, List<Path> originalDirectories,
       List<HdfsFileStatusWithId> original,
@@ -1847,7 +1847,7 @@ public class AcidUtils {
       }
     }
   }
-  
+
   /**
    * checks {@code visibilityTxnId} to see if {@code child} is committed in current snapshot
    */
@@ -2539,7 +2539,7 @@ public class AcidUtils {
      * This is only meaningful for full CRUD tables - Insert-only tables have all their data
      * in raw format by definition.
      * @param baseOrDeltaDir base or delta file.
-     * @param dirSnapshot 
+     * @param dirSnapshot
      */
     public static boolean isRawFormat(Path baseOrDeltaDir, FileSystem fs, HdfsDirSnapshot dirSnapshot) throws IOException {
       //todo: this could be optimized - for full CRUD table only base_x and delta_x_x could have
@@ -2578,7 +2578,7 @@ public class AcidUtils {
       }
       return isRawFormatFile(dataFile, fs);
     }
-    
+
     public static boolean isRawFormatFile(Path dataFile, FileSystem fs) throws IOException {
       try {
         Reader reader = OrcFile.createReader(dataFile, OrcFile.readerOptions(fs.getConf()));
@@ -2900,7 +2900,7 @@ public class AcidUtils {
     boolean skipReadLock = !conf.getBoolVar(ConfVars.HIVE_TXN_READ_LOCKS);
     boolean skipNonAcidReadLock = !conf.getBoolVar(ConfVars.HIVE_TXN_NONACID_READ_LOCKS);
 
-    // For each source to read, get a shared lock
+    // For each source to read, get a shared_read lock
     for (ReadEntity input : inputs) {
       if (input.isDummy()
           || !input.needsLock()
@@ -2912,7 +2912,7 @@ public class AcidUtils {
         continue;
       }
       LockComponentBuilder compBuilder = new LockComponentBuilder();
-      compBuilder.setShared();
+      compBuilder.setSharedRead();
       compBuilder.setOperationType(DataOperationType.SELECT);
 
       Table t = null;
@@ -2954,7 +2954,7 @@ public class AcidUtils {
     // For each source to write to, get the appropriate lock type.  If it's
     // an OVERWRITE, we need to get an exclusive lock.  If it's an insert (no
     // overwrite) than we need a shared.  If it's update or delete then we
-    // need a SEMI-SHARED.
+    // need a SHARED_WRITE.
     for (WriteEntity output : outputs) {
       LOG.debug("output is null " + (output == null));
       if (output.getType() == Entity.Type.DFS_DIR || output.getType() == Entity.Type.LOCAL_DIR || !AcidUtils
@@ -3001,7 +3001,7 @@ public class AcidUtils {
             if (conf.getBoolVar(HiveConf.ConfVars.TXN_OVERWRITE_X_LOCK)) {
               compBuilder.setExclusive();
             } else {
-              compBuilder.setSemiShared();
+              compBuilder.setSharedWrite();
             }
             compBuilder.setOperationType(DataOperationType.UPDATE);
           } else {
@@ -3012,7 +3012,7 @@ public class AcidUtils {
         case INSERT:
           assert t != null;
           if (AcidUtils.isTransactionalTable(t)) {
-            compBuilder.setShared();
+            compBuilder.setSharedRead();
           } else if (MetaStoreUtils.isNonNativeTable(t.getTTable())) {
             final HiveStorageHandler storageHandler = Preconditions.checkNotNull(t.getStorageHandler(),
                     "Thought all the non native tables have an instance of storage handler"
@@ -3028,22 +3028,22 @@ public class AcidUtils {
               if (conf.getBoolVar(HiveConf.ConfVars.HIVE_TXN_STRICT_LOCKING_MODE)) {
                   compBuilder.setExclusive();
               } else {  // this is backward compatible for non-ACID resources, w/o ACID semantics
-                  compBuilder.setShared();
+                  compBuilder.setSharedRead();
               }
           }
           compBuilder.setOperationType(DataOperationType.INSERT);
           break;
         case DDL_SHARED:
-          compBuilder.setShared();
+          compBuilder.setSharedRead();
           compBuilder.setOperationType(DataOperationType.NO_TXN);
           break;
 
         case UPDATE:
-          compBuilder.setSemiShared();
+          compBuilder.setSharedWrite();
           compBuilder.setOperationType(DataOperationType.UPDATE);
           break;
         case DELETE:
-          compBuilder.setSemiShared();
+          compBuilder.setSharedWrite();
           compBuilder.setOperationType(DataOperationType.DELETE);
           break;
 
