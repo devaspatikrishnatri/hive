@@ -129,6 +129,10 @@
       <version>${druid.version}</version>
       <exclusions>
         <exclusion>
+          <groupId>com.ibm.icu</groupId>
+          <artifactId>icu4j</artifactId>
+        </exclusion>
+        <exclusion>
           <!--LGPL licenced library-->
           <groupId>com.google.code.findbugs</groupId>
           <artifactId>annotations</artifactId>
