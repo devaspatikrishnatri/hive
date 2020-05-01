@@ -206,6 +206,7 @@ import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveFilterProjectTransp
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveFilterSetOpTransposeRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveFilterSortPredicates;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveFilterSortTransposeRule;
+import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveInBetweenExpandRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveInsertExchange4JoinRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveIntersectMergeRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveIntersectRewriteRule;
@@ -2108,6 +2109,16 @@ public class CalcitePlanner extends SemanticAnalyzer {
             HepMatchOrder.DEPTH_FIRST, HiveProjectSortExchangeTransposeRule.INSTANCE, HiveProjectMergeRule.INSTANCE);
       }
 
+      // 13. We need to expand IN/BETWEEN expressions when loading a materialized view
+      // since otherwise this may prevent some rewritings from happening
+      if (ctx.isLoadingMaterializedView()) {
+        calciteOptimizedPlan = hepPlan(calciteOptimizedPlan, true, mdProvider.getMetadataProvider(), null,
+            HepMatchOrder.DEPTH_FIRST,
+            HiveInBetweenExpandRule.FILTER_INSTANCE,
+            HiveInBetweenExpandRule.JOIN_INSTANCE,
+            HiveInBetweenExpandRule.PROJECT_INSTANCE);
+      }
+
       if (LOG.isDebugEnabled() && !conf.getBoolVar(ConfVars.HIVE_IN_TEST)) {
         LOG.debug("CBO Planning details:\n");
         LOG.debug("Original Plan:\n" + RelOptUtil.toString(calciteGenPlan));
@@ -2357,7 +2368,7 @@ public class CalcitePlanner extends SemanticAnalyzer {
                   // There is a Project on top (due to nullability)
                   final Project pq = (Project) viewScan;
                   newViewScan = HiveProject.create(optCluster, copyNodeScan(pq.getInput()),
-                      pq.getChildExps(), pq.getRowType(), Collections.<RelCollation> emptyList());
+                      pq.getChildExps(), pq.getRowType(), Collections.emptyList());
                 } else {
                   newViewScan = copyNodeScan(viewScan);
                 }
@@ -2397,6 +2408,14 @@ public class CalcitePlanner extends SemanticAnalyzer {
       }
 
       perfLogger.PerfLogBegin(this.getClass().getName(), PerfLogger.OPTIMIZER);
+
+      // We need to expand IN/BETWEEN expressions when materialized view rewriting
+      // is triggered since otherwise this may prevent some rewritings from happening
+      basePlan = hepPlan(basePlan, true, mdProvider, null,
+          HepMatchOrder.DEPTH_FIRST,
+          HiveInBetweenExpandRule.FILTER_INSTANCE,
+          HiveInBetweenExpandRule.JOIN_INSTANCE,
+          HiveInBetweenExpandRule.PROJECT_INSTANCE);
 
       if (mvRebuild) {
         // If it is a materialized view rebuild, we use the HepPlanner, since we only have
