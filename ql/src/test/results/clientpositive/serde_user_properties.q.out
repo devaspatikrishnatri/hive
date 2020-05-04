@@ -79,6 +79,7 @@ STAGE PLANS:
               outputColumnNames: _col0
               Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
               File Output Operator
+                bucketingVersion: 2
                 compressed: false
                 GlobalTableId: 0
 #### A masked pattern was here ####
@@ -89,6 +90,7 @@ STAGE PLANS:
                     input format: org.apache.hadoop.mapred.SequenceFileInputFormat
                     output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
                     properties:
+                      bucketing_version -1
                       columns _col0
                       columns.types string
                       escape.delim \
@@ -219,6 +221,7 @@ STAGE PLANS:
               outputColumnNames: _col0
               Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
               File Output Operator
+                bucketingVersion: 2
                 compressed: false
                 GlobalTableId: 0
 #### A masked pattern was here ####
@@ -229,6 +232,7 @@ STAGE PLANS:
                     input format: org.apache.hadoop.mapred.SequenceFileInputFormat
                     output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
                     properties:
+                      bucketing_version -1
                       columns _col0
                       columns.types string
                       escape.delim \
@@ -361,6 +365,7 @@ STAGE PLANS:
               outputColumnNames: _col0
               Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
               File Output Operator
+                bucketingVersion: 2
                 compressed: false
                 GlobalTableId: 0
 #### A masked pattern was here ####
@@ -371,6 +376,7 @@ STAGE PLANS:
                     input format: org.apache.hadoop.mapred.SequenceFileInputFormat
                     output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
                     properties:
+                      bucketing_version -1
                       columns _col0
                       columns.types string
                       escape.delim \

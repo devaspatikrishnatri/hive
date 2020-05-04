@@ -61,8 +61,10 @@ STAGE PLANS:
                 outputColumnNames: _col0
                 Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
                 Reduce Output Operator
+                  bucketingVersion: 2
                   key expressions: _col0 (type: int)
                   null sort order: a
+                  numBuckets: -1
                   sort order: +
                   Map-reduce partition columns: _col0 (type: int)
                   Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
@@ -129,6 +131,7 @@ STAGE PLANS:
           outputColumnNames: _col0
           Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
           File Output Operator
+            bucketingVersion: 1
             compressed: false
             GlobalTableId: 0
 #### A masked pattern was here ####
@@ -153,8 +156,10 @@ STAGE PLANS:
           TableScan
             GatherStats: false
             Reduce Output Operator
+              bucketingVersion: 2
               key expressions: _col0 (type: int)
               null sort order: z
+              numBuckets: -1
               sort order: +
               Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
               tag: -1
@@ -194,6 +199,7 @@ STAGE PLANS:
           outputColumnNames: _col0
           Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
           File Output Operator
+            bucketingVersion: 2
             compressed: false
             GlobalTableId: 1
             directory: ### BLOBSTORE_STAGING_PATH ###
@@ -241,6 +247,7 @@ STAGE PLANS:
                 outputColumnNames: _col0
                 Statistics: Num rows: 1 Data size: 424 Basic stats: PARTIAL Column stats: NONE
                 File Output Operator
+                  bucketingVersion: 2
                   compressed: false
                   GlobalTableId: 0
 #### A masked pattern was here ####
@@ -251,6 +258,7 @@ STAGE PLANS:
                       input format: org.apache.hadoop.mapred.SequenceFileInputFormat
                       output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
                       properties:
+                        bucketing_version -1
                         columns _col0
                         columns.types struct<columntype:string,min:bigint,max:bigint,countnulls:bigint,numdistinctvalues:bigint,ndvbitvector:binary>
                         escape.delim \
@@ -340,8 +348,10 @@ STAGE PLANS:
                 outputColumnNames: _col0
                 Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
                 Reduce Output Operator
+                  bucketingVersion: 2
                   key expressions: _col0 (type: int)
                   null sort order: a
+                  numBuckets: -1
                   sort order: +
                   Map-reduce partition columns: _col0 (type: int)
                   Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
@@ -408,6 +418,7 @@ STAGE PLANS:
           outputColumnNames: _col0
           Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
           File Output Operator
+            bucketingVersion: 1
             compressed: false
             GlobalTableId: 0
 #### A masked pattern was here ####
@@ -432,8 +443,10 @@ STAGE PLANS:
           TableScan
             GatherStats: false
             Reduce Output Operator
+              bucketingVersion: 2
               key expressions: _col0 (type: int)
               null sort order: z
+              numBuckets: -1
               sort order: +
               Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
               tag: -1
@@ -473,6 +486,7 @@ STAGE PLANS:
           outputColumnNames: _col0
           Statistics: Num rows: 1 Data size: 0 Basic stats: PARTIAL Column stats: NONE
           File Output Operator
+            bucketingVersion: 2
             compressed: false
             GlobalTableId: 1
             directory: ### BLOBSTORE_STAGING_PATH ###
@@ -520,6 +534,7 @@ STAGE PLANS:
                 outputColumnNames: _col0
                 Statistics: Num rows: 1 Data size: 424 Basic stats: PARTIAL Column stats: NONE
                 File Output Operator
+                  bucketingVersion: 2
                   compressed: false
                   GlobalTableId: 0
 #### A masked pattern was here ####
@@ -530,6 +545,7 @@ STAGE PLANS:
                       input format: org.apache.hadoop.mapred.SequenceFileInputFormat
                       output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
                       properties:
+                        bucketing_version -1
                         columns _col0
                         columns.types struct<columntype:string,min:bigint,max:bigint,countnulls:bigint,numdistinctvalues:bigint,ndvbitvector:binary>
                         escape.delim \

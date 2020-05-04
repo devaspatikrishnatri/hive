@@ -265,6 +265,7 @@ STAGE PLANS:
                       expressions: key (type: int)
                       outputColumnNames: _col0
                       Statistics: Num rows: 3 Data size: 12 Basic stats: COMPLETE Column stats: COMPLETE
+                      Dummy Store
             Map Operator Tree:
                 TableScan
                   alias: a

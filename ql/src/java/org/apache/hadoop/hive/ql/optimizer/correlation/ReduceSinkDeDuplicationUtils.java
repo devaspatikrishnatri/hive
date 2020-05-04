@@ -208,7 +208,7 @@ public class ReduceSinkDeDuplicationUtils {
           throws SemanticException {
     return strictMerge(cRS, ImmutableList.of(pRS));
   }
-  
+
   public static boolean strictMerge(ReduceSinkOperator cRS, List<ReduceSinkOperator> pRSs)
           throws SemanticException {
     ReduceSinkDesc cRSc = cRS.getConf();
@@ -226,7 +226,7 @@ public class ReduceSinkDeDuplicationUtils {
       if (moveRSOrderTo == null) {
         return false;
       }
-  
+
       int cKeySize = cRSc.getKeyCols().size();
       for (int i = 0; i < cKeySize; i++) {
         ExprNodeDesc cExpr = cRSc.getKeyCols().get(i);
@@ -240,7 +240,7 @@ public class ReduceSinkDeDuplicationUtils {
           return false;
         }
       }
-  
+
       int cPartSize = cRSc.getPartitionCols().size();
       for (int i = 0; i < cPartSize; i++) {
         ExprNodeDesc cExpr = cRSc.getPartitionCols().get(i);
@@ -307,6 +307,9 @@ public class ReduceSinkDeDuplicationUtils {
     }
     // if cRS is being used for distinct - the two reduce sinks are incompatible
     if (cConf.getDistinctColumnIndices().size() >= 2) {
+      return null;
+    }
+    if (cConf.getBucketingVersion() != pConf.getBucketingVersion()) {
       return null;
     }
     Integer moveReducerNumTo = checkNumReducer(cConf.getNumReducers(), pConf.getNumReducers());
@@ -484,6 +487,9 @@ public class ReduceSinkDeDuplicationUtils {
     List<ExprNodeDesc> cKeys = cConf.getKeyCols();
     List<ExprNodeDesc> pKeys = pConf.getKeyCols();
 
+    if (cRS.getConf().getBucketingVersion() != pRS.getConf().getBucketingVersion()) {
+      return false;
+    }
     // Check that in the path between cRS and pRS, there are only Select operators
     // i.e. the sequence must be pRS-SEL*-cRS
     Operator<? extends OperatorDesc> parent = cRS.getParentOperators().get(0);
