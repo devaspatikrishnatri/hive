@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.hive.ql;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -82,7 +83,7 @@ class ValidTxnManager {
     // - Exclusive for INSERT OVERWRITE, when shared write is disabled (HiveConf.TXN_WRITE_X_LOCK=false).
     // - Excl-write for UPDATE/DELETE, when shared write is disabled, INSERT OVERWRITE - when enabled.
     Set<String> nonSharedLockedTables = getNonSharedLockedTables();
-    if (nonSharedLockedTables == null) {
+    if (nonSharedLockedTables.isEmpty()) {
       return true; // Nothing to check
     }
 
@@ -113,7 +114,7 @@ class ValidTxnManager {
 
   private Set<String> getNonSharedLockedTables() {
     if (CollectionUtils.isEmpty(driver.getContext().getHiveLocks())) {
-      return null; // Nothing to check
+      return Collections.emptySet(); // Nothing to check
     }
 
     Set<String> nonSharedLockedTables = new HashSet<>();
