@@ -22,6 +22,7 @@ import static org.apache.hadoop.hive.metastore.Warehouse.DEFAULT_DATABASE_NAME;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.getDefaultCatalog;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.prependCatalogToDbName;
 
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -58,6 +59,7 @@ import org.apache.hadoop.hive.common.StatsSetupConst;
 import org.apache.hadoop.hive.common.ValidTxnList;
 import org.apache.hadoop.hive.common.ValidWriteIdList;
 import org.apache.hadoop.hive.metastore.api.*;
+import org.apache.hadoop.hive.metastore.api.ThriftHiveMetastore.Client;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf.ConfVars;
 import org.apache.hadoop.hive.metastore.hooks.URIResolverHook;
@@ -4159,6 +4161,17 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     }
   }
 
+  @Override
+  public ThriftHiveMetastore.Client getThriftClient() throws MetaException {
+    if (client == null) {
+      throw new MetaException("Client is not initialized");
+    }
+    if (!(client instanceof ThriftHiveMetastore.Client)) {
+      throw new MetaException("getThriftClient is only supported in remote metastore "
+          + "mode.");
+    }
+    return (Client) client;
+  }
 
   /**
   * Builder for requiredFields bitmask to be sent via GetTablesExtRequest
