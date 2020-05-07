@@ -42,11 +42,11 @@ public interface TxnStore extends Configurable {
   /**
    * Prefix for key when committing with a key/value.
    */
-  public static final String TXN_KEY_START = "_meta";
+  String TXN_KEY_START = "_meta";
 
   enum MUTEX_KEY {
-    Initiator, Cleaner, HouseKeeper, CompactionHistory, CheckLock,
-    WriteSetCleaner, CompactionScheduler, WriteIdAllocator, MaterializationRebuild
+    Initiator, Cleaner, HouseKeeper, TxnCleaner, CheckLock,
+    CompactionScheduler, WriteIdAllocator, MaterializationRebuild
   }
   // Compactor states (Should really be enum)
   String INITIATED_RESPONSE = "initiated";
