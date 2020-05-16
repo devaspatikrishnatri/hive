@@ -1191,7 +1191,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns isrobot,channel,timestamp,flags,isunpatrolled,page,diffurl,added,comment,commentlength,isnew,isminor,delta,isanonymous,user,deltabucket,deleted,namespace,__key,__partition,__offset,__timestamp
-                    columns.comments 'from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer'
                     columns.types boolean:string:string:string:boolean:string:string:bigint:string:bigint:boolean:boolean:bigint:boolean:string:double:bigint:string:binary:int:bigint:bigint
 #### A masked pattern was here ####
                     hive.kafka.max.retries 6
@@ -1534,7 +1533,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns isrobot,channel,timestamp,flags,isunpatrolled,page,diffurl,added,comment,commentlength,isnew,isminor,delta,isanonymous,user,deltabucket,deleted,namespace,__key,__partition,__offset,__timestamp
-                    columns.comments 'from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer','from deserializer'
                     columns.types boolean:string:string:string:boolean:string:string:bigint:string:bigint:boolean:boolean:bigint:boolean:string:double:bigint:string:binary:int:bigint:bigint
 #### A masked pattern was here ####
                     hive.kafka.max.retries 6

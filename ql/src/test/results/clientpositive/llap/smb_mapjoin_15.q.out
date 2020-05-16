@@ -95,7 +95,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 
                     columns.types int:string
 #### A masked pattern was here ####
                     name default.test_table2_n4
@@ -191,7 +190,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 
                     columns.types int:string
 #### A masked pattern was here ####
                     name default.test_table1_n4
@@ -420,7 +418,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,key2,value
-                    columns.comments 
                     columns.types int:int:string
 #### A masked pattern was here ####
                     name default.test_table1_n4
@@ -503,7 +500,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,key2,value
-                    columns.comments 
                     columns.types int:int:string
 #### A masked pattern was here ####
                     name default.test_table2_n4
@@ -709,7 +705,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,key2,value
-                    columns.comments 
                     columns.types int:int:string
 #### A masked pattern was here ####
                     name default.test_table1_n4
@@ -792,7 +787,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,key2,value
-                    columns.comments 
                     columns.types int:int:string
 #### A masked pattern was here ####
                     name default.test_table2_n4
@@ -998,7 +992,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,key2,value
-                    columns.comments 
                     columns.types int:int:string
 #### A masked pattern was here ####
                     name default.test_table1_n4
@@ -1081,7 +1074,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,key2,value
-                    columns.comments 
                     columns.types int:int:string
 #### A masked pattern was here ####
                     name default.test_table2_n4

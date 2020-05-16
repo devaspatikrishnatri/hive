@@ -369,7 +369,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 
                     columns.types int:string
 #### A masked pattern was here ####
                     name default.srcbucket_mapjoin_n15
@@ -449,7 +448,6 @@ STAGE PLANS:
                     bucket_field_name key
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 
                     columns.types int:string
 #### A masked pattern was here ####
                     name default.srcbucket_mapjoin_part_n16
@@ -812,7 +810,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 
                     columns.types int:string
 #### A masked pattern was here ####
                     name default.srcbucket_mapjoin_n15
@@ -892,7 +889,6 @@ STAGE PLANS:
                     bucket_field_name key
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 
                     columns.types int:string
 #### A masked pattern was here ####
                     name default.srcbucket_mapjoin_part_n16

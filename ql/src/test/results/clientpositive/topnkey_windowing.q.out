@@ -384,7 +384,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns tw_code,tw_value
-              columns.comments 
               columns.types string:double
 #### A masked pattern was here ####
               name default.topnkey_windowing
@@ -570,7 +569,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns tw_code,tw_value
-              columns.comments 
               columns.types string:double
 #### A masked pattern was here ####
               name default.topnkey_windowing

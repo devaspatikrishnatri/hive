@@ -3941,7 +3941,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns k0,k1,k2,k3,k4,k5
-                    columns.comments 
                     columns.types string:string:string:string:string:string
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -4047,7 +4046,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns k1,k2,k3,k4
-                    columns.comments 
                     columns.types string:string:string:string
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -4127,7 +4125,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns k0,k1,k2,k3,k4,k5
-                    columns.comments 
                     columns.types string:string:string:string:string:string
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -5279,7 +5276,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -5362,7 +5358,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -5447,7 +5442,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -5532,7 +5526,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -5832,7 +5825,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -5917,7 +5909,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -5996,7 +5987,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -6097,7 +6087,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -6344,7 +6333,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -6429,7 +6417,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -6528,7 +6515,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###
@@ -6607,7 +6593,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,count
-                    columns.comments 
                     columns.types string:bigint
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###

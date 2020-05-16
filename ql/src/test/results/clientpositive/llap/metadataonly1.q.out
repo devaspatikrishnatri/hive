@@ -170,7 +170,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -321,7 +320,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -472,7 +470,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -638,7 +635,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -686,7 +682,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -765,7 +760,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -813,7 +807,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -1067,7 +1060,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1115,7 +1107,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1163,7 +1154,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1329,7 +1319,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1378,7 +1367,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1427,7 +1415,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1586,7 +1573,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -1633,7 +1619,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test1_n12
@@ -1851,7 +1836,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1899,7 +1883,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1947,7 +1930,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -1995,7 +1977,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8
@@ -2043,7 +2024,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns a,b
-                    columns.comments 
                     columns.types int:double
 #### A masked pattern was here ####
                     name default.test2_n8

@@ -220,7 +220,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns x,y,z
-              columns.comments 
               columns.types int:string:string
 #### A masked pattern was here ####
               name default.fact_daily_n0
@@ -266,7 +265,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns x,y,z
-              columns.comments 
               columns.types int:string:string
 #### A masked pattern was here ####
               name default.fact_daily_n0
@@ -312,7 +310,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns x,y,z
-              columns.comments 
               columns.types int:string:string
 #### A masked pattern was here ####
               name default.fact_daily_n0

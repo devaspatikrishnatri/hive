@@ -89,7 +89,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -234,7 +233,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -423,7 +421,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -568,7 +565,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -757,7 +753,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -902,7 +897,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -1089,7 +1083,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -1235,7 +1228,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -1381,7 +1373,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -1565,7 +1556,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -1710,7 +1700,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4
@@ -1856,7 +1845,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:int
 #### A masked pattern was here ####
               name default.a_n4

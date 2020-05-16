@@ -188,7 +188,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types string:string
 #### A masked pattern was here ####
               name default.alter_coltype_temp
@@ -240,7 +239,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types string:string
 #### A masked pattern was here ####
               name default.alter_coltype_temp
@@ -394,7 +392,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types string:string
 #### A masked pattern was here ####
               name default.alter_coltype_temp
@@ -446,7 +443,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types string:string
 #### A masked pattern was here ####
               name default.alter_coltype_temp
@@ -619,7 +615,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types string:string
 #### A masked pattern was here ####
               name default.alter_coltype_temp
@@ -669,7 +664,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types string:string
 #### A masked pattern was here ####
               name default.alter_coltype_temp
@@ -875,7 +869,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns intcol
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name pt.alterdynamic_part_table_temp
@@ -958,7 +951,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns intcol
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name pt.alterdynamic_part_table_temp

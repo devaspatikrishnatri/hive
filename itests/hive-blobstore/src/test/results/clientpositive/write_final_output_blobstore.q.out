@@ -83,7 +83,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key
-              columns.comments 
               columns.types int
 #### A masked pattern was here ####
               name default.hdfs_table
@@ -363,7 +362,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key
-              columns.comments 
               columns.types int
 #### A masked pattern was here ####
               name default.hdfs_table

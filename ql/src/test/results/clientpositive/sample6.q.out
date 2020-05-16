@@ -110,7 +110,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.srcbucket
@@ -759,7 +758,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.srcbucket
@@ -1170,7 +1168,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.srcbucket
@@ -1804,7 +1801,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.srcbucket
@@ -2320,7 +2316,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.srcbucket
@@ -2776,7 +2771,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.srcbucket2
@@ -3158,7 +3152,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.srcbucket2
@@ -3431,7 +3424,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,value
-              columns.comments 
               columns.types int:string
 #### A masked pattern was here ####
               name default.empty_bucket

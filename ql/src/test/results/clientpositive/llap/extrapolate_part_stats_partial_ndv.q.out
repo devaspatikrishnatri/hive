@@ -287,7 +287,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -333,7 +332,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -379,7 +377,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -425,7 +422,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -678,7 +674,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -724,7 +719,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -770,7 +764,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -816,7 +809,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt,zip
-              columns.comments 
               columns.types string:double:decimal(10,0):int
 #### A masked pattern was here ####
               name default.loc_orc_1d_n0
@@ -1119,7 +1111,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1166,7 +1157,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1213,7 +1203,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1260,7 +1249,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1307,7 +1295,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1354,7 +1341,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1401,7 +1387,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1448,7 +1433,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1495,7 +1479,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1542,7 +1525,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0
@@ -1589,7 +1571,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns state,locid,cnt
-              columns.comments 
               columns.types string:int:decimal(10,0)
 #### A masked pattern was here ####
               name default.loc_orc_2d_n0

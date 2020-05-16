@@ -2525,7 +2525,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns join_col,filter_col
-                    columns.comments 
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.my_dim

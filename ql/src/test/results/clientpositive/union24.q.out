@@ -143,7 +143,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src5_n3
@@ -385,7 +384,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src2_n6
@@ -433,7 +431,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src3_n2
@@ -481,7 +478,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src4_n0
@@ -693,7 +689,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src4_n0
@@ -741,7 +736,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src5_n3
@@ -953,7 +947,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src2_n6
@@ -1001,7 +994,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src3_n2
@@ -1203,7 +1195,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src4_n0
@@ -1251,7 +1242,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src5_n3
@@ -1535,7 +1525,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src2_n6
@@ -1583,7 +1572,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns key,count
-              columns.comments 
               columns.types string:bigint
 #### A masked pattern was here ####
               name default.src3_n2

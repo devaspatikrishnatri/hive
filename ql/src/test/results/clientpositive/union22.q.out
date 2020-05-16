@@ -122,7 +122,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns k0,k1,k2,k3,k4,k5
-                    columns.comments 
                     columns.types string:string:string:string:string:string
 #### A masked pattern was here ####
                     name default.dst_union22_delta
@@ -254,7 +253,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns k1,k2,k3,k4
-              columns.comments 
               columns.types string:string:string:string
 #### A masked pattern was here ####
               name default.dst_union22
@@ -302,7 +300,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns k0,k1,k2,k3,k4,k5
-              columns.comments 
               columns.types string:string:string:string:string:string
 #### A masked pattern was here ####
               name default.dst_union22_delta
@@ -502,7 +499,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns k0,k1,k2,k3,k4,k5
-              columns.comments 
               columns.types string:string:string:string:string:string
 #### A masked pattern was here ####
               name default.dst_union22_delta
@@ -676,7 +672,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns k1,k2,k3,k4
-              columns.comments 
               columns.types string:string:string:string
 #### A masked pattern was here ####
               name default.dst_union22
@@ -724,7 +719,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns k0,k1,k2,k3,k4,k5
-              columns.comments 
               columns.types string:string:string:string:string:string
 #### A masked pattern was here ####
               name default.dst_union22_delta

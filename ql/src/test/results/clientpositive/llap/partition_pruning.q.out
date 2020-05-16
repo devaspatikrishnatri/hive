@@ -123,7 +123,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns customer
-              columns.comments 
               columns.types int
 #### A masked pattern was here ####
               name default.daysales
@@ -205,7 +204,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns customer
-              columns.comments 
               columns.types int
 #### A masked pattern was here ####
               name default.daysales
@@ -251,7 +249,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns customer
-              columns.comments 
               columns.types int
 #### A masked pattern was here ####
               name default.daysales
@@ -333,7 +330,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns customer
-              columns.comments 
               columns.types int
 #### A masked pattern was here ####
               name default.daysales
@@ -379,7 +375,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns customer
-              columns.comments 
               columns.types int
 #### A masked pattern was here ####
               name default.daysales

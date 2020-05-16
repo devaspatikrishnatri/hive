@@ -119,7 +119,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns name
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.test2_n6
@@ -165,7 +164,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns name
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.test2_n6
@@ -211,7 +209,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns name
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.test2_n6
@@ -257,7 +254,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns name
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.test2_n6

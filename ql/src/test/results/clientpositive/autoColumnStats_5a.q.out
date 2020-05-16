@@ -110,7 +110,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns 
-              columns.comments 
               columns.types 
 #### A masked pattern was here ####
               name _dummy_database._dummy_table
@@ -536,7 +535,6 @@ STAGE PLANS:
               bucketing_version 2
               column.name.delimiter ,
               columns 
-              columns.comments 
               columns.types 
 #### A masked pattern was here ####
               name _dummy_database._dummy_table

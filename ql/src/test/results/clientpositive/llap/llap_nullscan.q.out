@@ -94,7 +94,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value,ds,hr
-                    columns.comments 
                     columns.types string:string:string:string
 #### A masked pattern was here ####
                     location hdfs://### HDFS PATH ###

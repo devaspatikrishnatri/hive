@@ -609,7 +609,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns key,val
-              columns.comments 
               columns.types string:string
 #### A masked pattern was here ####
               name default.t1_n61

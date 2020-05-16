@@ -74,7 +74,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns intcol
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.dynamic_part_table
@@ -154,7 +153,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns intcol
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.dynamic_part_table
@@ -236,7 +234,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns intcol
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.dynamic_part_table
@@ -283,7 +280,6 @@ STAGE PLANS:
               bucket_count -1
               column.name.delimiter ,
               columns intcol
-              columns.comments 
               columns.types string
 #### A masked pattern was here ####
               name default.dynamic_part_table

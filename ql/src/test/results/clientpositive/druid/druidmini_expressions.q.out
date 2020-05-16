@@ -244,7 +244,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns __time,cstring1,cstring2,cdouble,cfloat,ctinyint,csmallint,cint,cbigint,cboolean1,cboolean2,cintstring,cfloatstring,cdoublestring
-                    columns.comments 
                     columns.types timestamp with local time zone:string:string:double:float:tinyint:smallint:int:bigint:boolean:boolean:string:string:string
                     druid.datasource default.druid_table_alltypesorc
                     druid.fieldNames vc

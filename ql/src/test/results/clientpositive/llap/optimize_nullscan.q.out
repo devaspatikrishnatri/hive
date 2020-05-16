@@ -205,7 +205,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
@@ -285,7 +284,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -333,7 +331,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -381,7 +378,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -429,7 +425,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -601,7 +596,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
@@ -681,7 +675,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -730,7 +723,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -779,7 +771,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -828,7 +819,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -1029,7 +1019,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
@@ -1108,7 +1097,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -1156,7 +1144,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -1204,7 +1191,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -1252,7 +1238,6 @@ STAGE PLANS:
                     bucket_count -1
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.srcpart
@@ -1431,7 +1416,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
@@ -1503,7 +1487,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
@@ -1672,7 +1655,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
@@ -1745,7 +1727,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
@@ -1898,7 +1879,6 @@ STAGE PLANS:
                     bucketing_version 2
                     column.name.delimiter ,
                     columns key,value
-                    columns.comments 'default','default'
                     columns.types string:string
 #### A masked pattern was here ####
                     name default.src
