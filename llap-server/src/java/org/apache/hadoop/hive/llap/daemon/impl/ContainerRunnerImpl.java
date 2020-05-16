@@ -29,6 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -285,15 +286,11 @@ public class ContainerRunnerImpl extends CompositeService implements ContainerRu
           vertex.getVertexName(), request.getFragmentNumber(), request.getAttemptNumber(),
           vertex.getUser(), vertex, jobToken, fragmentIdString, tokenInfo, amNodeId, ugiPool);
 
-      String[] localDirs = fragmentInfo.getLocalDirs();
-      Preconditions.checkNotNull(localDirs);
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Dirs are: " + Arrays.toString(localDirs));
-      }
       // May need to setup localDir for re-localization, which is usually setup as Environment.PWD.
       // Used for re-localization, to add the user specified configuration (conf_pb_binary_stream)
 
-      Configuration callableConf = new Configuration(getConfig());
+      // Lazy create conf object, as it gets expensive in this codepath.
+      Supplier<Configuration> callableConf = () -> new Configuration(getConfig());
       final String llapHost;
       if (UserGroupInformation.isSecurityEnabled()) {
         // when kerberos is enabled always use FQDN
