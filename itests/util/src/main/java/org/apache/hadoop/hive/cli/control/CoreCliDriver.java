@@ -33,6 +33,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.internal.AssumptionViolatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -199,8 +200,10 @@ public class CoreCliDriver extends CliAdapter {
             : "\r\n" + result.getCapturedOutput();
         qt.failedDiff(result.getReturnCode(), fname, message);
       }
-    }
-    catch (Exception e) {
+    } catch (AssumptionViolatedException e) {
+      skipped = true;
+      throw e;
+    } catch (Exception e) {
       failed = true;
       qt.failed(e, fname, QTestUtil.DEBUG_HINT);
     } finally {

@@ -1,3 +1,4 @@
+--! qt:disabled:multi insert is falky
 --! qt:dataset:src
 set hive.stats.column.autogather=false;
 set hive.mapred.mode=nonstrict;

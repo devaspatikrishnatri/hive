@@ -33,6 +33,8 @@ import org.apache.hadoop.hive.ql.QTestMiniClusters.MiniClusterType;
 import org.apache.hadoop.hive.ql.processors.CommandProcessorException;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.internal.AssumptionViolatedException;
+
 /**
  * This is the TestPerformance Cli Driver for integrating performance regression tests as part of
  * the Hive Unit tests. Currently this includes support for : 1. Running explain plans for TPCDS
@@ -142,6 +144,8 @@ public class CorePerfCliDriver extends CliAdapter {
           : "\r\n" + result.getCapturedOutput();
         qt.failedDiff(result.getReturnCode(), fname, message);
       }
+    } catch (AssumptionViolatedException e) {
+      throw e;
     } catch (Exception e) {
       qt.failed(e, fname, QTestUtil.DEBUG_HINT);
     }
