@@ -110,7 +110,6 @@ STAGE PLANS:
                     numRows 9174
                     rawDataSize 0
                     serialization.ddl struct acidtbldefault { i32 a}
-                    serialization.format 1
                     serialization.lib org.apache.hadoop.hive.ql.io.orc.OrcSerde
                     totalSize 34811
                     transactional true
@@ -136,7 +135,6 @@ STAGE PLANS:
                       numRows 9174
                       rawDataSize 0
                       serialization.ddl struct acidtbldefault { i32 a}
-                      serialization.format 1
                       serialization.lib org.apache.hadoop.hive.ql.io.orc.OrcSerde
                       totalSize 34811
                       transactional true

@@ -91,7 +91,6 @@ STAGE PLANS:
               numRows 11
               rawDataSize 0
               serialization.ddl struct acid_vectorized_n1 { i32 a, string b}
-              serialization.format 1
               serialization.lib org.apache.hadoop.hive.serde2.NullStructSerDe
               totalSize 2602
               transactional true
@@ -116,7 +115,6 @@ STAGE PLANS:
                 numRows 11
                 rawDataSize 0
                 serialization.ddl struct acid_vectorized_n1 { i32 a, string b}
-                serialization.format 1
                 serialization.lib org.apache.hadoop.hive.ql.io.orc.OrcSerde
                 totalSize 2602
                 transactional true
