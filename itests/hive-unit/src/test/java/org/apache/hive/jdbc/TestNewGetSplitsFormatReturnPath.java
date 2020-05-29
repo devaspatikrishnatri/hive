@@ -19,6 +19,7 @@ package org.apache.hive.jdbc;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * TestNewGetSplitsFormat.
@@ -36,7 +37,14 @@ public class TestNewGetSplitsFormatReturnPath extends TestNewGetSplitsFormat {
 
   @Override
   @Ignore
+  @Test
   public void testMultipleBatchesOfComplexTypes() {
     // ToDo: FixMe
+  }
+
+  @Override
+  @Ignore("HIVE-23524 flaky")
+  @Test
+  public void testLlapInputFormatEndToEndWithMultipleBatches() {
   }
 }
