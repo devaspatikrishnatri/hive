@@ -161,12 +161,6 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
   static final protected char MAJOR_TYPE = 'a';
   static final protected char MINOR_TYPE = 'i';
 
-  // Transaction states
-  static final protected char TXN_ABORTED = 'a';
-  static final protected char TXN_OPEN = 'o';
-  //todo: make these like OperationType and remove above char constants
-  enum TxnStatus {OPEN, ABORTED, COMMITTED, UNKNOWN}
-
   // Lock states
   static final protected char LOCK_ACQUIRED = 'a';
   static final protected char LOCK_WAITING = 'w';
@@ -184,53 +178,6 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
   static private boolean doRetryOnConnPool = false;
 
   private List<TransactionalMetaStoreEventListener> transactionalListeners;
-
-  /**
-   * These are the valid values for TXN_COMPONENTS.TC_OPERATION_TYPE
-   */
-  enum OperationType {
-    SELECT('s'), INSERT('i'), UPDATE('u'), DELETE('d'), COMPACT('c');
-    private final char sqlConst;
-    OperationType(char sqlConst) {
-      this.sqlConst = sqlConst;
-    }
-    public String toString() {
-      return Character.toString(sqlConst);
-    }
-    public static OperationType fromString(char sqlConst) {
-      switch (sqlConst) {
-        case 's':
-          return SELECT;
-        case 'i':
-          return INSERT;
-        case 'u':
-          return UPDATE;
-        case 'd':
-          return DELETE;
-        case 'c':
-          return COMPACT;
-        default:
-          throw new IllegalArgumentException(quoteChar(sqlConst));
-      }
-    }
-    public static OperationType fromDataOperationType(DataOperationType dop) {
-      switch (dop) {
-        case SELECT:
-          return OperationType.SELECT;
-        case INSERT:
-          return OperationType.INSERT;
-        case UPDATE:
-          return OperationType.UPDATE;
-        case DELETE:
-          return OperationType.DELETE;
-        default:
-          throw new IllegalArgumentException("Unexpected value: " + dop);
-      }
-    }
-    char getSqlConst() {
-      return sqlConst;
-    }
-  }
 
   // Maximum number of open transactions that's allowed
   private static volatile int maxOpenTxns = 0;
@@ -343,9 +290,18 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     return conf;
   }
 
-  @Override
   @RetrySemantics.ReadOnly
   public GetOpenTxnsInfoResponse getOpenTxnsInfo() throws MetaException {
+    return getOpenTxnsList(true).toOpenTxnsInfoResponse();
+  }
+
+  @Override
+  @RetrySemantics.ReadOnly
+  public GetOpenTxnsResponse getOpenTxns() throws MetaException {
+    return getOpenTxnsList(false).toOpenTxnsResponse();
+  }
+
+  private OpenTxnList getOpenTxnsList(boolean infoFields) throws MetaException {
     try {
       // We need to figure out the current transaction number and the list of
       // open transactions.  To avoid needing a transaction on the underlying
@@ -377,120 +333,37 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
             "initialized, null record found in next_txn_id");
         }
         close(rs);
-        List<TxnInfo> txnInfos = new ArrayList<>();
-        //need the WHERE clause below to ensure consistent results with READ_COMMITTED
-        s = "SELECT \"TXN_ID\", \"TXN_STATE\", \"TXN_USER\", \"TXN_HOST\", \"TXN_STARTED\", \"TXN_LAST_HEARTBEAT\" FROM " +
-            "\"TXNS\" WHERE \"TXN_ID\" <= " + hwm;
-        LOG.debug("Going to execute query<" + s + ">");
-        rs = stmt.executeQuery(s);
-        while (rs.next()) {
-          char c = rs.getString(2).charAt(0);
-          TxnState state;
-          switch (c) {
-            case TXN_ABORTED:
-              state = TxnState.ABORTED;
-              break;
-
-            case TXN_OPEN:
-              state = TxnState.OPEN;
-              break;
-
-            default:
-              throw new MetaException("Unexpected transaction state " + c +
-                " found in txns table");
-          }
-          TxnInfo txnInfo = new TxnInfo(rs.getLong(1), state, rs.getString(3), rs.getString(4));
-          txnInfo.setStartedTime(rs.getLong(5));
-          txnInfo.setLastHeartbeatTime(rs.getLong(6));
-          txnInfos.add(txnInfo);
-        }
-        LOG.debug("Going to rollback");
-        dbConn.rollback();
-        return new GetOpenTxnsInfoResponse(hwm, txnInfos);
-      } catch (SQLException e) {
-        LOG.debug("Going to rollback");
-        rollbackDBConn(dbConn);
-        checkRetryable(dbConn, e, "getOpenTxnsInfo");
-        throw new MetaException("Unable to select from transaction database: " + getMessage(e)
-          + StringUtils.stringifyException(e));
-      } finally {
-        close(rs, stmt, dbConn);
-      }
-    } catch (RetryException e) {
-      return getOpenTxnsInfo();
-    }
-  }
-
-  @Override
-  @RetrySemantics.ReadOnly
-  public GetOpenTxnsResponse getOpenTxns() throws MetaException {
-    try {
-      // We need to figure out the current transaction number and the list of
-      // open transactions.  To avoid needing a transaction on the underlying
-      // database we'll look at the current transaction number first.  If it
-      // subsequently shows up in the open list that's ok.
-      Connection dbConn = null;
-      Statement stmt = null;
-      ResultSet rs = null;
-      try {
-        /**
-         * This runs at READ_COMMITTED for exactly the same reason as {@link #getOpenTxnsInfo()}
-         */
-        dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
-        stmt = dbConn.createStatement();
-        String s = "SELECT \"NTXN_NEXT\" - 1 FROM \"NEXT_TXN_ID\"";
-        LOG.debug("Going to execute query <" + s + ">");
-        rs = stmt.executeQuery(s);
-        if (!rs.next()) {
-          throw new MetaException("Transaction tables not properly " +
-            "initialized, no record found in next_txn_id");
-        }
-        long hwm = rs.getLong(1);
-        if (rs.wasNull()) {
-          throw new MetaException("Transaction tables not properly " +
-            "initialized, null record found in next_txn_id");
-        }
-        close(rs);
-        List<Long> openList = new ArrayList<>();
-        //need the WHERE clause below to ensure consistent results with READ_COMMITTED
-        s = "SELECT \"TXN_ID\", \"TXN_STATE\", \"TXN_TYPE\" FROM \"TXNS\" WHERE \"TXN_ID\" <= " + hwm + " ORDER BY \"TXN_ID\"";
-        LOG.debug("Going to execute query<" + s + ">");
-        rs = stmt.executeQuery(s);
-        long minOpenTxn = Long.MAX_VALUE;
-        BitSet abortedBits = new BitSet();
+        List<OpenTxn> txnInfos = new ArrayList<>();
+        // need the WHERE clause below to ensure consistent results with READ_COMMITTED
+        String txnsQuery = String.format(infoFields ? OpenTxn.OPEN_TXNS_INFO_QUERY : OpenTxn.OPEN_TXNS_QUERY, hwm);
+        LOG.debug("Going to execute query<" + txnsQuery + ">");
+        rs = stmt.executeQuery(txnsQuery);
         while (rs.next()) {
           long txnId = rs.getLong(1);
-          char txnState = rs.getString(2).charAt(0);
-          if (txnState == TXN_OPEN) {
-            minOpenTxn = Math.min(minOpenTxn, txnId);
+          TxnStatus state = TxnStatus.fromString(rs.getString(2));
+          OpenTxn txnInfo = new OpenTxn(txnId, state, TxnType.findByValue(rs.getInt(3)));
+          if (infoFields) {
+            txnInfo.setUser(rs.getString(4));
+            txnInfo.setHost(rs.getString(5));
+            txnInfo.setStartedTime(rs.getLong(6));
+            txnInfo.setLastHeartBeatTime(rs.getLong(7));
           }
-          TxnType txnType = TxnType.findByValue(rs.getInt(3));
-          if (txnType != TxnType.READ_ONLY) {
-            openList.add(txnId);
-            if (txnState == TXN_ABORTED) {
-              abortedBits.set(openList.size() - 1);
-            }
-          }
+          txnInfos.add(txnInfo);
         }
-        LOG.debug("Going to rollback");
         dbConn.rollback();
-        ByteBuffer byteBuffer = ByteBuffer.wrap(abortedBits.toByteArray());
-        GetOpenTxnsResponse otr = new GetOpenTxnsResponse(hwm, openList, byteBuffer);
-        if(minOpenTxn < Long.MAX_VALUE) {
-          otr.setMin_open_txn(minOpenTxn);
-        }
-        return otr;
+        LOG.debug("Got OpenTxnList with hwm: {} and openTxnList size {}.", hwm, txnInfos.size());
+        return new OpenTxnList(hwm, txnInfos);
       } catch (SQLException e) {
         LOG.debug("Going to rollback");
         rollbackDBConn(dbConn);
-        checkRetryable(dbConn, e, "getOpenTxns");
+        checkRetryable(dbConn, e, "getOpenTxnsList");
         throw new MetaException("Unable to select from transaction database, "
           + StringUtils.stringifyException(e));
       } finally {
         close(rs, stmt, dbConn);
       }
     } catch (RetryException e) {
-      return getOpenTxns();
+      return getOpenTxnsList(infoFields);
     }
   }
 
@@ -612,7 +485,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       String dbEpochString = getDbEpochString();
       for (long i = first; i < first + numTxns; i++) {
         txnIds.add(i);
-        rows.add(i + "," + quoteChar(TXN_OPEN) + "," + dbEpochString + "," + dbEpochString + ",?,?,"
+        rows.add(i + "," + TxnStatus.OPEN  + "," + dbEpochString + "," + dbEpochString + ",?,?,"
                      + txnType.getValue());
         paramsList.add(params);
       }
@@ -629,7 +502,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       // minOpenTxnId for every insert is not cost effective, so caching the value
       if (txnIds.size() == 1) {
         s = "INSERT INTO \"MIN_HISTORY_LEVEL\" (\"MHL_TXNID\", \"MHL_MIN_OPEN_TXNID\") " +
-                "SELECT ?, MIN(\"TXN_ID\") FROM \"TXNS\" WHERE \"TXN_STATE\" = " + quoteChar(TXN_OPEN);
+                "SELECT ?, MIN(\"TXN_ID\") FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN;
         LOG.debug("Going to execute query <" + s + ">");
         try (PreparedStatement pstmt = dbConn.prepareStatement(s)) {
           pstmt.setLong(1, txnIds.get(0));
@@ -637,7 +510,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         }
         LOG.info("Added entries to MIN_HISTORY_LEVEL with a single query for current txn: " + txnIds);
       } else {
-        s = "SELECT MIN(\"TXN_ID\") FROM \"TXNS\" WHERE \"TXN_STATE\" = " + quoteChar(TXN_OPEN);
+        s = "SELECT MIN(\"TXN_ID\") FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN;
         LOG.debug("Going to execute query <" + s + ">");
         long minOpenTxnId = -1L;
         try(ResultSet minOpenTxnIdRs = stmt.executeQuery(s)) {
@@ -800,7 +673,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           txnid = targetTxnIds.get(0);
         }
 
-        TxnRecord txnRecord = lockTransactionRecord(stmt, txnid, TXN_OPEN);
+        TxnRecord txnRecord = lockTransactionRecord(stmt, txnid, TxnStatus.OPEN);
         if (txnRecord == null) {
           TxnStatus status = findTxnState(txnid, stmt);
           if (status == TxnStatus.ABORTED) {
@@ -856,8 +729,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
 
         List<String> queries = new ArrayList<>();
         StringBuilder prefix = new StringBuilder("select \"TXN_ID\", \"TXN_TYPE\" from \"TXNS\" where \"TXN_STATE\" = ")
-          .append(quoteChar(TXN_OPEN)).append(" and \"TXN_TYPE\" != ").append(TxnType.READ_ONLY.getValue())
-          .append(" and ");
+            .append(TxnStatus.OPEN)
+            .append(" and \"TXN_TYPE\" != ").append(TxnType.READ_ONLY.getValue()).append(" and ");
 
         TxnUtils.buildQueryWithINClause(conf, queries, prefix, new StringBuilder(),
             txnIds, "\"TXN_ID\"", false, false);
@@ -1073,7 +946,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
          * should not normally run concurrently (for same txn) but could due to bugs in the client
          * which could then corrupt internal transaction manager state.  Also competes with abortTxn().
          */
-        TxnRecord txnRecord = lockTransactionRecord(stmt, txnid, TXN_OPEN);
+        TxnRecord txnRecord = lockTransactionRecord(stmt, txnid, TxnStatus.OPEN);
         if (txnRecord == null) {
           //if here, txn was not found (in expected state)
           TxnStatus actualTxnStatus = findTxnState(txnid, stmt);
@@ -1097,7 +970,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           rs = null;
         } else {
           conflictSQLSuffix = "FROM \"TXN_COMPONENTS\" WHERE \"TC_TXNID\"=" + txnid + " AND \"TC_OPERATION_TYPE\" IN(" +
-                  quoteChar(OperationType.UPDATE.sqlConst) + "," + quoteChar(OperationType.DELETE.sqlConst) + ")";
+                  OperationType.UPDATE + "," + OperationType.DELETE + ")";
           rs = stmt.executeQuery(sqlGenerator.addLimitClause(1,
                   "\"TC_OPERATION_TYPE\" " + conflictSQLSuffix));
         }
@@ -1160,10 +1033,10 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
                 //The same happens when Hive splits U=I+D early so it looks like 2 branches of a
                 //multi-insert stmt (an Insert and a Delete branch).  It also 'feels'
                 // un-serializable to allow concurrent deletes
-              " and (\"COMMITTED\".\"WS_OPERATION_TYPE\" IN(" + quoteChar(OperationType.UPDATE.sqlConst) +
-                ", " + quoteChar(OperationType.DELETE.sqlConst) +
-              ") AND \"CUR\".\"WS_OPERATION_TYPE\" IN(" + quoteChar(OperationType.UPDATE.sqlConst) + ", "
-                + quoteChar(OperationType.DELETE.sqlConst) + "))"));
+              " and (\"COMMITTED\".\"WS_OPERATION_TYPE\" IN(" + OperationType.UPDATE +
+                ", " + OperationType.DELETE +
+              ") AND \"CUR\".\"WS_OPERATION_TYPE\" IN(" + OperationType.UPDATE + ", "
+                + OperationType.DELETE + "))"));
           if (rs.next()) {
             //found a conflict
             String committedTxn = "[" + JavaUtils.txnIdToString(rs.getLong(1)) + "," + rs.getLong(2) + "]";
@@ -1212,7 +1085,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
               "' FROM \"TXN_COMPONENTS\" WHERE \"TC_TXNID\" = " + txnid +
               //we only track compactor activity in TXN_COMPONENTS to handle the case where the
               //compactor txn aborts - so don't bother copying it to COMPLETED_TXN_COMPONENTS
-              " AND \"TC_OPERATION_TYPE\" <> " + quoteChar(OperationType.COMPACT.sqlConst);
+              " AND \"TC_OPERATION_TYPE\" <> " + OperationType.COMPACT;
           LOG.debug("Going to execute insert <" + s + ">");
           int modCount = 0;
           if ((modCount = stmt.executeUpdate(s)) < 1) {
@@ -1930,7 +1803,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       }
       long highestAllocatedTxnId = rs.getLong(1);
       close(rs);
-      rs = stmt.executeQuery("SELECT MIN(\"TXN_ID\") FROM \"TXNS\" WHERE \"TXN_STATE\"=" + quoteChar(TXN_OPEN));
+      rs = stmt.executeQuery("SELECT MIN(\"TXN_ID\") FROM \"TXNS\" WHERE \"TXN_STATE\"=" + TxnStatus.OPEN);
       if(!rs.next()) {
         throw new IllegalStateException("Scalar query returned no rows?!?!!");
       }
@@ -2073,7 +1946,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       throws MetaException {
 
     if (LOG.isDebugEnabled()) {
-      LOG.debug("Acquiring lock for materialization rebuild with txnId={} for {}", txnId, Warehouse.getQualifiedName(dbName,tableName));
+      LOG.debug("Acquiring lock for materialization rebuild with txnId={} for {}",
+          JavaUtils.txnIdToString(txnId), TableName.getDbTable(dbName, tableName));
     }
 
     TxnStore.MutexAPI.LockHandle handle = null;
@@ -2147,7 +2021,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         if (rc < 1) {
           LOG.debug("Going to rollback");
           dbConn.rollback();
-          LOG.info("No lock found for rebuild of " + Warehouse.getQualifiedName(dbName, tableName) +
+          LOG.info("No lock found for rebuild of " + TableName.getDbTable(dbName, tableName) +
               " when trying to heartbeat");
           // It could not be renewed, return that information
           return false;
@@ -2160,7 +2034,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         LOG.debug("Going to rollback");
         rollbackDBConn(dbConn);
         checkRetryable(dbConn, e,
-            "heartbeatLockMaterializationRebuild(" + Warehouse.getQualifiedName(dbName, tableName) + ", " + txnId + ")");
+            "heartbeatLockMaterializationRebuild(" + TableName.getDbTable(dbName, tableName) + ", " + txnId + ")");
         throw new MetaException("Unable to heartbeat rebuild lock due to " +
             StringUtils.stringifyException(e));
       } finally {
@@ -2274,9 +2148,10 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
    * @throws SQLException
    * @throws MetaException
    */
-  private TxnRecord lockTransactionRecord(Statement stmt, long txnId, Character txnState) throws SQLException, MetaException {
+  private TxnRecord lockTransactionRecord(Statement stmt, long txnId, TxnStatus txnState)
+      throws SQLException, MetaException {
     String query = "SELECT \"TXN_TYPE\" FROM \"TXNS\" WHERE \"TXN_ID\" = " + txnId
-      + (txnState != null ? " and \"TXN_STATE\" = " + quoteChar(txnState) : "");
+      + (txnState != null ? " and \"TXN_STATE\" = " + txnState : "");
     try (ResultSet rs = stmt.executeQuery(sqlGenerator.addForUpdateClause(query))) {
       return rs.next() ? new TxnRecord(rs.getInt(1)) : null;
     }
@@ -2299,7 +2174,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
    * 2. We use S4U on the relevant TXNS row to block any concurrent abort/commit/etc operations
    * @see #checkLockWithRetry(Connection, long, long)
    */
-  private ConnectionLockIdPair enqueueLockWithRetry(LockRequest rqst) throws NoSuchTxnException, TxnAbortedException, MetaException {
+  private ConnectionLockIdPair enqueueLockWithRetry(LockRequest rqst)
+      throws NoSuchTxnException, TxnAbortedException, MetaException {
     boolean success = false;
     Connection dbConn = null;
     try {
@@ -2314,7 +2190,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         stmt = dbConn.createStatement();
         if (isValidTxn(txnid)) {
           //this also ensures that txn is still there in expected state
-          TxnRecord txnRecord = lockTransactionRecord(stmt, txnid, TXN_OPEN);
+          TxnRecord txnRecord = lockTransactionRecord(stmt, txnid, TxnStatus.OPEN);
           if (txnRecord == null) {
             ensureValidTxn(dbConn, txnid, stmt);
             shouldNeverHappen(txnid);
@@ -2414,7 +2290,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
             rows.add(txnid + ", ?, " +
                     (tblName == null ? "null" : "?") + ", " +
                     (partName == null ? "null" : "?")+ "," +
-                    quoteString(OperationType.fromDataOperationType(lc.getOperationType()).toString())+ "," +
+                    OperationType.fromDataOperationType(lc.getOperationType()).toString()+ "," +
                     (writeId == null ? "null" : writeId));
             List<String> params = new ArrayList<>();
             params.add(dbName);
@@ -2572,12 +2448,12 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
    * The clients that operate in blocking mode, can't heartbeat a lock until the lock is acquired.
    * We should make CheckLockRequest include timestamp or last request to skip unnecessary heartbeats. Thrift change.
    *
-   * {@link #checkLock(java.sql.Connection, long)}  must run at SERIALIZABLE (make sure some lock we are checking
+   * {@link #checkLock(java.sql.Connection, long, long)}  must run at SERIALIZABLE (make sure some lock we are checking
    * against doesn't move from W to A in another txn) but this method can heartbeat in
    * separate txn at READ_COMMITTED.
    *
    * Retry-by-caller note:
-   * Retryable because {@link #checkLock(Connection, long)} is
+   * Retryable because {@link #checkLock(Connection, long, long)} is
    */
   @Override
   @RetrySemantics.SafeToRetry
@@ -2877,7 +2753,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         }
         TxnUtils.buildQueryWithINClause(conf, queries,
           new StringBuilder("UPDATE \"TXNS\" SET \"TXN_LAST_HEARTBEAT\" = " + getDbEpochString() +
-            " WHERE \"TXN_STATE\" = " + quoteChar(TXN_OPEN) + " AND "),
+            " WHERE \"TXN_STATE\" = " + TxnStatus.OPEN  + " AND "),
           new StringBuilder(""), txnIds, "\"TXN_ID\"", true, false);
         int updateCnt = 0;
         for (String query : queries) {
@@ -3203,7 +3079,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         lockInternal();
         dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
         stmt = dbConn.createStatement();
-        TxnRecord txnRecord = lockTransactionRecord(stmt, rqst.getTxnid(), TXN_OPEN);
+        TxnRecord txnRecord = lockTransactionRecord(stmt, rqst.getTxnid(), TxnStatus.OPEN);
         if (txnRecord == null) {
           //ensures txn is still there and in expected state
           ensureValidTxn(dbConn, rqst.getTxnid(), stmt);
@@ -3219,7 +3095,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         List<String> rows = new ArrayList<>();
         List<List<String>> paramsList = new ArrayList<>();
         for (String partName : rqst.getPartitionnames()) {
-          rows.add(rqst.getTxnid() + ",?,?,?," + quoteChar(ot.sqlConst) + "," + writeId);
+          rows.add(rqst.getTxnid() + ",?,?,?," + ot + "," + writeId);
           List<String> params = new ArrayList<>();
           params.add(normalizeCase(rqst.getDbname()));
           params.add(normalizeCase(rqst.getTablename()));
@@ -4190,8 +4066,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       StringBuilder prefix = new StringBuilder();
       StringBuilder suffix = new StringBuilder();
 
-      prefix.append("UPDATE \"TXNS\" SET \"TXN_STATE\" = " + quoteChar(TXN_ABORTED) +
-        " WHERE \"TXN_STATE\" = " + quoteChar(TXN_OPEN) + " AND ");
+      prefix.append("UPDATE \"TXNS\" SET \"TXN_STATE\" = " + TxnStatus.ABORTED +
+        " WHERE \"TXN_STATE\" = " + TxnStatus.OPEN + " AND ");
       if(checkHeartbeat) {
         suffix.append(" AND \"TXN_LAST_HEARTBEAT\" < ").append(getDbEpochString()).append("-").append(timeout);
       }
@@ -4513,7 +4389,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     try {
       stmt = dbConn.createStatement();
       String s = "UPDATE \"TXNS\" SET \"TXN_LAST_HEARTBEAT\" = " + getDbEpochString() +
-        " WHERE \"TXN_ID\" = " + txnid + " AND \"TXN_STATE\" = '" + TXN_OPEN + "'";
+        " WHERE \"TXN_ID\" = " + txnid + " AND \"TXN_STATE\" = " + TxnStatus.OPEN;
       LOG.debug("Going to execute update <" + s + ">");
       int rc = stmt.executeUpdate(s);
       if (rc < 1) {
@@ -4551,13 +4427,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         // could also check WRITE_SET but that seems overkill
         return TxnStatus.UNKNOWN;
       }
-      char txnState = rs.getString(1).charAt(0);
-      if (txnState == TXN_ABORTED) {
-        return TxnStatus.ABORTED;
-      }
-      assert txnState == TXN_OPEN : "we found it in TXNS but it's not ABORTED, so must be OPEN";
+      return TxnStatus.fromString(rs.getString(1));
     }
-    return TxnStatus.OPEN;
   }
 
   /**
@@ -4572,8 +4443,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
 
     // Get the count of txns from the given list that are in open state and not read-only.
     // If the returned count is same as the input number of txns, then all txns are in open state and not read-only.
-    prefix.append("SELECT COUNT(*) FROM \"TXNS\" WHERE \"TXN_STATE\" = '" + TXN_OPEN
-        + "' AND \"TXN_TYPE\" != " + TxnType.READ_ONLY.getValue() + " AND ");
+    prefix.append("SELECT COUNT(*) FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN
+        + " AND \"TXN_TYPE\" != " + TxnType.READ_ONLY.getValue() + " AND ");
 
     TxnUtils.buildQueryWithINClause(conf, queries, prefix, new StringBuilder(),
         txnIds, "\"TXN_ID\"", false, false);
@@ -4610,10 +4481,10 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       try (ResultSet rs = stmt.executeQuery(query)) {
         while (rs.next()) {
           long txnId = rs.getLong(1);
-          char txnState = rs.getString(2).charAt(0);
+          TxnStatus txnState = TxnStatus.fromString(rs.getString(2));
           TxnType txnType = TxnType.findByValue(rs.getInt(3));
 
-          if (txnState != TXN_OPEN) {
+          if (txnState != TxnStatus.OPEN) {
             txnInfo.append("{").append(txnId).append(",").append(txnState).append("}");
           } else if (txnType == TxnType.READ_ONLY) {
             txnInfo.append("{").append(txnId).append(",read-only}");
@@ -4697,7 +4568,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           throw new NoSuchTxnException("No such transaction " + JavaUtils.txnIdToString(txnid));
         }
       }
-      if (rs.getString(1).charAt(0) == TXN_ABORTED) {
+      if (TxnStatus.fromString(rs.getString(1)) == TxnStatus.ABORTED) {
         LOG.debug("Going to rollback");
         rollbackDBConn(dbConn);
         throw new TxnAbortedException("Transaction " + JavaUtils.txnIdToString(txnid)
@@ -4846,8 +4717,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       timeOutLocks(dbConn);
       while(true) {
         stmt = dbConn.createStatement();
-        String s = " \"TXN_ID\" FROM \"TXNS\" WHERE \"TXN_STATE\" = '" + TXN_OPEN +
-            "' AND \"TXN_LAST_HEARTBEAT\" <  " + getDbEpochString() + "-" + timeout +
+        String s = " \"TXN_ID\" FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN  +
+            " AND \"TXN_LAST_HEARTBEAT\" <  " + getDbEpochString() + "-" + timeout +
             " AND \"TXN_TYPE\" != " + TxnType.REPL_CREATED.getValue();
         //safety valve for extreme cases
         s = sqlGenerator.addLimitClause(10 * TIMED_OUT_TXN_ABORT_BATCH_SIZE, s);
@@ -4907,7 +4778,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       try {
         dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
         stmt = dbConn.createStatement();
-        String s = "SELECT COUNT(*) FROM \"TXNS\" WHERE \"TXN_STATE\" = '" + TXN_OPEN + "'";
+        String s = "SELECT COUNT(*) FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN;
         LOG.debug("Going to execute query <" + s + ">");
         rs = stmt.executeQuery(s);
         if (!rs.next()) {
@@ -5286,6 +5157,6 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
       throw new UnsupportedOperationException();
     }
-  };
+  }
 
 }
