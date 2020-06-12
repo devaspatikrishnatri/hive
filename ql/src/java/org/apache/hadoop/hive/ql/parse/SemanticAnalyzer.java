@@ -13405,7 +13405,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
   private Map<String, String> validateAndAddDefaultProperties(
       Map<String, String> tblProp, boolean isExt, StorageFormat storageFormat,
       String qualifiedTableName, List<Order> sortCols, boolean isMaterialization,
-      boolean isTemporaryTable, boolean isTransactional) throws SemanticException {
+      boolean isTemporaryTable, boolean isTransactional, boolean isManaged) throws SemanticException {
     Map<String, String> retValue;
     if (tblProp == null) {
       retValue = new HashMap<String, String>();
@@ -13440,6 +13440,12 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     boolean makeInsertOnly = !isTemporaryTable && HiveConf.getBoolVar(
         conf, ConfVars.HIVE_CREATE_TABLES_AS_INSERT_ONLY);
     boolean makeAcid = !isTemporaryTable && makeAcid();
+    // if not specify managed table and create.table.as.external is true
+    // ignore makeInsertOnly and makeAcid.
+    if (!isManaged && HiveConf.getBoolVar(conf, ConfVars.CREATE_TABLE_AS_EXTERNAL)) {
+      makeInsertOnly = false;
+      makeAcid = false;
+    }
     if ((makeInsertOnly || makeAcid || isTransactional)
         && !isExt  && !isMaterialization && StringUtils.isBlank(storageFormat.getStorageHandler())
         //don't overwrite user choice if transactional attribute is explicitly set
@@ -13549,6 +13555,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     boolean ifNotExists = false;
     boolean isExt = false;
     boolean isTemporary = false;
+    boolean isManaged = false;
     boolean isMaterialization = false;
     boolean isTransactional = false;
     ASTNode selectStmt = null;
@@ -13587,6 +13594,9 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         break;
       case HiveParser.KW_EXTERNAL:
         isExt = true;
+        break;
+      case HiveParser.KW_MANAGED:
+        isManaged = true;
         break;
       case HiveParser.KW_TEMPORARY:
         isTemporary = true;
@@ -13765,7 +13775,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
             "Partition columns can only declared using their name and types in regular CREATE TABLE statements");
       }
       tblProps = validateAndAddDefaultProperties(
-          tblProps, isExt, storageFormat, dbDotTab, sortCols, isMaterialization, isTemporary, isTransactional);
+          tblProps, isExt, storageFormat, dbDotTab, sortCols, isMaterialization, isTemporary,
+          isTransactional, isManaged);
       addDbAndTabToOutputs(new String[] {qualifiedTabName.getDb(), qualifiedTabName.getTable()},
           TableType.MANAGED_TABLE, isTemporary, tblProps);
 
@@ -13793,7 +13804,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
             qualifiedTabName.getTable() + " cannot be declared transactional because it's an external table");
       }
       tblProps = validateAndAddDefaultProperties(tblProps, isExt, storageFormat, dbDotTab, sortCols, isMaterialization,
-          isTemporary, isTransactional);
+          isTemporary, isTransactional, isManaged);
       addDbAndTabToOutputs(new String[] {qualifiedTabName.getDb(), qualifiedTabName.getTable()},
           TableType.MANAGED_TABLE, false, tblProps);
 
@@ -13816,7 +13827,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     case CTLT: // create table like <tbl_name>
 
       tblProps = validateAndAddDefaultProperties(
-          tblProps, isExt, storageFormat, dbDotTab, sortCols, isMaterialization, isTemporary, isTransactional);
+          tblProps, isExt, storageFormat, dbDotTab, sortCols, isMaterialization, isTemporary,
+          isTransactional, isManaged);
       addDbAndTabToOutputs(new String[] {qualifiedTabName.getDb(), qualifiedTabName.getTable()},
           TableType.MANAGED_TABLE, isTemporary, tblProps);
 
@@ -13901,7 +13913,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       }
 
       tblProps = validateAndAddDefaultProperties(
-          tblProps, isExt, storageFormat, dbDotTab, sortCols, isMaterialization, isTemporary, isTransactional);
+          tblProps, isExt, storageFormat, dbDotTab, sortCols, isMaterialization, isTemporary,
+          isTransactional, isManaged);
       addDbAndTabToOutputs(new String[] {qualifiedTabName.getDb(), qualifiedTabName.getTable()},
           TableType.MANAGED_TABLE, isTemporary, tblProps);
       tableDesc = new CreateTableDesc(qualifiedTabName, isExt, isTemporary, cols,
