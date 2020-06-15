@@ -37,6 +37,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -1446,6 +1447,9 @@ public class HiveMetaStore extends ThriftHiveMetastore {
         db.setManagedLocationUri(null);
       }else{
         db.setLocationUri(dbExtPath.toString());
+        if (dbMgdPath != null) {
+          db.setManagedLocationUri(dbMgdPath.toString());
+        }
       }
       if (db.getOwnerName() == null){
         try {
@@ -1498,10 +1502,13 @@ public class HiveMetaStore extends ThriftHiveMetastore {
               });
               if (madeManagedDir) {
                 LOG.info("Created database path in managed directory " + dbMgdPath);
+              } else {
+                throw new MetaException(
+                    "Unable to create database managed directory " + dbMgdPath + ", failed to create database " + db.getName());
               }
             } catch (IOException | InterruptedException e) {
               throw new MetaException(
-                  "Unable to create database managed directory " + dbMgdPath + ", failed to create database " + db.getName());
+                  "Unable to create database managed directory " + dbMgdPath + ", failed to create database " + db.getName() + ":" + e.getMessage());
             }
           }
           if (dbExtPath != null) {
@@ -1519,10 +1526,10 @@ public class HiveMetaStore extends ThriftHiveMetastore {
                 LOG.info("Created database path in external directory " + dbExtPath);
               } else {
                 LOG.warn("Failed to create external path " + dbExtPath + " for database " + db.getName() + ". This may result in access not being allowed if the "
-                    + "StorageBasedAuthorizationProvider is enabled ");
+                    + "StorageBasedAuthorizationProvider is enabled");
               }
             } catch (IOException | InterruptedException | UndeclaredThrowableException e) {
-              LOG.warn("Failed to create external path " + dbExtPath + " for database " + db.getName() + ". This may result in access not being allowed if the "
+              throw new MetaException("Failed to create external path " + dbExtPath + " for database " + db.getName() + ". This may result in access not being allowed if the "
                   + "StorageBasedAuthorizationProvider is enabled: " + e.getMessage());
             }
           } else {
@@ -1917,6 +1924,15 @@ public class HiveMetaStore extends ThriftHiveMetastore {
           if (db.getCatalogName() != null && !db.getCatalogName().
               equals(Warehouse.DEFAULT_CATALOG_NAME)) {
             try {
+              if (db.getManagedLocationUri() != null) {
+                wh.deleteDir(new Path(db.getManagedLocationUri()), true, db);
+              }
+            } catch (Exception e) {
+              LOG.error("Failed to delete database directory: " + db.getManagedLocationUri() +
+                  " " + e.getMessage());
+            }
+            // Delete the data in the database's location only if it is a legacy db path?
+            try {
               wh.deleteDir(new Path(db.getLocationUri()), true, db);
             } catch (Exception e) {
               LOG.error("Failed to delete database directory: " + db.getLocationUri() +
@@ -1924,6 +1940,22 @@ public class HiveMetaStore extends ThriftHiveMetastore {
             }
             // it is not a terrible thing even if the data is not deleted
           } else {
+            try {
+              if (db.getManagedLocationUri() != null) {
+                final Database dbFinal = db;
+                Boolean deleted = UserGroupInformation.getLoginUser().doAs(new PrivilegedExceptionAction<Boolean>() {
+                  @Override public Boolean run() throws MetaException {
+                    return wh.deleteDir(new Path(dbFinal.getManagedLocationUri()), true, dbFinal);
+                  }
+                });
+                if (!deleted) {
+                  LOG.error("Failed to delete database folder " + db.getManagedLocationUri());
+                }
+              }
+            } catch (IOException | InterruptedException | UndeclaredThrowableException e) {
+              LOG.error("Might have failed to delete the database folder for database: " + db.getManagedLocationUri() + " " + e
+                  .getMessage());
+            }
             try {
               final Database dbFinal = db;
               Boolean deleted = UserGroupInformation.getLoginUser().doAs(new PrivilegedExceptionAction<Boolean>() {

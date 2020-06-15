@@ -140,6 +140,8 @@ public class TestDatabases extends MetaStoreClientTest {
     client.dropDatabase(database.getName());
     Assert.assertFalse("The directory should be removed",
         metaStore.isPathExists(new Path(database.getLocationUri())));
+    Assert.assertFalse("The directory should be removed",
+        metaStore.isPathExists(new Path(database.getManagedLocationUri())));
     try {
       client.getDatabase(database.getName());
       Assert.fail("Expected a NoSuchObjectException to be thrown");
