@@ -9234,7 +9234,7 @@ inline std::ostream& operator<<(std::ostream& out, const CompactionRequest& obj)
 }
 
 typedef struct _CompactionInfoStruct__isset {
-  _CompactionInfoStruct__isset() : partitionname(false), runas(false), properties(false), toomanyaborts(false), state(false), workerId(false), start(false), highestWriteId(false), errorMessage(false), hasoldabort(false) {}
+  _CompactionInfoStruct__isset() : partitionname(false), runas(false), properties(false), toomanyaborts(false), state(false), workerId(false), start(false), highestWriteId(false), errorMessage(false), hasoldabort(false), enqueueTime(false) {}
   bool partitionname :1;
   bool runas :1;
   bool properties :1;
@@ -9245,6 +9245,7 @@ typedef struct _CompactionInfoStruct__isset {
   bool highestWriteId :1;
   bool errorMessage :1;
   bool hasoldabort :1;
+  bool enqueueTime :1;
 } _CompactionInfoStruct__isset;
 
 class CompactionInfoStruct {
@@ -9252,7 +9253,7 @@ class CompactionInfoStruct {
 
   CompactionInfoStruct(const CompactionInfoStruct&);
   CompactionInfoStruct& operator=(const CompactionInfoStruct&);
-  CompactionInfoStruct() : id(0), dbname(), tablename(), partitionname(), type((CompactionType::type)0), runas(), properties(), toomanyaborts(0), state(), workerId(), start(0), highestWriteId(0), errorMessage(), hasoldabort(0) {
+  CompactionInfoStruct() : id(0), dbname(), tablename(), partitionname(), type((CompactionType::type)0), runas(), properties(), toomanyaborts(0), state(), workerId(), start(0), highestWriteId(0), errorMessage(), hasoldabort(0), enqueueTime(0) {
   }
 
   virtual ~CompactionInfoStruct() throw();
@@ -9270,6 +9271,7 @@ class CompactionInfoStruct {
   int64_t highestWriteId;
   std::string errorMessage;
   bool hasoldabort;
+  int64_t enqueueTime;
 
   _CompactionInfoStruct__isset __isset;
 
@@ -9300,6 +9302,8 @@ class CompactionInfoStruct {
   void __set_errorMessage(const std::string& val);
 
   void __set_hasoldabort(const bool val);
+
+  void __set_enqueueTime(const int64_t val);
 
   bool operator == (const CompactionInfoStruct & rhs) const
   {
@@ -9350,6 +9354,10 @@ class CompactionInfoStruct {
     if (__isset.hasoldabort != rhs.__isset.hasoldabort)
       return false;
     else if (__isset.hasoldabort && !(hasoldabort == rhs.hasoldabort))
+      return false;
+    if (__isset.enqueueTime != rhs.__isset.enqueueTime)
+      return false;
+    else if (__isset.enqueueTime && !(enqueueTime == rhs.enqueueTime))
       return false;
     return true;
   }
@@ -9507,7 +9515,7 @@ inline std::ostream& operator<<(std::ostream& out, const ShowCompactRequest& obj
 }
 
 typedef struct _ShowCompactResponseElement__isset {
-  _ShowCompactResponseElement__isset() : partitionname(false), workerid(false), start(false), runAs(false), hightestTxnId(false), metaInfo(false), endTime(false), hadoopJobId(true), id(false), errorMessage(false) {}
+  _ShowCompactResponseElement__isset() : partitionname(false), workerid(false), start(false), runAs(false), hightestTxnId(false), metaInfo(false), endTime(false), hadoopJobId(true), id(false), errorMessage(false), enqueueTime(false) {}
   bool partitionname :1;
   bool workerid :1;
   bool start :1;
@@ -9518,6 +9526,7 @@ typedef struct _ShowCompactResponseElement__isset {
   bool hadoopJobId :1;
   bool id :1;
   bool errorMessage :1;
+  bool enqueueTime :1;
 } _ShowCompactResponseElement__isset;
 
 class ShowCompactResponseElement {
@@ -9525,7 +9534,7 @@ class ShowCompactResponseElement {
 
   ShowCompactResponseElement(const ShowCompactResponseElement&);
   ShowCompactResponseElement& operator=(const ShowCompactResponseElement&);
-  ShowCompactResponseElement() : dbname(), tablename(), partitionname(), type((CompactionType::type)0), state(), workerid(), start(0), runAs(), hightestTxnId(0), metaInfo(), endTime(0), hadoopJobId("None"), id(0), errorMessage() {
+  ShowCompactResponseElement() : dbname(), tablename(), partitionname(), type((CompactionType::type)0), state(), workerid(), start(0), runAs(), hightestTxnId(0), metaInfo(), endTime(0), hadoopJobId("None"), id(0), errorMessage(), enqueueTime(0) {
   }
 
   virtual ~ShowCompactResponseElement() throw();
@@ -9543,6 +9552,7 @@ class ShowCompactResponseElement {
   std::string hadoopJobId;
   int64_t id;
   std::string errorMessage;
+  int64_t enqueueTime;
 
   _ShowCompactResponseElement__isset __isset;
 
@@ -9573,6 +9583,8 @@ class ShowCompactResponseElement {
   void __set_id(const int64_t val);
 
   void __set_errorMessage(const std::string& val);
+
+  void __set_enqueueTime(const int64_t val);
 
   bool operator == (const ShowCompactResponseElement & rhs) const
   {
@@ -9623,6 +9635,10 @@ class ShowCompactResponseElement {
     if (__isset.errorMessage != rhs.__isset.errorMessage)
       return false;
     else if (__isset.errorMessage && !(errorMessage == rhs.errorMessage))
+      return false;
+    if (__isset.enqueueTime != rhs.__isset.enqueueTime)
+      return false;
+    else if (__isset.enqueueTime && !(enqueueTime == rhs.enqueueTime))
       return false;
     return true;
   }

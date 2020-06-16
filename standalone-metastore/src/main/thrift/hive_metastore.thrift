@@ -29,7 +29,7 @@ namespace php metastore
 namespace cpp Apache.Hadoop.Hive
 
 const string DDL_TIME = "transient_lastDdlTime"
-const string HMS_API = "1.2.4"
+const string HMS_API = "1.2.8"
 const byte ACCESSTYPE_NONE       = 1;
 const byte ACCESSTYPE_READONLY   = 2;
 const byte ACCESSTYPE_WRITEONLY  = 4;
@@ -1146,6 +1146,7 @@ struct CompactionInfoStruct {
     12: optional i64 highestWriteId
     13: optional string errorMessage
     14: optional bool hasoldabort
+    15: optional i64 enqueueTime
 }
 
 struct OptionalCompactionInfoStruct {
@@ -1176,6 +1177,7 @@ struct ShowCompactResponseElement {
     12: optional string hadoopJobId = "None",
     13: optional i64 id,
     14: optional string errorMessage,
+    15: optional i64 enqueueTime,
 }
 
 struct ShowCompactResponse {

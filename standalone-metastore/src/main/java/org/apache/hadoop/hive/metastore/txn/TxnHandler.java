@@ -96,6 +96,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import static org.apache.hadoop.hive.metastore.DatabaseProduct.MYSQL;
 import static org.apache.hadoop.hive.metastore.txn.TxnDbUtil.executeQueriesInBatch;
+import static org.apache.hadoop.hive.metastore.txn.TxnDbUtil.getEpochFn;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.getDefaultCatalog;
 import static org.apache.hadoop.hive.metastore.utils.StringUtils.normalizeIdentifier;
 
@@ -510,8 +511,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
 
       for (long i = first; i < first + numTxns; i++) {
         txnIds.add(i);
-        rows.add(i + "," + TxnStatus.OPEN  + "," + TxnDbUtil.getEpochFn(dbProduct)  + ","
-                 + TxnDbUtil.getEpochFn(dbProduct)  + ",?,?," + txnType.getValue());
+        rows.add(i + "," + TxnStatus.OPEN + "," + getEpochFn(dbProduct) + ","
+                + getEpochFn(dbProduct) + ",?,?," + txnType.getValue());
         paramsList.add(params);
       }
       insertPreparedStmts = sqlGenerator.createInsertValuesPreparedStmt(dbConn,
@@ -2437,7 +2438,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
 
   private long insertHiveLocksWithTemporaryExtLockId(long txnid, Connection dbConn, LockRequest rqst) throws MetaException, SQLException {
 
-    String lastHB = isValidTxn(txnid) ? "0" : TxnDbUtil.getEpochFn(dbProduct);
+    String lastHB = isValidTxn(txnid) ? "0" : getEpochFn(dbProduct);
     String insertLocksQuery = String.format(HIVE_LOCKS_INSERT_QRY, lastHB);
     int batchSize = MetastoreConf.getIntVar(conf, ConfVars.DIRECT_SQL_MAX_ELEMENTS_VALUES_CLAUSE);
     long intLockId = 0;
@@ -2839,7 +2840,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           txnIds.add(txn);
         }
         TxnUtils.buildQueryWithINClause(conf, queries,
-          new StringBuilder("UPDATE \"TXNS\" SET \"TXN_LAST_HEARTBEAT\" = " + TxnDbUtil.getEpochFn(dbProduct) +
+          new StringBuilder("UPDATE \"TXNS\" SET \"TXN_LAST_HEARTBEAT\" = " + getEpochFn(dbProduct) +
             " WHERE \"TXN_STATE\" = " + TxnStatus.OPEN + " AND "),
           new StringBuilder(""), txnIds, "\"TXN_ID\"", true, false);
         int updateCnt = 0;
@@ -2989,7 +2990,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           "\"CQ_TABLE\", ");
         String partName = rqst.getPartitionname();
         if (partName != null) buf.append("\"CQ_PARTITION\", ");
-        buf.append("\"CQ_STATE\", \"CQ_TYPE\"");
+        buf.append("\"CQ_STATE\", \"CQ_TYPE\", \"CQ_ENQUEUE_TIME\"");
         if (rqst.getProperties() != null) {
           buf.append(", \"CQ_TBLPROPERTIES\"");
         }
@@ -3023,7 +3024,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
             dbConn.rollback();
             throw new MetaException("Unexpected compaction type " + rqst.getType().toString());
         }
-        buf.append("'");
+        buf.append("',");
+        buf.append(getEpochFn(dbProduct));
         if (rqst.getProperties() != null) {
           buf.append(", ?");
           params.add(new StringableMap(rqst.getProperties()).toString());
@@ -3084,10 +3086,12 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         String s = "SELECT \"CQ_DATABASE\", \"CQ_TABLE\", \"CQ_PARTITION\", " +
               "\"CQ_STATE\", \"CQ_TYPE\", \"CQ_WORKER_ID\", " +
           //-1 because 'null' literal doesn't work for all DBs...
-          "\"CQ_START\", -1 \"CC_END\", \"CQ_RUN_AS\", \"CQ_HADOOP_JOB_ID\", \"CQ_ID\", \"CQ_ERROR_MESSAGE\" " +
+          "\"CQ_START\", -1 \"CC_END\", \"CQ_RUN_AS\", \"CQ_HADOOP_JOB_ID\", \"CQ_ID\", \"CQ_ERROR_MESSAGE\", " +
+          "\"CQ_ENQUEUE_TIME\" " +
           "FROM \"COMPACTION_QUEUE\" UNION ALL " +
           "SELECT \"CC_DATABASE\", \"CC_TABLE\", \"CC_PARTITION\", \"CC_STATE\", \"CC_TYPE\", \"CC_WORKER_ID\", " +
-          "\"CC_START\", \"CC_END\", \"CC_RUN_AS\", \"CC_HADOOP_JOB_ID\", \"CC_ID\", \"CC_ERROR_MESSAGE\" " +
+          "\"CC_START\", \"CC_END\", \"CC_RUN_AS\", \"CC_HADOOP_JOB_ID\", \"CC_ID\", \"CC_ERROR_MESSAGE\", " +
+          "\"CC_ENQUEUE_TIME\" " +
           "FROM \"COMPLETED_COMPACTIONS\""; //todo: sort by cq_id?
         //what I want is order by cc_end desc, cc_start asc
         // (but derby has a bug https://issues.apache.org/jira/browse/DERBY-6013)
@@ -3121,6 +3125,10 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           e.setHadoopJobId(rs.getString(10));
           e.setId(rs.getLong(11));
           e.setErrorMessage(rs.getString(12));
+          long enqueueTime = rs.getLong(13);
+          if (!rs.wasNull()) {
+            e.setEnqueueTime(enqueueTime);
+          }
           response.addToCompacts(e);
         }
         LOG.debug("Going to rollback");
@@ -4078,7 +4086,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
               .append(" WHERE \"TXN_STATE\" = ").append(TxnStatus.OPEN).append(" AND ");
       if (checkHeartbeat) {
         suffix.append(" AND \"TXN_LAST_HEARTBEAT\" < ")
-                .append(TxnDbUtil.getEpochFn(dbProduct)).append("-").append(timeout);
+                .append(getEpochFn(dbProduct)).append("-").append(timeout);
       }
       TxnUtils.buildQueryWithINClause(conf, queries, prefix, suffix, txnids, "\"TXN_ID\"", true, false);
       int numUpdateQueries = queries.size();
@@ -4307,8 +4315,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     long extLockId = locksBeingChecked.get(0).extLockId;
     String s = "UPDATE \"HIVE_LOCKS\" SET \"HL_LOCK_STATE\" = '" + LOCK_ACQUIRED + "', " +
       //if lock is part of txn, heartbeat info is in txn record
-      "\"HL_LAST_HEARTBEAT\" = " + (isValidTxn(txnId) ? 0 : TxnDbUtil.getEpochFn(dbProduct)) +
-      ",\"HL_ACQUIRED_AT\" = " + TxnDbUtil.getEpochFn(dbProduct) +
+      "\"HL_LAST_HEARTBEAT\" = " + (isValidTxn(txnId) ? 0 : getEpochFn(dbProduct)) +
+      ",\"HL_ACQUIRED_AT\" = " + getEpochFn(dbProduct) +
       ",\"HL_BLOCKEDBY_EXT_ID\"=NULL,\"HL_BLOCKEDBY_INT_ID\"=NULL" +
       " WHERE \"HL_LOCK_EXT_ID\" = " +  extLockId;
     LOG.debug("Going to execute update <" + s + ">");
@@ -4354,7 +4362,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       stmt = dbConn.createStatement();
 
       String s = "UPDATE \"HIVE_LOCKS\" SET \"HL_LAST_HEARTBEAT\" = " +
-          TxnDbUtil.getEpochFn(dbProduct) + " WHERE \"HL_LOCK_EXT_ID\" = " + extLockId;
+          getEpochFn(dbProduct) + " WHERE \"HL_LOCK_EXT_ID\" = " + extLockId;
       LOG.debug("Going to execute update <" + s + ">");
       int rc = stmt.executeUpdate(s);
       if (rc < 1) {
@@ -4377,7 +4385,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     Statement stmt = null;
     try {
       stmt = dbConn.createStatement();
-      String s = "UPDATE \"TXNS\" SET \"TXN_LAST_HEARTBEAT\" = " + TxnDbUtil.getEpochFn(dbProduct) +
+      String s = "UPDATE \"TXNS\" SET \"TXN_LAST_HEARTBEAT\" = " + getEpochFn(dbProduct) +
         " WHERE \"TXN_ID\" = " + txnid + " AND \"TXN_STATE\" = " + TxnStatus.OPEN;
       LOG.debug("Going to execute update <" + s + ">");
       int rc = stmt.executeUpdate(s);
@@ -4628,7 +4636,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       stmt = dbConn.createStatement();
       //doing a SELECT first is less efficient but makes it easier to debug things
       String s = "SELECT DISTINCT \"HL_LOCK_EXT_ID\" FROM \"HIVE_LOCKS\" WHERE \"HL_LAST_HEARTBEAT\" < " +
-          TxnDbUtil.getEpochFn(dbProduct) + "-" + timeout + " AND \"HL_TXNID\" = 0";//when txnid is <> 0, the lock is
+          getEpochFn(dbProduct) + "-" + timeout + " AND \"HL_TXNID\" = 0";//when txnid is <> 0, the lock is
       //associated with a txn and is handled by performTimeOuts()
       //want to avoid expiring locks for a txn w/o expiring the txn itself
       List<Long> extLockIDs = new ArrayList<>();
@@ -4649,7 +4657,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
 
       //include same hl_last_heartbeat condition in case someone heartbeated since the select
       prefix.append("DELETE FROM \"HIVE_LOCKS\" WHERE \"HL_LAST_HEARTBEAT\" < ");
-      prefix.append(TxnDbUtil.getEpochFn(dbProduct)).append("-").append(timeout);
+      prefix.append(getEpochFn(dbProduct)).append("-").append(timeout);
       prefix.append(" AND \"HL_TXNID\" = 0 AND ");
       suffix.append("");
 
@@ -4709,7 +4717,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         String s = " \"TXN_ID\" FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN +
           " AND (" +
           "\"TXN_TYPE\" != " + TxnType.REPL_CREATED.getValue() +
-          " AND \"TXN_LAST_HEARTBEAT\" <  " + TxnDbUtil.getEpochFn(dbProduct) + "-" + timeout +
+          " AND \"TXN_LAST_HEARTBEAT\" <  " + getEpochFn(dbProduct) + "-" + timeout +
           " OR " +
           " \"TXN_TYPE\" = " + TxnType.REPL_CREATED.getValue() +
           " AND \"TXN_LAST_HEARTBEAT\" <  " + TxnDbUtil.getEpochFn(dbProduct) + "-" + replicationTxnTimeout +
