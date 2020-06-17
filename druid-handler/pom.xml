@@ -361,7 +361,7 @@
                       <include>com.google.guava:*</include>
                       <include>it.unimi.dsi:*</include>
                       <include>org.jdbi:*</include>
-                      <include>net.jpountz.lz4:*</include>
+                      <include>org.lz4:*</include>
                       <include>org.apache.commons:*</include>
                       <include>org.roaringbitmap:*</include>
                       <include>org.apache.derby:*</include>
