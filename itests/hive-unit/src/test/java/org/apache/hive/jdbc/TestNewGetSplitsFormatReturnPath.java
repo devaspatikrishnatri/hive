@@ -23,6 +23,7 @@ import org.junit.Ignore;
 /**
  * TestNewGetSplitsFormat.
  */
+@Ignore("flaky HIVE-23524")
 public class TestNewGetSplitsFormatReturnPath extends TestNewGetSplitsFormat {
 
   @BeforeClass public static void beforeTest() throws Exception {
