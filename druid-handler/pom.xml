@@ -363,6 +363,7 @@
                       <include>org.jdbi:*</include>
                       <include>org.lz4:*</include>
                       <include>org.apache.commons:*</include>
+                      <include>org.apache.maven:*</include>
                       <include>org.roaringbitmap:*</include>
                       <include>org.apache.derby:*</include>
                       <include>org.asynchttpclient:*</include>
