@@ -903,7 +903,7 @@ STAGE PLANS:
           properties:
             druid.fieldNames vc
             druid.fieldTypes string
-            druid.query.json {"queryType":"scan","dataSource":"default.druid_table_alltypesorc","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"substring(timestamp_format(timestamp_floor(\"__time\",'P1D','','US/Pacific'),'yyyy-MM-dd','UTC'), 3, -1)","outputType":"STRING"}],"columns":["vc"],"resultFormat":"compactedList","limit":5}
+            druid.query.json {"queryType":"scan","dataSource":"default.druid_table_alltypesorc","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"substring(timestamp_format(timestamp_floor(\"__time\",'P1D',null,'US/Pacific'),'yyyy-MM-dd','UTC'), 3, -1)","outputType":"STRING"}],"columns":["vc"],"resultFormat":"compactedList","limit":5}
             druid.query.type scan
           Select Operator
             expressions: vc (type: string)
@@ -944,7 +944,7 @@ STAGE PLANS:
           properties:
             druid.fieldNames vc
             druid.fieldTypes string
-            druid.query.json {"queryType":"scan","dataSource":"default.druid_table_alltypesorc","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"substring(timestamp_format(timestamp_floor(\"__time\",'P1D','','US/Pacific'),'yyyy-MM-dd','UTC'), 3, -1)","outputType":"STRING"}],"columns":["vc"],"resultFormat":"compactedList","limit":5}
+            druid.query.json {"queryType":"scan","dataSource":"default.druid_table_alltypesorc","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"substring(timestamp_format(timestamp_floor(\"__time\",'P1D',null,'US/Pacific'),'yyyy-MM-dd','UTC'), 3, -1)","outputType":"STRING"}],"columns":["vc"],"resultFormat":"compactedList","limit":5}
             druid.query.type scan
           Select Operator
             expressions: vc (type: string)

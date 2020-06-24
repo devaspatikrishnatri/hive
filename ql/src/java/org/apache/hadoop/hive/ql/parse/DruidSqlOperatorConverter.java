@@ -181,7 +181,7 @@ public class DruidSqlOperatorConverter {
         if (SqlTypeUtil.isDatetime(call.getOperands().get(0).getType())) {
           final TimeZone tz = timezoneId(query, call.getOperands().get(0));
           return applyTimestampFormat(
-              DruidExpressions.applyTimestampFloor(arg, Period.days(1).toString(), "", tz),
+              DruidExpressions.applyTimestampFloor(arg, Period.days(1).toString(), null, tz),
               YYYY_MM_DD,
               tz);
         }
@@ -211,7 +211,7 @@ public class DruidSqlOperatorConverter {
         }
         final TimeZone tz = timezoneId(query, call.getOperands().get(0));
         return applyTimestampFormat(
-            DruidExpressions.applyTimestampFloor(arg, unit, "", tz),
+            DruidExpressions.applyTimestampFloor(arg, unit, null, tz),
             YYYY_MM_DD,
             tz);
       }
@@ -242,7 +242,7 @@ public class DruidSqlOperatorConverter {
       return DruidExpressions.applyTimestampFloor(
           arg,
           Period.days(1).toString(),
-          "",
+          null,
           timezoneId(query, call.getOperands().get(0)));
     }
   }

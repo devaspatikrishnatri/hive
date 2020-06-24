@@ -215,7 +215,7 @@ STAGE PLANS:
           properties:
             druid.fieldNames vc
             druid.fieldTypes timestamp
-            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n0","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(timestamp_parse(timestamp_format(\"__time\",'yyyy-MM-dd\\u0027T\\u0027HH:mm:ss.SSS\\u0027Z\\u0027','US/Pacific'),null,'UTC'),'PT1H','','UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
+            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n0","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(timestamp_parse(timestamp_format(\"__time\",'yyyy-MM-dd\\u0027T\\u0027HH:mm:ss.SSS\\u0027Z\\u0027','US/Pacific'),null,'UTC'),'PT1H',null,'UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
             druid.query.type scan
           Select Operator
             expressions: vc (type: timestamp)
@@ -363,7 +363,7 @@ STAGE PLANS:
           properties:
             druid.fieldNames vc
             druid.fieldTypes timestamp
-            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n1","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(\"__time\",'PT1H','','UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
+            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n1","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(\"__time\",'PT1H',null,'UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
             druid.query.type scan
           Select Operator
             expressions: vc (type: timestamp)
@@ -659,7 +659,7 @@ STAGE PLANS:
           properties:
             druid.fieldNames vc
             druid.fieldTypes timestamp
-            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n0","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(\"__time\",'PT1H','','UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
+            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n0","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(\"__time\",'PT1H',null,'UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
             druid.query.type scan
           Select Operator
             expressions: vc (type: timestamp)
@@ -807,7 +807,7 @@ STAGE PLANS:
           properties:
             druid.fieldNames vc
             druid.fieldTypes timestamp
-            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n1","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(\"__time\",'PT1H','','UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
+            druid.query.json {"queryType":"scan","dataSource":"default.tstz1_n1","intervals":["1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z"],"virtualColumns":[{"type":"expression","name":"vc","expression":"timestamp_floor(\"__time\",'PT1H',null,'UTC')","outputType":"LONG"}],"columns":["vc"],"resultFormat":"compactedList"}
             druid.query.type scan
           Select Operator
             expressions: vc (type: timestamp)
