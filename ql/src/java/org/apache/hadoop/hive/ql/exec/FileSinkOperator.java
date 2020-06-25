@@ -1520,8 +1520,8 @@ public class FileSinkOperator extends TerminalOperator<FileSinkDesc> implements
       if (conf.isMmTable() || conf.isDirectInsert()) {
         boolean isDelete = AcidUtils.Operation.DELETE.equals(conf.getAcidOperation());
         Utilities.writeCommitManifest(commitPaths, specPath, fs, originalTaskId, conf.getTableWriteId(),
-            conf.getStatementId(), unionPath, conf.getInsertOverwrite(), bDynParts, dynamicPartitionSpecs,
-            isDelete);
+                conf.getStatementId(), unionPath, conf.getInsertOverwrite(), bDynParts, dynamicPartitionSpecs,
+                conf.getStaticSpec(), isDelete);
       }
       // Only publish stats if this operator's flag was set to gather stats
       if (conf.isGatherStats()) {
@@ -1580,12 +1580,12 @@ public class FileSinkOperator extends TerminalOperator<FileSinkDesc> implements
               lbLevels = lbCtx == null ? 0 : lbCtx.calculateListBucketingLevel();
           // TODO: why is it stored in both table and dpCtx?
           int numBuckets = (conf.getTable() != null) ? conf.getTable().getNumBuckets()
-              : (dpCtx != null ? dpCtx.getNumBuckets() : 0);
+                  : (dpCtx != null ? dpCtx.getNumBuckets() : 0);
           MissingBucketsContext mbc = new MissingBucketsContext(
-              conf.getTableInfo(), numBuckets, conf.getCompressed());
+                  conf.getTableInfo(), numBuckets, conf.getCompressed());
           Utilities.handleDirectInsertTableFinalPath(specPath, unionSuffix, hconf, success, dpLevels, lbLevels, mbc,
-              conf.getTableWriteId(), conf.getStatementId(), reporter, conf.isMmTable(), conf.isMmCtas(), conf
-                  .getInsertOverwrite(), conf.isDirectInsert(), conf.getAcidOperation(), conf);
+                  conf.getTableWriteId(), conf.getStatementId(), reporter, conf.isMmTable(), conf.isMmCtas(), conf
+                          .getInsertOverwrite(), conf.isDirectInsert(), conf.getStaticSpec(), conf.getAcidOperation(), conf);
         }
       }
     } catch (IOException e) {
