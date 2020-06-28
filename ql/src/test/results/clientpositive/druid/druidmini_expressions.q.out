@@ -39,7 +39,7 @@ FROM druid_table_alltypesorc WHERE ceil(cfloat) > 0 AND floor(cdouble) * 2 < 100
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-35881.09400522709	23378637	28946	7.57221208318E11	757217375155	68151649880
+47554.16200709343	11428904	44809	7.60489903182E11	760498035615	38482329423
 PREHOOK: query: SELECT  SUM(cfloat + 1), CAST(SUM(cdouble + ctinyint) AS INTEGER), SUM(ctinyint) + 1 , CAST(SUM(csmallint) + SUM(cint) AS DOUBLE), SUM(cint), SUM(cbigint)
 FROM druid_table_alltypesorc WHERE ceil(cfloat) > 0 AND floor(cdouble) * 2 < 1000
 PREHOOK: type: QUERY
@@ -50,7 +50,7 @@ FROM druid_table_alltypesorc WHERE ceil(cfloat) > 0 AND floor(cdouble) * 2 < 100
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-78620.21200561523	-9973483	74628	3.54463845353E11	354473882701	92859255924
+57116.212005615234	-9992939	55172	3.57744505813E11	357754543161	38482329423
 PREHOOK: query: SELECT  SUM(cfloat + 1), CAST(SUM(cdouble + ctinyint) AS INTEGER), SUM(ctinyint) + 1 , CAST(SUM(csmallint) + SUM(cint) AS DOUBLE), SUM(cint), SUM(cbigint)
 FROM druid_table_alltypesorc WHERE  ln(cdouble) / log10(10) > 0 AND COS(cint) > 0 OR SIN(cdouble) > 1
 PREHOOK: type: QUERY
@@ -61,7 +61,7 @@ FROM druid_table_alltypesorc WHERE  ln(cdouble) / log10(10) > 0 AND COS(cint) > 
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
--2195.4589961767197	27912403	-6517	5.33299976914E11	533291579903	13774723379
+-1746.4969971179962	19514160	-2840	5.33291574994E11	533291579903	NULL
 PREHOOK: query: SELECT  SUM(cfloat + 1), CAST(SUM(cdouble + ctinyint) AS INTEGER), SUM(ctinyint) + 1 , CAST(SUM(csmallint) + SUM(cint) AS DOUBLE), SUM(cint), SUM(cbigint)
 FROM druid_table_alltypesorc WHERE  SIN(cdouble) > 1
 PREHOOK: type: QUERY
@@ -72,7 +72,7 @@ FROM druid_table_alltypesorc WHERE  SIN(cdouble) > 1
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-0.0	0	1	0.0	0	0
+NULL	NULL	NULL	NULL	NULL	NULL
 PREHOOK: query: SELECT cstring1 || '_'|| cstring2, substring(cstring2, 2, 3) as concat , upper(cstring2), lower(cstring1), SUM(cdouble) as s FROM druid_table_alltypesorc WHERE cstring1 IS NOT NULL AND cstring2 IS NOT NULL AND cstring2 like 'Y%'
  GROUP BY cstring1 || '_'|| cstring2, substring(cstring2, 2, 3), upper(cstring2), lower(cstring1) ORDER BY concat DESC LIMIT 10
 PREHOOK: type: QUERY
@@ -83,16 +83,16 @@ POSTHOOK: query: SELECT cstring1 || '_'|| cstring2, substring(cstring2, 2, 3) as
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-8Nj7qpHBTH1GUkMM1BXr2_YyROa06YMuK3C2eg85d	yRO	YYROA06YMUK3C2EG85D	8nj7qphbth1gukmm1bxr2	0.0
-k7rg3Vw6IpwU6_YyKI8Rb72WP5dP1BMSPoT	yKI	YYKI8RB72WP5DP1BMSPOT	k7rg3vw6ipwu6	0.0
-b0r8g21X6I2TvvPj623IKR_YxSwHWr	xSw	YXSWHWR	b0r8g21x6i2tvvpj623ikr	0.0
-ox4gTH52_YsjDHuPsD2	sjD	YSJDHUPSD2	ox4gth52	0.0
-NEGa0N8MJ2dnn3MKAfl6u_Yr4e3n	r4e	YR4E3N	nega0n8mj2dnn3mkafl6u	0.0
-767fOfF1Oj8fyOv6YFI16rM_YqdbA5	qdb	YQDBA5	767foff1oj8fyov6yfi16rm	0.0
-kM4k0y1fqwton_YpK3CTDWEXOV	pK3	YPK3CTDWEXOV	km4k0y1fqwton	0.0
-TBI20Ba2YuO44754E2BM_YpB20i4	pB2	YPB20I4	tbi20ba2yuo44754e2bm	0.0
-jiqEpNs7qXo0y37_Ynnw5opXqf6BU	nnw	YNNW5OPXQF6BU	jiqepns7qxo0y37	0.0
-TgS6dAlI2w4y_Ynh42DscA373RX27nBkft	nh4	YNH42DSCA373RX27NBKFT	tgs6dali2w4y	0.0
+8Nj7qpHBTH1GUkMM1BXr2_YyROa06YMuK3C2eg85d	yRO	YYROA06YMUK3C2EG85D	8nj7qphbth1gukmm1bxr2	NULL
+k7rg3Vw6IpwU6_YyKI8Rb72WP5dP1BMSPoT	yKI	YYKI8RB72WP5DP1BMSPOT	k7rg3vw6ipwu6	NULL
+b0r8g21X6I2TvvPj623IKR_YxSwHWr	xSw	YXSWHWR	b0r8g21x6i2tvvpj623ikr	NULL
+ox4gTH52_YsjDHuPsD2	sjD	YSJDHUPSD2	ox4gth52	NULL
+NEGa0N8MJ2dnn3MKAfl6u_Yr4e3n	r4e	YR4E3N	nega0n8mj2dnn3mkafl6u	NULL
+767fOfF1Oj8fyOv6YFI16rM_YqdbA5	qdb	YQDBA5	767foff1oj8fyov6yfi16rm	NULL
+kM4k0y1fqwton_YpK3CTDWEXOV	pK3	YPK3CTDWEXOV	km4k0y1fqwton	NULL
+TBI20Ba2YuO44754E2BM_YpB20i4	pB2	YPB20I4	tbi20ba2yuo44754e2bm	NULL
+jiqEpNs7qXo0y37_Ynnw5opXqf6BU	nnw	YNNW5OPXQF6BU	jiqepns7qxo0y37	NULL
+TgS6dAlI2w4y_Ynh42DscA373RX27nBkft	nh4	YNH42DSCA373RX27NBKFT	tgs6dali2w4y	NULL
 PREHOOK: query: EXPLAIN SELECT count(*) FROM druid_table_alltypesorc WHERE character_length(CAST(ctinyint AS STRING)) > 1 AND char_length(CAST(ctinyint AS STRING)) < 10 AND power(cfloat, 2) * pow(csmallint, 3) > 1 AND SQRT(ABS(ctinyint)) > 3
 PREHOOK: type: QUERY
 PREHOOK: Input: default@druid_table_alltypesorc
@@ -1220,7 +1220,7 @@ POSTHOOK: query: select count(distinct cstring2 || '_'|| cstring1), sum(cdouble)
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-6095	2.7308662793799996E7	-1073279343
+3030	2.73086627938E7	-1073279343
 PREHOOK: query: select count(*) from (select `__time` from druid_table_alltypesorc limit 1025) as src
 PREHOOK: type: QUERY
 PREHOOK: Input: default@druid_table_alltypesorc
@@ -1959,7 +1959,8 @@ POSTHOOK: query: SELECT cboolean2, count(*) from druid_table_alltypesorc GROUP B
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-false	6214
+NULL	3072
+false	3142
 true	2959
 PREHOOK: query: -- Expected results of this query are wrong due to https://issues.apache.org/jira/browse/CALCITE-2319
   -- It should get fixed once we upgrade calcite
@@ -1973,7 +1974,8 @@ POSTHOOK: query: -- Expected results of this query are wrong due to https://issu
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-false	4280
+NULL	28
+false	4252
 true	4893
 PREHOOK: query: EXPLAIN SELECT ctinyint > 2, count(*) from druid_table_alltypesorc GROUP BY ctinyint > 2
 PREHOOK: type: QUERY
@@ -2752,4 +2754,4 @@ POSTHOOK: query: select count(distinct `__time`, cint) from (select * from druid
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-3027
+3025

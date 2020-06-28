@@ -190,6 +190,8 @@ import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveAggregatePullUpCons
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveAggregateReduceFunctionsRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveAggregateReduceRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveAggregateSplitRule;
+import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveDruidPullInvertFromBetweenRule;
+import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveDruidPushInvertIntoBetweenRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveDruidRules;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveExceptRewriteRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveExpandDistinctAggregatesRule;
@@ -2017,7 +2019,7 @@ public class CalcitePlanner extends SemanticAnalyzer {
       // 11. Apply Druid and JDBC transformation rules
       perfLogger.PerfLogBegin(this.getClass().getName(), PerfLogger.OPTIMIZER);
       calciteOptimizedPlan = hepPlan(calciteOptimizedPlan, false, mdProvider.getMetadataProvider(), null,
-          HepMatchOrder.BOTTOM_UP,
+          HepMatchOrder.BOTTOM_UP, HiveDruidPullInvertFromBetweenRule.INSTANCE,
           HiveDruidRules.FILTER, HiveDruidRules.PROJECT_FILTER_TRANSPOSE,
           HiveDruidRules.AGGREGATE_FILTER_TRANSPOSE,
           HiveDruidRules.AGGREGATE_PROJECT,
@@ -2030,7 +2032,8 @@ public class CalcitePlanner extends SemanticAnalyzer {
           HiveDruidRules.HAVING_FILTER_RULE,
           HiveDruidRules.SORT_PROJECT_TRANSPOSE,
           HiveDruidRules.SORT,
-          HiveDruidRules.PROJECT_SORT_TRANSPOSE
+          HiveDruidRules.PROJECT_SORT_TRANSPOSE,
+          HiveDruidPushInvertIntoBetweenRule.INSTANCE
       );
       perfLogger.PerfLogEnd(this.getClass().getName(), PerfLogger.OPTIMIZER, "Calcite: Druid transformation rules");
 

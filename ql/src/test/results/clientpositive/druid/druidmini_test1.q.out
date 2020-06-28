@@ -194,16 +194,16 @@ POSTHOOK: query: SELECT cstring1, SUM(cdouble) as s FROM druid_table_alltypesorc
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-1cGVWH7n1QU	-596096.6799999999
-821UdmGbkEf4j	-14161.826999999997
-00iT08	0.0
-02v8WnLuYDos3Cq	0.0
-yv1js	0.0
-02VRbSC5I	0.0
-014ILGhXxNY7g02hl0Xw	0.0
-02vDyIVT752	0.0
-00PafC7v	0.0
-ytpx1RL8F2I	0.0
+00MmJs1fiJp37y60mj4Ej8	NULL
+00iT08	NULL
+02vDyIVT752	NULL
+02v8WnLuYDos3Cq	NULL
+yv1js	NULL
+02VRbSC5I	NULL
+014ILGhXxNY7g02hl0Xw	NULL
+00k3yt70n476d6UQA	NULL
+00PafC7v	NULL
+ytpx1RL8F2I	NULL
 PREHOOK: query: EXPLAIN SELECT cstring2, MAX(cdouble) FROM druid_table_alltypesorc GROUP BY cstring2 ORDER BY cstring2 ASC LIMIT 10
 PREHOOK: type: QUERY
 PREHOOK: Input: default@druid_table_alltypesorc
@@ -242,14 +242,14 @@ POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
 NULL	9763215.5639
 0034fkcXMQI3	15601.0
-004J8y	0.0
+004J8y	NULL
 00GNm	-200.0
 00GW4dnb6Wgj52	-200.0
-00PBhB1Iefgk	0.0
+00PBhB1Iefgk	NULL
 00d5kr1wEB7evExG	15601.0
-00qccwt8n	0.0
-017fFeQ3Gcsa83Xj2Vo0	0.0
-01EfkvNk6mjG44uxs	0.0
+00qccwt8n	NULL
+017fFeQ3Gcsa83Xj2Vo0	NULL
+01EfkvNk6mjG44uxs	NULL
 PREHOOK: query: EXPLAIN
 SELECT `__time`
 FROM druid_table_alltypesorc ORDER BY `__time` ASC LIMIT 10

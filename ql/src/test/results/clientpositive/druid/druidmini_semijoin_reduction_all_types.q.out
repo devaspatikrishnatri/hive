@@ -460,24 +460,24 @@ STAGE PLANS:
                 TableScan
                   alias: alltypesorc_small
                   filterExpr: csmallint is not null (type: boolean)
-                  Statistics: Num rows: 69 Data size: 276 Basic stats: COMPLETE Column stats: COMPLETE
+                  Statistics: Num rows: 69 Data size: 4 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
                     predicate: csmallint is not null (type: boolean)
-                    Statistics: Num rows: 69 Data size: 276 Basic stats: COMPLETE Column stats: COMPLETE
+                    Statistics: Num rows: 69 Data size: 4 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: csmallint (type: smallint)
                       outputColumnNames: _col0
-                      Statistics: Num rows: 69 Data size: 276 Basic stats: COMPLETE Column stats: COMPLETE
+                      Statistics: Num rows: 69 Data size: 4 Basic stats: COMPLETE Column stats: COMPLETE
                       Reduce Output Operator
                         key expressions: _col0 (type: smallint)
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col0 (type: smallint)
-                        Statistics: Num rows: 69 Data size: 276 Basic stats: COMPLETE Column stats: COMPLETE
+                        Statistics: Num rows: 69 Data size: 4 Basic stats: COMPLETE Column stats: COMPLETE
                       Select Operator
                         expressions: _col0 (type: smallint)
                         outputColumnNames: _col0
-                        Statistics: Num rows: 69 Data size: 276 Basic stats: COMPLETE Column stats: COMPLETE
+                        Statistics: Num rows: 69 Data size: 4 Basic stats: COMPLETE Column stats: COMPLETE
                         Group By Operator
                           aggregations: min(_col0), max(_col0), bloom_filter(_col0, expectedEntries=1)
                           minReductionHashAggr: 0.98550725
@@ -578,7 +578,7 @@ POSTHOOK: type: QUERY
 POSTHOOK: Input: default@alltypesorc_small
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-211968
+0
 PREHOOK: query: select count(*) from alltypesorc_small join druid_table_alltypesorc on (alltypesorc_small.csmallint = druid_table_alltypesorc.csmallint)
 PREHOOK: type: QUERY
 PREHOOK: Input: default@alltypesorc_small
@@ -589,7 +589,7 @@ POSTHOOK: type: QUERY
 POSTHOOK: Input: default@alltypesorc_small
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-211968
+0
 PREHOOK: query: EXPLAIN select count(*) from alltypesorc_small join druid_table_alltypesorc on (alltypesorc_small.cint = druid_table_alltypesorc.cint)
 PREHOOK: type: QUERY
 PREHOOK: Input: default@alltypesorc_small
@@ -1100,24 +1100,24 @@ STAGE PLANS:
                 TableScan
                   alias: alltypesorc_small
                   filterExpr: cdouble is not null (type: boolean)
-                  Statistics: Num rows: 69 Data size: 552 Basic stats: COMPLETE Column stats: COMPLETE
+                  Statistics: Num rows: 69 Data size: 8 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
                     predicate: cdouble is not null (type: boolean)
-                    Statistics: Num rows: 69 Data size: 552 Basic stats: COMPLETE Column stats: COMPLETE
+                    Statistics: Num rows: 69 Data size: 8 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: cdouble (type: double)
                       outputColumnNames: _col0
-                      Statistics: Num rows: 69 Data size: 552 Basic stats: COMPLETE Column stats: COMPLETE
+                      Statistics: Num rows: 69 Data size: 8 Basic stats: COMPLETE Column stats: COMPLETE
                       Reduce Output Operator
                         key expressions: _col0 (type: double)
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col0 (type: double)
-                        Statistics: Num rows: 69 Data size: 552 Basic stats: COMPLETE Column stats: COMPLETE
+                        Statistics: Num rows: 69 Data size: 8 Basic stats: COMPLETE Column stats: COMPLETE
                       Select Operator
                         expressions: _col0 (type: double)
                         outputColumnNames: _col0
-                        Statistics: Num rows: 69 Data size: 552 Basic stats: COMPLETE Column stats: COMPLETE
+                        Statistics: Num rows: 69 Data size: 8 Basic stats: COMPLETE Column stats: COMPLETE
                         Group By Operator
                           aggregations: min(_col0), max(_col0), bloom_filter(_col0, expectedEntries=1)
                           minReductionHashAggr: 0.98550725
@@ -1218,7 +1218,7 @@ POSTHOOK: type: QUERY
 POSTHOOK: Input: default@alltypesorc_small
 POSTHOOK: Input: default@druid_table_alltypesorc
 POSTHOOK: Output: hdfs://### HDFS PATH ###
-211968
+0
 PREHOOK: query: EXPLAIN select count(*) from alltypesorc_small join druid_table_alltypesorc on (alltypesorc_small.ctimestamp1 = druid_table_alltypesorc.`__time`)
 PREHOOK: type: QUERY
 PREHOOK: Input: default@alltypesorc_small
@@ -1729,24 +1729,24 @@ STAGE PLANS:
                 TableScan
                   alias: alltypesorc_small
                   filterExpr: CAST( cdouble AS STRING) is not null (type: boolean)
-                  Statistics: Num rows: 69 Data size: 552 Basic stats: COMPLETE Column stats: COMPLETE
+                  Statistics: Num rows: 69 Data size: 8 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
                     predicate: CAST( cdouble AS STRING) is not null (type: boolean)
-                    Statistics: Num rows: 69 Data size: 552 Basic stats: COMPLETE Column stats: COMPLETE
+                    Statistics: Num rows: 69 Data size: 8 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       expressions: CAST( cdouble AS STRING) (type: string)
                       outputColumnNames: _col0
-                      Statistics: Num rows: 69 Data size: 12696 Basic stats: COMPLETE Column stats: COMPLETE
+                      Statistics: Num rows: 69 Data size: 184 Basic stats: COMPLETE Column stats: COMPLETE
                       Reduce Output Operator
                         key expressions: _col0 (type: string)
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col0 (type: string)
-                        Statistics: Num rows: 69 Data size: 12696 Basic stats: COMPLETE Column stats: COMPLETE
+                        Statistics: Num rows: 69 Data size: 184 Basic stats: COMPLETE Column stats: COMPLETE
                       Select Operator
                         expressions: _col0 (type: string)
                         outputColumnNames: _col0
-                        Statistics: Num rows: 69 Data size: 12696 Basic stats: COMPLETE Column stats: COMPLETE
+                        Statistics: Num rows: 69 Data size: 184 Basic stats: COMPLETE Column stats: COMPLETE
                         Group By Operator
                           aggregations: min(_col0), max(_col0), bloom_filter(_col0, expectedEntries=1)
                           minReductionHashAggr: 0.98550725
