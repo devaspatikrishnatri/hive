@@ -22573,6 +22573,10 @@ class ShowCompactResponseElement {
    * @var string
    */
   public $errorMessage = null;
+  /**
+   * @var bool
+   */
+  public $hasoldabort = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -22633,6 +22637,10 @@ class ShowCompactResponseElement {
           'var' => 'errorMessage',
           'type' => TType::STRING,
           ),
+        14 => array(
+          'var' => 'hasoldabort',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -22677,6 +22685,9 @@ class ShowCompactResponseElement {
       }
       if (isset($vals['errorMessage'])) {
         $this->errorMessage = $vals['errorMessage'];
+      }
+      if (isset($vals['hasoldabort'])) {
+        $this->hasoldabort = $vals['hasoldabort'];
       }
     }
   }
@@ -22798,6 +22809,13 @@ class ShowCompactResponseElement {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 14:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->hasoldabort);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -22879,6 +22897,11 @@ class ShowCompactResponseElement {
     if ($this->errorMessage !== null) {
       $xfer += $output->writeFieldBegin('errorMessage', TType::STRING, 14);
       $xfer += $output->writeString($this->errorMessage);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->hasoldabort !== null) {
+      $xfer += $output->writeFieldBegin('hasoldabort', TType::BOOL, 14);
+      $xfer += $output->writeBool($this->hasoldabort);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

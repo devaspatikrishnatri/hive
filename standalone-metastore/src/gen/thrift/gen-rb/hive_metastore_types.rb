@@ -3392,6 +3392,7 @@ class CompactionInfoStruct
   START = 11
   HIGHESTWRITEID = 12
   ERRORMESSAGE = 13
+  HASOLDABORT = 14
 
   FIELDS = {
     ID => {:type => ::Thrift::Types::I64, :name => 'id'},
@@ -3406,7 +3407,8 @@ class CompactionInfoStruct
     WORKERID => {:type => ::Thrift::Types::STRING, :name => 'workerId', :optional => true},
     START => {:type => ::Thrift::Types::I64, :name => 'start', :optional => true},
     HIGHESTWRITEID => {:type => ::Thrift::Types::I64, :name => 'highestWriteId', :optional => true},
-    ERRORMESSAGE => {:type => ::Thrift::Types::STRING, :name => 'errorMessage', :optional => true}
+    ERRORMESSAGE => {:type => ::Thrift::Types::STRING, :name => 'errorMessage', :optional => true},
+    HASOLDABORT => {:type => ::Thrift::Types::BOOL, :name => 'hasoldabort', :optional => true}
   }
 
   def struct_fields; FIELDS; end
