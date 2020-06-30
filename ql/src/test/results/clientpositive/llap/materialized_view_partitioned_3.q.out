@@ -63,6 +63,7 @@ STAGE PLANS:
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col1 (type: string)
+                        Statistics: Num rows: 55 Data size: 9790 Basic stats: COMPLETE Column stats: COMPLETE
                         value expressions: _col0 (type: string)
                       Select Operator
                         expressions: _col0 (type: string), _col1 (type: string)

@@ -148,6 +148,7 @@ STAGE PLANS:
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -291,6 +292,7 @@ STAGE PLANS:
                     null sort order: a
                     sort order: +
                     Map-reduce partition columns: _col4 (type: tinyint)
+                    Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                     value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                   Select Operator
                     expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -410,6 +412,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
             Execution mode: llap
             LLAP IO: no inputs
@@ -492,6 +495,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint)
             Execution mode: llap
             LLAP IO: no inputs
@@ -644,6 +648,7 @@ STAGE PLANS:
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -787,6 +792,7 @@ STAGE PLANS:
                     null sort order: a
                     sort order: +
                     Map-reduce partition columns: _col4 (type: tinyint)
+                    Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                     value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                   Select Operator
                     expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -906,6 +912,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
             Execution mode: llap
             LLAP IO: no inputs
@@ -988,6 +995,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint)
             Execution mode: llap
             LLAP IO: no inputs
@@ -1646,6 +1654,7 @@ STAGE PLANS:
                         null sort order: aa
                         sort order: ++
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col2 (type: bigint), _col3 (type: float)
             Execution mode: llap
             LLAP IO: no inputs
@@ -1758,6 +1767,7 @@ STAGE PLANS:
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -2521,6 +2531,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 1 Data size: 24 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint)
             Execution mode: llap
             LLAP IO: no inputs
@@ -2900,6 +2911,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
+                        Statistics: Num rows: 1 Data size: 208 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float), _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
@@ -3023,6 +3035,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
+                        Statistics: Num rows: 1 Data size: 208 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float), _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
@@ -3146,6 +3159,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
+                        Statistics: Num rows: 1 Data size: 208 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float), _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
@@ -3269,6 +3283,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
+                        Statistics: Num rows: 1 Data size: 208 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float), _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
@@ -3392,6 +3407,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
+                        Statistics: Num rows: 1 Data size: 208 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float), _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
@@ -3515,6 +3531,7 @@ STAGE PLANS:
                         null sort order: aaa
                         sort order: +++
                         Map-reduce partition columns: _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
+                        Statistics: Num rows: 1 Data size: 208 Basic stats: COMPLETE Column stats: NONE
                         value expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: bigint), _col2 (type: float), _col3 (type: string), _col4 (type: tinyint), _col5 (type: int)
@@ -4152,6 +4169,7 @@ STAGE PLANS:
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 352 Data size: 8448 Basic stats: COMPLETE Column stats: COMPLETE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -4295,6 +4313,7 @@ STAGE PLANS:
                     null sort order: a
                     sort order: +
                     Map-reduce partition columns: _col4 (type: tinyint)
+                    Statistics: Num rows: 10 Data size: 240 Basic stats: COMPLETE Column stats: COMPLETE
                     value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                   Select Operator
                     expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -4461,6 +4480,7 @@ STAGE PLANS:
                           null sort order: a
                           sort order: +
                           Map-reduce partition columns: _col1 (type: string)
+                          Statistics: Num rows: 524 Data size: 52924 Basic stats: COMPLETE Column stats: COMPLETE
                           value expressions: _col0 (type: int)
                         Select Operator
                           expressions: _col0 (type: int), _col1 (type: string)
@@ -4489,6 +4509,7 @@ STAGE PLANS:
                           null sort order: a
                           sort order: +
                           Map-reduce partition columns: _col1 (type: string)
+                          Statistics: Num rows: 524 Data size: 52924 Basic stats: COMPLETE Column stats: COMPLETE
                           value expressions: _col0 (type: int)
                         Select Operator
                           expressions: _col0 (type: int), _col1 (type: string)
@@ -4870,6 +4891,7 @@ STAGE PLANS:
                         null sort order: a
                         sort order: +
                         Map-reduce partition columns: _col4 (type: tinyint)
+                        Statistics: Num rows: 352 Data size: 8448 Basic stats: COMPLETE Column stats: COMPLETE
                         value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                       Select Operator
                         expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -5013,6 +5035,7 @@ STAGE PLANS:
                     null sort order: a
                     sort order: +
                     Map-reduce partition columns: _col4 (type: tinyint)
+                    Statistics: Num rows: 10 Data size: 240 Basic stats: COMPLETE Column stats: COMPLETE
                     value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                   Select Operator
                     expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
@@ -5261,6 +5284,7 @@ STAGE PLANS:
                     null sort order: a
                     sort order: +
                     Map-reduce partition columns: _col4 (type: tinyint)
+                    Statistics: Num rows: 10 Data size: 240 Basic stats: COMPLETE Column stats: COMPLETE
                     value expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float)
                   Select Operator
                     expressions: _col0 (type: smallint), _col1 (type: int), _col2 (type: bigint), _col3 (type: float), 'foo' (type: string), _col4 (type: tinyint)
