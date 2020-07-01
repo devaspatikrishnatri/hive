@@ -316,6 +316,7 @@ public class TestCliDriverMethods extends TestCase {
 
     sessionState.err = new SessionStream(data);
     sessionState.out = new SessionStream(System.out);
+    sessionState.setIsQtestLogging(true);
     try {
       CliSessionState.start(sessionState);
       CliDriver cliDriver = new CliDriver();
