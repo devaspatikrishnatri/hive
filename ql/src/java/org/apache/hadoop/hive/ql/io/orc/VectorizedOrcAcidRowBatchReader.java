@@ -65,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.io.FileNotFoundException;
 /**
  * A fast vectorized batch reader class for ACID. Insert events are read directly
  * from the base files/insert_only deltas in vectorized row batches. The deleted
@@ -1554,18 +1555,11 @@ public class VectorizedOrcAcidRowBatchReader
             Path[] deleteDeltaFiles = OrcRawRecordMerger.getDeltaFiles(deleteDeltaDir, bucket,
                 new OrcRawRecordMerger.Options().isCompacting(false), null);
             for (Path deleteDeltaFile : deleteDeltaFiles) {
-              // NOTE: Calling last flush length below is more for future-proofing when we have
-              // streaming deletes. But currently we don't support streaming deletes, and this can
-              // be removed if this becomes a performance issue.
-              long length = OrcAcidUtils.getLastFlushLength(fs, deleteDeltaFile);
-              // NOTE: A check for existence of deleteDeltaFile is required because we may not have
-              // deletes for the bucket being taken into consideration for this split processing.
-              if (length != -1 && fs.exists(deleteDeltaFile)) {
+              try {
                 /**
                  * todo: we have OrcSplit.orcTail so we should be able to get stats from there
                  */
-                Reader deleteDeltaReader = OrcFile.createReader(deleteDeltaFile,
-                    OrcFile.readerOptions(conf).maxLength(length));
+                Reader deleteDeltaReader = OrcFile.createReader(deleteDeltaFile, OrcFile.readerOptions(conf));
                 if (deleteDeltaReader.getNumberOfRows() <= 0) {
                   continue; // just a safe check to ensure that we are not reading empty delete files.
                 }
@@ -1579,6 +1573,8 @@ public class VectorizedOrcAcidRowBatchReader
                 } else {
                   deleteReaderValue.close();
                 }
+              } catch (FileNotFoundException fnf) {
+                // We may not have deletes for the bucket being taken into consideration for this split processing.
               }
             }
           }
