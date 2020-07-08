@@ -29,6 +29,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: explain insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 STAGE DEPENDENCIES:
   Stage-1 is a root stage
   Stage-2 depends on stages: Stage-1
@@ -131,6 +132,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: Output: default@orc_merge5a_n0@st=0.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=1.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=8.0
@@ -162,6 +164,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: Output: default@orc_merge5a_n0@st=0.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=1.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=8.0
@@ -246,6 +249,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: explain insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 STAGE DEPENDENCIES:
   Stage-1 is a root stage
   Stage-8 depends on stages: Stage-1 , consists of Stage-5, Stage-4, Stage-6
@@ -390,6 +394,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: Output: default@orc_merge5a_n0@st=0.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=1.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=8.0
@@ -421,6 +426,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: Output: default@orc_merge5a_n0@st=0.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=1.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=8.0
@@ -505,6 +511,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: Output: default@orc_merge5a_n0@st=0.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=1.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=8.0
@@ -536,6 +543,7 @@ PREHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: query: insert overwrite table orc_merge5a_n0 partition (st) select userid,string1,subtype,decimal1,ts,subtype from orc_merge5_n2
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@orc_merge5_n2
+POSTHOOK: Output: default@orc_merge5a_n0
 POSTHOOK: Output: default@orc_merge5a_n0@st=0.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=1.8
 POSTHOOK: Output: default@orc_merge5a_n0@st=8.0
