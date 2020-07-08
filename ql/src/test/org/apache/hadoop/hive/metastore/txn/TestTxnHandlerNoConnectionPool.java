@@ -49,13 +49,7 @@ public class TestTxnHandlerNoConnectionPool {
   public void setUp() throws Exception {
     conf.setVar(HiveConf.ConfVars.METASTORE_CONNECTION_POOLING_TYPE, "None");
     TxnDbUtil.setConfValues(conf);
-    try {
-      TxnDbUtil.prepDb(conf);
-    } catch (SQLException e) {
-      // Usually this means we've already created the tables, so clean them and then try again
-      tearDown();
-      TxnDbUtil.prepDb(conf);
-    }
+    TxnDbUtil.prepDb(conf);
     txnHandler = TxnUtils.getTxnStore(conf);
   }
 
