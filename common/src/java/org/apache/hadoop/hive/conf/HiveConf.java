@@ -2743,6 +2743,8 @@ public class HiveConf extends Configuration {
     HIVE_TXN_ACID_DIR_CACHE_DURATION("hive.txn.acid.dir.cache.duration",
         120, "Enable dir cache for ACID tables specified in minutes."
         + "0 indicates cache is disabled. "),
+    HIVE_WRITE_ACID_VERSION_FILE("hive.txn.write.acid.version.file", false,
+        "Creates an _orc_acid_version file along with acid files, to store the version data"),
 
     HIVE_TXN_READONLY_ENABLED("hive.txn.readonly.enabled", false,
       "Enables read-only transaction classification and related optimizations"),
