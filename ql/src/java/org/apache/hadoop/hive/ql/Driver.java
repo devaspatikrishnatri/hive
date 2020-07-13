@@ -417,6 +417,8 @@ public class Driver implements IDriver {
 
   public void releaseLocksAndCommitOrRollback(boolean commit) throws LockException {
     releaseLocksAndCommitOrRollback(commit, driverContext.getTxnManager());
+    ShutdownHookManager.removeShutdownHook(shutdownRunner);
+    shutdownRunner = null;
   }
 
   /**
