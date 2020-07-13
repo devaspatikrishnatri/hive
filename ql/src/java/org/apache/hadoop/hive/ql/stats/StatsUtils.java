@@ -1184,7 +1184,12 @@ public class StatsUtils {
 
         // constant list projection of known length
         StandardConstantListObjectInspector scloi = (StandardConstantListObjectInspector) oi;
-        length = scloi.getWritableConstantValue().size();
+        List<?> value = scloi.getWritableConstantValue();
+        if (null == value) {
+          length = 0;
+        } else {
+          length = value.size();
+        }
 
         // check if list elements are primitive or Objects
         ObjectInspector leoi = scloi.getListElementObjectInspector();
@@ -1338,6 +1343,9 @@ public class StatsUtils {
    */
   public static long getSizeOfMap(StandardConstantMapObjectInspector scmoi) {
     Map<?, ?> map = scmoi.getWritableConstantValue();
+    if (null == map) {
+      return 0L;
+    }
     ObjectInspector koi = scmoi.getMapKeyObjectInspector();
     ObjectInspector voi = scmoi.getMapValueObjectInspector();
     long result = 0;
