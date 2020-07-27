@@ -67,6 +67,25 @@ class GetPartitionsRequest
             'type' => TType::STRUCT,
             'class' => '\metastore\GetPartitionsFilterSpec',
         ),
+        9 => array(
+            'var' => 'processorCapabilities',
+            'isRequired' => false,
+            'type' => TType::LST,
+            'etype' => TType::STRING,
+            'elem' => array(
+                'type' => TType::STRING,
+                ),
+        ),
+        10 => array(
+            'var' => 'processorIdentifier',
+            'isRequired' => false,
+            'type' => TType::STRING,
+        ),
+        11 => array(
+            'var' => 'validWriteIdList',
+            'isRequired' => false,
+            'type' => TType::STRING,
+        ),
     );
 
     /**
@@ -101,6 +120,18 @@ class GetPartitionsRequest
      * @var \metastore\GetPartitionsFilterSpec
      */
     public $filterSpec = null;
+    /**
+     * @var string[]
+     */
+    public $processorCapabilities = null;
+    /**
+     * @var string
+     */
+    public $processorIdentifier = null;
+    /**
+     * @var string
+     */
+    public $validWriteIdList = null;
 
     public function __construct($vals = null)
     {
@@ -128,6 +159,15 @@ class GetPartitionsRequest
             }
             if (isset($vals['filterSpec'])) {
                 $this->filterSpec = $vals['filterSpec'];
+            }
+            if (isset($vals['processorCapabilities'])) {
+                $this->processorCapabilities = $vals['processorCapabilities'];
+            }
+            if (isset($vals['processorIdentifier'])) {
+                $this->processorIdentifier = $vals['processorIdentifier'];
+            }
+            if (isset($vals['validWriteIdList'])) {
+                $this->validWriteIdList = $vals['validWriteIdList'];
             }
         }
     }
@@ -218,6 +258,36 @@ class GetPartitionsRequest
                         $xfer += $input->skip($ftype);
                     }
                     break;
+                case 9:
+                    if ($ftype == TType::LST) {
+                        $this->processorCapabilities = array();
+                        $_size1063 = 0;
+                        $_etype1066 = 0;
+                        $xfer += $input->readListBegin($_etype1066, $_size1063);
+                        for ($_i1067 = 0; $_i1067 < $_size1063; ++$_i1067) {
+                            $elem1068 = null;
+                            $xfer += $input->readString($elem1068);
+                            $this->processorCapabilities []= $elem1068;
+                        }
+                        $xfer += $input->readListEnd();
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 10:
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->processorIdentifier);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 11:
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->validWriteIdList);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
                 default:
                     $xfer += $input->skip($ftype);
                     break;
@@ -263,8 +333,8 @@ class GetPartitionsRequest
             }
             $xfer += $output->writeFieldBegin('groupNames', TType::LST, 6);
             $output->writeListBegin(TType::STRING, count($this->groupNames));
-            foreach ($this->groupNames as $iter1063) {
-                $xfer += $output->writeString($iter1063);
+            foreach ($this->groupNames as $iter1069) {
+                $xfer += $output->writeString($iter1069);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();
@@ -283,6 +353,28 @@ class GetPartitionsRequest
             }
             $xfer += $output->writeFieldBegin('filterSpec', TType::STRUCT, 8);
             $xfer += $this->filterSpec->write($output);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->processorCapabilities !== null) {
+            if (!is_array($this->processorCapabilities)) {
+                throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+            }
+            $xfer += $output->writeFieldBegin('processorCapabilities', TType::LST, 9);
+            $output->writeListBegin(TType::STRING, count($this->processorCapabilities));
+            foreach ($this->processorCapabilities as $iter1070) {
+                $xfer += $output->writeString($iter1070);
+            }
+            $output->writeListEnd();
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->processorIdentifier !== null) {
+            $xfer += $output->writeFieldBegin('processorIdentifier', TType::STRING, 10);
+            $xfer += $output->writeString($this->processorIdentifier);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->validWriteIdList !== null) {
+            $xfer += $output->writeFieldBegin('validWriteIdList', TType::STRING, 11);
+            $xfer += $output->writeString($this->validWriteIdList);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

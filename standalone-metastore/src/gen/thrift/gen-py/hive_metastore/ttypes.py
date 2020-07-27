@@ -8645,17 +8645,23 @@ class PartitionsByExprRequest(object):
      - defaultPartitionName
      - maxParts
      - catName
+     - order
+     - validWriteIdList
+     - id
 
     """
 
 
-    def __init__(self, dbName=None, tblName=None, expr=None, defaultPartitionName=None, maxParts=-1, catName=None,):
+    def __init__(self, dbName=None, tblName=None, expr=None, defaultPartitionName=None, maxParts=-1, catName=None, order=None, validWriteIdList=None, id=-1,):
         self.dbName = dbName
         self.tblName = tblName
         self.expr = expr
         self.defaultPartitionName = defaultPartitionName
         self.maxParts = maxParts
         self.catName = catName
+        self.order = order
+        self.validWriteIdList = validWriteIdList
+        self.id = id
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -8696,6 +8702,21 @@ class PartitionsByExprRequest(object):
                     self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.STRING:
+                    self.order = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -8729,6 +8750,18 @@ class PartitionsByExprRequest(object):
         if self.catName is not None:
             oprot.writeFieldBegin('catName', TType.STRING, 6)
             oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.order is not None:
+            oprot.writeFieldBegin('order', TType.STRING, 7)
+            oprot.writeString(self.order.encode('utf-8') if sys.version_info[0] == 2 else self.order)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 8)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 9)
+            oprot.writeI64(self.id)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -8931,17 +8964,19 @@ class TableStatsRequest(object):
      - catName
      - validWriteIdList
      - engine
+     - id
 
     """
 
 
-    def __init__(self, dbName=None, tblName=None, colNames=None, catName=None, validWriteIdList=None, engine=None,):
+    def __init__(self, dbName=None, tblName=None, colNames=None, catName=None, validWriteIdList=None, engine=None, id=-1,):
         self.dbName = dbName
         self.tblName = tblName
         self.colNames = colNames
         self.catName = catName
         self.validWriteIdList = validWriteIdList
         self.engine = engine
+        self.id = id
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -8987,6 +9022,11 @@ class TableStatsRequest(object):
                     self.engine = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -9023,6 +9063,10 @@ class TableStatsRequest(object):
         if self.engine is not None:
             oprot.writeFieldBegin('engine', TType.STRING, 6)
             oprot.writeString(self.engine.encode('utf-8') if sys.version_info[0] == 2 else self.engine)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 7)
+            oprot.writeI64(self.id)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -9798,11 +9842,12 @@ class PartitionValuesRequest(object):
      - ascending
      - maxParts
      - catName
+     - validWriteIdList
 
     """
 
 
-    def __init__(self, dbName=None, tblName=None, partitionKeys=None, applyDistinct=True, filter=None, partitionOrder=None, ascending=True, maxParts=-1, catName=None,):
+    def __init__(self, dbName=None, tblName=None, partitionKeys=None, applyDistinct=True, filter=None, partitionOrder=None, ascending=True, maxParts=-1, catName=None, validWriteIdList=None,):
         self.dbName = dbName
         self.tblName = tblName
         self.partitionKeys = partitionKeys
@@ -9812,6 +9857,7 @@ class PartitionValuesRequest(object):
         self.ascending = ascending
         self.maxParts = maxParts
         self.catName = catName
+        self.validWriteIdList = validWriteIdList
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -9879,6 +9925,11 @@ class PartitionValuesRequest(object):
                     self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 10:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -9930,6 +9981,10 @@ class PartitionValuesRequest(object):
         if self.catName is not None:
             oprot.writeFieldBegin('catName', TType.STRING, 9)
             oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 10)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -10100,11 +10155,12 @@ class GetPartitionsByNamesRequest(object):
      - processorCapabilities
      - processorIdentifier
      - engine
+     - validWriteIdList
 
     """
 
 
-    def __init__(self, db_name=None, tbl_name=None, names=None, get_col_stats=None, processorCapabilities=None, processorIdentifier=None, engine=None,):
+    def __init__(self, db_name=None, tbl_name=None, names=None, get_col_stats=None, processorCapabilities=None, processorIdentifier=None, engine=None, validWriteIdList=None,):
         self.db_name = db_name
         self.tbl_name = tbl_name
         self.names = names
@@ -10112,6 +10168,7 @@ class GetPartitionsByNamesRequest(object):
         self.processorCapabilities = processorCapabilities
         self.processorIdentifier = processorIdentifier
         self.engine = engine
+        self.validWriteIdList = validWriteIdList
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -10167,6 +10224,11 @@ class GetPartitionsByNamesRequest(object):
                     self.engine = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -10210,6 +10272,10 @@ class GetPartitionsByNamesRequest(object):
         if self.engine is not None:
             oprot.writeFieldBegin('engine', TType.STRING, 7)
             oprot.writeString(self.engine.encode('utf-8') if sys.version_info[0] == 2 else self.engine)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 8)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -16941,11 +17007,12 @@ class GetTableRequest(object):
      - processorCapabilities
      - processorIdentifier
      - engine
+     - id
 
     """
 
 
-    def __init__(self, dbName=None, tblName=None, capabilities=None, catName=None, validWriteIdList=None, getColumnStats=None, processorCapabilities=None, processorIdentifier=None, engine=None,):
+    def __init__(self, dbName=None, tblName=None, capabilities=None, catName=None, validWriteIdList=None, getColumnStats=None, processorCapabilities=None, processorIdentifier=None, engine=None, id=-1,):
         self.dbName = dbName
         self.tblName = tblName
         self.capabilities = capabilities
@@ -16955,6 +17022,7 @@ class GetTableRequest(object):
         self.processorCapabilities = processorCapabilities
         self.processorIdentifier = processorIdentifier
         self.engine = engine
+        self.id = id
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -17016,6 +17084,11 @@ class GetTableRequest(object):
                     self.engine = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -17064,6 +17137,10 @@ class GetTableRequest(object):
         if self.engine is not None:
             oprot.writeFieldBegin('engine', TType.STRING, 10)
             oprot.writeString(self.engine.encode('utf-8') if sys.version_info[0] == 2 else self.engine)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 11)
+            oprot.writeI64(self.id)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -23249,11 +23326,14 @@ class GetPartitionsRequest(object):
      - groupNames
      - projectionSpec
      - filterSpec
+     - processorCapabilities
+     - processorIdentifier
+     - validWriteIdList
 
     """
 
 
-    def __init__(self, catName=None, dbName=None, tblName=None, withAuth=None, user=None, groupNames=None, projectionSpec=None, filterSpec=None,):
+    def __init__(self, catName=None, dbName=None, tblName=None, withAuth=None, user=None, groupNames=None, projectionSpec=None, filterSpec=None, processorCapabilities=None, processorIdentifier=None, validWriteIdList=None,):
         self.catName = catName
         self.dbName = dbName
         self.tblName = tblName
@@ -23262,6 +23342,9 @@ class GetPartitionsRequest(object):
         self.groupNames = groupNames
         self.projectionSpec = projectionSpec
         self.filterSpec = filterSpec
+        self.processorCapabilities = processorCapabilities
+        self.processorIdentifier = processorIdentifier
+        self.validWriteIdList = validWriteIdList
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -23319,6 +23402,26 @@ class GetPartitionsRequest(object):
                     self.filterSpec.read(iprot)
                 else:
                     iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.LIST:
+                    self.processorCapabilities = []
+                    (_etype1063, _size1060) = iprot.readListBegin()
+                    for _i1064 in range(_size1060):
+                        _elem1065 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem1065)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 10:
+                if ftype == TType.STRING:
+                    self.processorIdentifier = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -23352,8 +23455,8 @@ class GetPartitionsRequest(object):
         if self.groupNames is not None:
             oprot.writeFieldBegin('groupNames', TType.LIST, 6)
             oprot.writeListBegin(TType.STRING, len(self.groupNames))
-            for iter1060 in self.groupNames:
-                oprot.writeString(iter1060.encode('utf-8') if sys.version_info[0] == 2 else iter1060)
+            for iter1066 in self.groupNames:
+                oprot.writeString(iter1066.encode('utf-8') if sys.version_info[0] == 2 else iter1066)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.projectionSpec is not None:
@@ -23364,10 +23467,1200 @@ class GetPartitionsRequest(object):
             oprot.writeFieldBegin('filterSpec', TType.STRUCT, 8)
             self.filterSpec.write(oprot)
             oprot.writeFieldEnd()
+        if self.processorCapabilities is not None:
+            oprot.writeFieldBegin('processorCapabilities', TType.LIST, 9)
+            oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
+            for iter1067 in self.processorCapabilities:
+                oprot.writeString(iter1067.encode('utf-8') if sys.version_info[0] == 2 else iter1067)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.processorIdentifier is not None:
+            oprot.writeFieldBegin('processorIdentifier', TType.STRING, 10)
+            oprot.writeString(self.processorIdentifier.encode('utf-8') if sys.version_info[0] == 2 else self.processorIdentifier)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 11)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
     def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetFieldsRequest(object):
+    """
+    Attributes:
+     - catName
+     - dbName
+     - tblName
+     - envContext
+     - validWriteIdList
+     - id
+
+    """
+
+
+    def __init__(self, catName=None, dbName=None, tblName=None, envContext=None, validWriteIdList=None, id=-1,):
+        self.catName = catName
+        self.dbName = dbName
+        self.tblName = tblName
+        self.envContext = envContext
+        self.validWriteIdList = validWriteIdList
+        self.id = id
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.dbName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.tblName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.envContext = EnvironmentContext()
+                    self.envContext.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetFieldsRequest')
+        if self.catName is not None:
+            oprot.writeFieldBegin('catName', TType.STRING, 1)
+            oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.dbName is not None:
+            oprot.writeFieldBegin('dbName', TType.STRING, 2)
+            oprot.writeString(self.dbName.encode('utf-8') if sys.version_info[0] == 2 else self.dbName)
+            oprot.writeFieldEnd()
+        if self.tblName is not None:
+            oprot.writeFieldBegin('tblName', TType.STRING, 3)
+            oprot.writeString(self.tblName.encode('utf-8') if sys.version_info[0] == 2 else self.tblName)
+            oprot.writeFieldEnd()
+        if self.envContext is not None:
+            oprot.writeFieldBegin('envContext', TType.STRUCT, 4)
+            self.envContext.write(oprot)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 5)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 6)
+            oprot.writeI64(self.id)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.dbName is None:
+            raise TProtocolException(message='Required field dbName is unset!')
+        if self.tblName is None:
+            raise TProtocolException(message='Required field tblName is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetFieldsResponse(object):
+    """
+    Attributes:
+     - fields
+
+    """
+
+
+    def __init__(self, fields=None,):
+        self.fields = fields
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.fields = []
+                    (_etype1071, _size1068) = iprot.readListBegin()
+                    for _i1072 in range(_size1068):
+                        _elem1073 = FieldSchema()
+                        _elem1073.read(iprot)
+                        self.fields.append(_elem1073)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetFieldsResponse')
+        if self.fields is not None:
+            oprot.writeFieldBegin('fields', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRUCT, len(self.fields))
+            for iter1074 in self.fields:
+                iter1074.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.fields is None:
+            raise TProtocolException(message='Required field fields is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetSchemaRequest(object):
+    """
+    Attributes:
+     - catName
+     - dbName
+     - tblName
+     - envContext
+     - validWriteIdList
+     - id
+
+    """
+
+
+    def __init__(self, catName=None, dbName=None, tblName=None, envContext=None, validWriteIdList=None, id=-1,):
+        self.catName = catName
+        self.dbName = dbName
+        self.tblName = tblName
+        self.envContext = envContext
+        self.validWriteIdList = validWriteIdList
+        self.id = id
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.dbName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.tblName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.envContext = EnvironmentContext()
+                    self.envContext.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetSchemaRequest')
+        if self.catName is not None:
+            oprot.writeFieldBegin('catName', TType.STRING, 1)
+            oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.dbName is not None:
+            oprot.writeFieldBegin('dbName', TType.STRING, 2)
+            oprot.writeString(self.dbName.encode('utf-8') if sys.version_info[0] == 2 else self.dbName)
+            oprot.writeFieldEnd()
+        if self.tblName is not None:
+            oprot.writeFieldBegin('tblName', TType.STRING, 3)
+            oprot.writeString(self.tblName.encode('utf-8') if sys.version_info[0] == 2 else self.tblName)
+            oprot.writeFieldEnd()
+        if self.envContext is not None:
+            oprot.writeFieldBegin('envContext', TType.STRUCT, 4)
+            self.envContext.write(oprot)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 5)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 6)
+            oprot.writeI64(self.id)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.dbName is None:
+            raise TProtocolException(message='Required field dbName is unset!')
+        if self.tblName is None:
+            raise TProtocolException(message='Required field tblName is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetSchemaResponse(object):
+    """
+    Attributes:
+     - fields
+
+    """
+
+
+    def __init__(self, fields=None,):
+        self.fields = fields
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.fields = []
+                    (_etype1078, _size1075) = iprot.readListBegin()
+                    for _i1079 in range(_size1075):
+                        _elem1080 = FieldSchema()
+                        _elem1080.read(iprot)
+                        self.fields.append(_elem1080)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetSchemaResponse')
+        if self.fields is not None:
+            oprot.writeFieldBegin('fields', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRUCT, len(self.fields))
+            for iter1081 in self.fields:
+                iter1081.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.fields is None:
+            raise TProtocolException(message='Required field fields is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetPartitionRequest(object):
+    """
+    Attributes:
+     - catName
+     - dbName
+     - tblName
+     - partVals
+     - validWriteIdList
+     - id
+
+    """
+
+
+    def __init__(self, catName=None, dbName=None, tblName=None, partVals=None, validWriteIdList=None, id=-1,):
+        self.catName = catName
+        self.dbName = dbName
+        self.tblName = tblName
+        self.partVals = partVals
+        self.validWriteIdList = validWriteIdList
+        self.id = id
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.dbName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.tblName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.LIST:
+                    self.partVals = []
+                    (_etype1085, _size1082) = iprot.readListBegin()
+                    for _i1086 in range(_size1082):
+                        _elem1087 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partVals.append(_elem1087)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetPartitionRequest')
+        if self.catName is not None:
+            oprot.writeFieldBegin('catName', TType.STRING, 1)
+            oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.dbName is not None:
+            oprot.writeFieldBegin('dbName', TType.STRING, 2)
+            oprot.writeString(self.dbName.encode('utf-8') if sys.version_info[0] == 2 else self.dbName)
+            oprot.writeFieldEnd()
+        if self.tblName is not None:
+            oprot.writeFieldBegin('tblName', TType.STRING, 3)
+            oprot.writeString(self.tblName.encode('utf-8') if sys.version_info[0] == 2 else self.tblName)
+            oprot.writeFieldEnd()
+        if self.partVals is not None:
+            oprot.writeFieldBegin('partVals', TType.LIST, 4)
+            oprot.writeListBegin(TType.STRING, len(self.partVals))
+            for iter1088 in self.partVals:
+                oprot.writeString(iter1088.encode('utf-8') if sys.version_info[0] == 2 else iter1088)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 5)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 6)
+            oprot.writeI64(self.id)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.dbName is None:
+            raise TProtocolException(message='Required field dbName is unset!')
+        if self.tblName is None:
+            raise TProtocolException(message='Required field tblName is unset!')
+        if self.partVals is None:
+            raise TProtocolException(message='Required field partVals is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetPartitionResponse(object):
+    """
+    Attributes:
+     - partition
+
+    """
+
+
+    def __init__(self, partition=None,):
+        self.partition = partition
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.partition = Partition()
+                    self.partition.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetPartitionResponse')
+        if self.partition is not None:
+            oprot.writeFieldBegin('partition', TType.STRUCT, 1)
+            self.partition.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.partition is None:
+            raise TProtocolException(message='Required field partition is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class PartitionsRequest(object):
+    """
+    Attributes:
+     - catName
+     - dbName
+     - tblName
+     - maxParts
+     - validWriteIdList
+     - id
+
+    """
+
+
+    def __init__(self, catName=None, dbName=None, tblName=None, maxParts=-1, validWriteIdList=None, id=-1,):
+        self.catName = catName
+        self.dbName = dbName
+        self.tblName = tblName
+        self.maxParts = maxParts
+        self.validWriteIdList = validWriteIdList
+        self.id = id
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.dbName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.tblName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I16:
+                    self.maxParts = iprot.readI16()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('PartitionsRequest')
+        if self.catName is not None:
+            oprot.writeFieldBegin('catName', TType.STRING, 1)
+            oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.dbName is not None:
+            oprot.writeFieldBegin('dbName', TType.STRING, 2)
+            oprot.writeString(self.dbName.encode('utf-8') if sys.version_info[0] == 2 else self.dbName)
+            oprot.writeFieldEnd()
+        if self.tblName is not None:
+            oprot.writeFieldBegin('tblName', TType.STRING, 3)
+            oprot.writeString(self.tblName.encode('utf-8') if sys.version_info[0] == 2 else self.tblName)
+            oprot.writeFieldEnd()
+        if self.maxParts is not None:
+            oprot.writeFieldBegin('maxParts', TType.I16, 4)
+            oprot.writeI16(self.maxParts)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 5)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 6)
+            oprot.writeI64(self.id)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.dbName is None:
+            raise TProtocolException(message='Required field dbName is unset!')
+        if self.tblName is None:
+            raise TProtocolException(message='Required field tblName is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class PartitionsResponse(object):
+    """
+    Attributes:
+     - partitions
+
+    """
+
+
+    def __init__(self, partitions=None,):
+        self.partitions = partitions
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.partitions = []
+                    (_etype1092, _size1089) = iprot.readListBegin()
+                    for _i1093 in range(_size1089):
+                        _elem1094 = Partition()
+                        _elem1094.read(iprot)
+                        self.partitions.append(_elem1094)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('PartitionsResponse')
+        if self.partitions is not None:
+            oprot.writeFieldBegin('partitions', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRUCT, len(self.partitions))
+            for iter1095 in self.partitions:
+                iter1095.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.partitions is None:
+            raise TProtocolException(message='Required field partitions is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetPartitionNamesPsRequest(object):
+    """
+    Attributes:
+     - catName
+     - dbName
+     - tblName
+     - partValues
+     - maxParts
+     - validWriteIdList
+     - id
+
+    """
+
+
+    def __init__(self, catName=None, dbName=None, tblName=None, partValues=None, maxParts=-1, validWriteIdList=None, id=-1,):
+        self.catName = catName
+        self.dbName = dbName
+        self.tblName = tblName
+        self.partValues = partValues
+        self.maxParts = maxParts
+        self.validWriteIdList = validWriteIdList
+        self.id = id
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.dbName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.tblName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.LIST:
+                    self.partValues = []
+                    (_etype1099, _size1096) = iprot.readListBegin()
+                    for _i1100 in range(_size1096):
+                        _elem1101 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partValues.append(_elem1101)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I16:
+                    self.maxParts = iprot.readI16()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetPartitionNamesPsRequest')
+        if self.catName is not None:
+            oprot.writeFieldBegin('catName', TType.STRING, 1)
+            oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.dbName is not None:
+            oprot.writeFieldBegin('dbName', TType.STRING, 2)
+            oprot.writeString(self.dbName.encode('utf-8') if sys.version_info[0] == 2 else self.dbName)
+            oprot.writeFieldEnd()
+        if self.tblName is not None:
+            oprot.writeFieldBegin('tblName', TType.STRING, 3)
+            oprot.writeString(self.tblName.encode('utf-8') if sys.version_info[0] == 2 else self.tblName)
+            oprot.writeFieldEnd()
+        if self.partValues is not None:
+            oprot.writeFieldBegin('partValues', TType.LIST, 4)
+            oprot.writeListBegin(TType.STRING, len(self.partValues))
+            for iter1102 in self.partValues:
+                oprot.writeString(iter1102.encode('utf-8') if sys.version_info[0] == 2 else iter1102)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.maxParts is not None:
+            oprot.writeFieldBegin('maxParts', TType.I16, 5)
+            oprot.writeI16(self.maxParts)
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 6)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 7)
+            oprot.writeI64(self.id)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.dbName is None:
+            raise TProtocolException(message='Required field dbName is unset!')
+        if self.tblName is None:
+            raise TProtocolException(message='Required field tblName is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetPartitionNamesPsResponse(object):
+    """
+    Attributes:
+     - names
+
+    """
+
+
+    def __init__(self, names=None,):
+        self.names = names
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.names = []
+                    (_etype1106, _size1103) = iprot.readListBegin()
+                    for _i1107 in range(_size1103):
+                        _elem1108 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.names.append(_elem1108)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetPartitionNamesPsResponse')
+        if self.names is not None:
+            oprot.writeFieldBegin('names', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRING, len(self.names))
+            for iter1109 in self.names:
+                oprot.writeString(iter1109.encode('utf-8') if sys.version_info[0] == 2 else iter1109)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.names is None:
+            raise TProtocolException(message='Required field names is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetPartitionsPsWithAuthRequest(object):
+    """
+    Attributes:
+     - catName
+     - dbName
+     - tblName
+     - partVals
+     - maxParts
+     - userName
+     - groupNames
+     - validWriteIdList
+     - id
+
+    """
+
+
+    def __init__(self, catName=None, dbName=None, tblName=None, partVals=None, maxParts=-1, userName=None, groupNames=None, validWriteIdList=None, id=-1,):
+        self.catName = catName
+        self.dbName = dbName
+        self.tblName = tblName
+        self.partVals = partVals
+        self.maxParts = maxParts
+        self.userName = userName
+        self.groupNames = groupNames
+        self.validWriteIdList = validWriteIdList
+        self.id = id
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.dbName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.tblName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.LIST:
+                    self.partVals = []
+                    (_etype1113, _size1110) = iprot.readListBegin()
+                    for _i1114 in range(_size1110):
+                        _elem1115 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partVals.append(_elem1115)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I16:
+                    self.maxParts = iprot.readI16()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.STRING:
+                    self.userName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.LIST:
+                    self.groupNames = []
+                    (_etype1119, _size1116) = iprot.readListBegin()
+                    for _i1120 in range(_size1116):
+                        _elem1121 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.groupNames.append(_elem1121)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.validWriteIdList = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetPartitionsPsWithAuthRequest')
+        if self.catName is not None:
+            oprot.writeFieldBegin('catName', TType.STRING, 1)
+            oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.dbName is not None:
+            oprot.writeFieldBegin('dbName', TType.STRING, 2)
+            oprot.writeString(self.dbName.encode('utf-8') if sys.version_info[0] == 2 else self.dbName)
+            oprot.writeFieldEnd()
+        if self.tblName is not None:
+            oprot.writeFieldBegin('tblName', TType.STRING, 3)
+            oprot.writeString(self.tblName.encode('utf-8') if sys.version_info[0] == 2 else self.tblName)
+            oprot.writeFieldEnd()
+        if self.partVals is not None:
+            oprot.writeFieldBegin('partVals', TType.LIST, 4)
+            oprot.writeListBegin(TType.STRING, len(self.partVals))
+            for iter1122 in self.partVals:
+                oprot.writeString(iter1122.encode('utf-8') if sys.version_info[0] == 2 else iter1122)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.maxParts is not None:
+            oprot.writeFieldBegin('maxParts', TType.I16, 5)
+            oprot.writeI16(self.maxParts)
+            oprot.writeFieldEnd()
+        if self.userName is not None:
+            oprot.writeFieldBegin('userName', TType.STRING, 6)
+            oprot.writeString(self.userName.encode('utf-8') if sys.version_info[0] == 2 else self.userName)
+            oprot.writeFieldEnd()
+        if self.groupNames is not None:
+            oprot.writeFieldBegin('groupNames', TType.LIST, 7)
+            oprot.writeListBegin(TType.STRING, len(self.groupNames))
+            for iter1123 in self.groupNames:
+                oprot.writeString(iter1123.encode('utf-8') if sys.version_info[0] == 2 else iter1123)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.validWriteIdList is not None:
+            oprot.writeFieldBegin('validWriteIdList', TType.STRING, 8)
+            oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 9)
+            oprot.writeI64(self.id)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.dbName is None:
+            raise TProtocolException(message='Required field dbName is unset!')
+        if self.tblName is None:
+            raise TProtocolException(message='Required field tblName is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class GetPartitionsPsWithAuthResponse(object):
+    """
+    Attributes:
+     - partitions
+
+    """
+
+
+    def __init__(self, partitions=None,):
+        self.partitions = partitions
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.partitions = []
+                    (_etype1127, _size1124) = iprot.readListBegin()
+                    for _i1128 in range(_size1124):
+                        _elem1129 = Partition()
+                        _elem1129.read(iprot)
+                        self.partitions.append(_elem1129)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('GetPartitionsPsWithAuthResponse')
+        if self.partitions is not None:
+            oprot.writeFieldBegin('partitions', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRUCT, len(self.partitions))
+            for iter1130 in self.partitions:
+                iter1130.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.partitions is None:
+            raise TProtocolException(message='Required field partitions is unset!')
         return
 
     def __repr__(self):
@@ -23523,11 +24816,11 @@ class ReplicationMetricList(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.replicationMetricList = []
-                    (_etype1064, _size1061) = iprot.readListBegin()
-                    for _i1065 in range(_size1061):
-                        _elem1066 = ReplicationMetrics()
-                        _elem1066.read(iprot)
-                        self.replicationMetricList.append(_elem1066)
+                    (_etype1134, _size1131) = iprot.readListBegin()
+                    for _i1135 in range(_size1131):
+                        _elem1136 = ReplicationMetrics()
+                        _elem1136.read(iprot)
+                        self.replicationMetricList.append(_elem1136)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23544,8 +24837,8 @@ class ReplicationMetricList(object):
         if self.replicationMetricList is not None:
             oprot.writeFieldBegin('replicationMetricList', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.replicationMetricList))
-            for iter1067 in self.replicationMetricList:
-                iter1067.write(oprot)
+            for iter1137 in self.replicationMetricList:
+                iter1137.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -23670,10 +24963,10 @@ class GetOpenTxnsRequest(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.excludeTxnTypes = []
-                    (_etype1071, _size1068) = iprot.readListBegin()
-                    for _i1072 in range(_size1068):
-                        _elem1073 = iprot.readI32()
-                        self.excludeTxnTypes.append(_elem1073)
+                    (_etype1141, _size1138) = iprot.readListBegin()
+                    for _i1142 in range(_size1138):
+                        _elem1143 = iprot.readI32()
+                        self.excludeTxnTypes.append(_elem1143)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23690,8 +24983,8 @@ class GetOpenTxnsRequest(object):
         if self.excludeTxnTypes is not None:
             oprot.writeFieldBegin('excludeTxnTypes', TType.LIST, 1)
             oprot.writeListBegin(TType.I32, len(self.excludeTxnTypes))
-            for iter1074 in self.excludeTxnTypes:
-                oprot.writeI32(iter1074)
+            for iter1144 in self.excludeTxnTypes:
+                oprot.writeI32(iter1144)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -26279,6 +27572,9 @@ PartitionsByExprRequest.thrift_spec = (
     (4, TType.STRING, 'defaultPartitionName', 'UTF8', None, ),  # 4
     (5, TType.I16, 'maxParts', None, -1, ),  # 5
     (6, TType.STRING, 'catName', 'UTF8', None, ),  # 6
+    (7, TType.STRING, 'order', 'UTF8', None, ),  # 7
+    (8, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 8
+    (9, TType.I64, 'id', None, -1, ),  # 9
 )
 all_structs.append(TableStatsResult)
 TableStatsResult.thrift_spec = (
@@ -26301,6 +27597,7 @@ TableStatsRequest.thrift_spec = (
     (4, TType.STRING, 'catName', 'UTF8', None, ),  # 4
     (5, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 5
     (6, TType.STRING, 'engine', 'UTF8', None, ),  # 6
+    (7, TType.I64, 'id', None, -1, ),  # 7
 )
 all_structs.append(PartitionsStatsRequest)
 PartitionsStatsRequest.thrift_spec = (
@@ -26372,6 +27669,7 @@ PartitionValuesRequest.thrift_spec = (
     (7, TType.BOOL, 'ascending', None, True, ),  # 7
     (8, TType.I64, 'maxParts', None, -1, ),  # 8
     (9, TType.STRING, 'catName', 'UTF8', None, ),  # 9
+    (10, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 10
 )
 all_structs.append(PartitionValuesRow)
 PartitionValuesRow.thrift_spec = (
@@ -26393,6 +27691,7 @@ GetPartitionsByNamesRequest.thrift_spec = (
     (5, TType.LIST, 'processorCapabilities', (TType.STRING, 'UTF8', False), None, ),  # 5
     (6, TType.STRING, 'processorIdentifier', 'UTF8', None, ),  # 6
     (7, TType.STRING, 'engine', 'UTF8', None, ),  # 7
+    (8, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 8
 )
 all_structs.append(GetPartitionsByNamesResult)
 GetPartitionsByNamesResult.thrift_spec = (
@@ -26944,6 +28243,7 @@ GetTableRequest.thrift_spec = (
     (8, TType.LIST, 'processorCapabilities', (TType.STRING, 'UTF8', False), None, ),  # 8
     (9, TType.STRING, 'processorIdentifier', 'UTF8', None, ),  # 9
     (10, TType.STRING, 'engine', 'UTF8', None, ),  # 10
+    (11, TType.I64, 'id', None, -1, ),  # 11
 )
 all_structs.append(GetTableResult)
 GetTableResult.thrift_spec = (
@@ -27467,6 +28767,103 @@ GetPartitionsRequest.thrift_spec = (
     (6, TType.LIST, 'groupNames', (TType.STRING, 'UTF8', False), None, ),  # 6
     (7, TType.STRUCT, 'projectionSpec', [GetProjectionsSpec, None], None, ),  # 7
     (8, TType.STRUCT, 'filterSpec', [GetPartitionsFilterSpec, None], None, ),  # 8
+    (9, TType.LIST, 'processorCapabilities', (TType.STRING, 'UTF8', False), None, ),  # 9
+    (10, TType.STRING, 'processorIdentifier', 'UTF8', None, ),  # 10
+    (11, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 11
+)
+all_structs.append(GetFieldsRequest)
+GetFieldsRequest.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'catName', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'dbName', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'tblName', 'UTF8', None, ),  # 3
+    (4, TType.STRUCT, 'envContext', [EnvironmentContext, None], None, ),  # 4
+    (5, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 5
+    (6, TType.I64, 'id', None, -1, ),  # 6
+)
+all_structs.append(GetFieldsResponse)
+GetFieldsResponse.thrift_spec = (
+    None,  # 0
+    (1, TType.LIST, 'fields', (TType.STRUCT, [FieldSchema, None], False), None, ),  # 1
+)
+all_structs.append(GetSchemaRequest)
+GetSchemaRequest.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'catName', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'dbName', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'tblName', 'UTF8', None, ),  # 3
+    (4, TType.STRUCT, 'envContext', [EnvironmentContext, None], None, ),  # 4
+    (5, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 5
+    (6, TType.I64, 'id', None, -1, ),  # 6
+)
+all_structs.append(GetSchemaResponse)
+GetSchemaResponse.thrift_spec = (
+    None,  # 0
+    (1, TType.LIST, 'fields', (TType.STRUCT, [FieldSchema, None], False), None, ),  # 1
+)
+all_structs.append(GetPartitionRequest)
+GetPartitionRequest.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'catName', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'dbName', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'tblName', 'UTF8', None, ),  # 3
+    (4, TType.LIST, 'partVals', (TType.STRING, 'UTF8', False), None, ),  # 4
+    (5, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 5
+    (6, TType.I64, 'id', None, -1, ),  # 6
+)
+all_structs.append(GetPartitionResponse)
+GetPartitionResponse.thrift_spec = (
+    None,  # 0
+    (1, TType.STRUCT, 'partition', [Partition, None], None, ),  # 1
+)
+all_structs.append(PartitionsRequest)
+PartitionsRequest.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'catName', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'dbName', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'tblName', 'UTF8', None, ),  # 3
+    (4, TType.I16, 'maxParts', None, -1, ),  # 4
+    (5, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 5
+    (6, TType.I64, 'id', None, -1, ),  # 6
+)
+all_structs.append(PartitionsResponse)
+PartitionsResponse.thrift_spec = (
+    None,  # 0
+    (1, TType.LIST, 'partitions', (TType.STRUCT, [Partition, None], False), None, ),  # 1
+)
+all_structs.append(GetPartitionNamesPsRequest)
+GetPartitionNamesPsRequest.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'catName', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'dbName', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'tblName', 'UTF8', None, ),  # 3
+    (4, TType.LIST, 'partValues', (TType.STRING, 'UTF8', False), None, ),  # 4
+    (5, TType.I16, 'maxParts', None, -1, ),  # 5
+    (6, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 6
+    (7, TType.I64, 'id', None, -1, ),  # 7
+)
+all_structs.append(GetPartitionNamesPsResponse)
+GetPartitionNamesPsResponse.thrift_spec = (
+    None,  # 0
+    (1, TType.LIST, 'names', (TType.STRING, 'UTF8', False), None, ),  # 1
+)
+all_structs.append(GetPartitionsPsWithAuthRequest)
+GetPartitionsPsWithAuthRequest.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'catName', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'dbName', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'tblName', 'UTF8', None, ),  # 3
+    (4, TType.LIST, 'partVals', (TType.STRING, 'UTF8', False), None, ),  # 4
+    (5, TType.I16, 'maxParts', None, -1, ),  # 5
+    (6, TType.STRING, 'userName', 'UTF8', None, ),  # 6
+    (7, TType.LIST, 'groupNames', (TType.STRING, 'UTF8', False), None, ),  # 7
+    (8, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 8
+    (9, TType.I64, 'id', None, -1, ),  # 9
+)
+all_structs.append(GetPartitionsPsWithAuthResponse)
+GetPartitionsPsWithAuthResponse.thrift_spec = (
+    None,  # 0
+    (1, TType.LIST, 'partitions', (TType.STRUCT, [Partition, None], False), None, ),  # 1
 )
 all_structs.append(ReplicationMetrics)
 ReplicationMetrics.thrift_spec = (

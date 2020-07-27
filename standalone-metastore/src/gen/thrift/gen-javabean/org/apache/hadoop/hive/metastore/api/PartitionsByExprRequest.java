@@ -17,6 +17,9 @@ package org.apache.hadoop.hive.metastore.api;
   private static final org.apache.thrift.protocol.TField DEFAULT_PARTITION_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPartitionName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField MAX_PARTS_FIELD_DESC = new org.apache.thrift.protocol.TField("maxParts", org.apache.thrift.protocol.TType.I16, (short)5);
   private static final org.apache.thrift.protocol.TField CAT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("catName", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField ORDER_FIELD_DESC = new org.apache.thrift.protocol.TField("order", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField VALID_WRITE_ID_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("validWriteIdList", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I64, (short)9);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new PartitionsByExprRequestStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new PartitionsByExprRequestTupleSchemeFactory();
@@ -27,6 +30,9 @@ package org.apache.hadoop.hive.metastore.api;
   private @org.apache.thrift.annotation.Nullable java.lang.String defaultPartitionName; // optional
   private short maxParts; // optional
   private @org.apache.thrift.annotation.Nullable java.lang.String catName; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String order; // optional
+  private @org.apache.thrift.annotation.Nullable java.lang.String validWriteIdList; // optional
+  private long id; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -35,7 +41,10 @@ package org.apache.hadoop.hive.metastore.api;
     EXPR((short)3, "expr"),
     DEFAULT_PARTITION_NAME((short)4, "defaultPartitionName"),
     MAX_PARTS((short)5, "maxParts"),
-    CAT_NAME((short)6, "catName");
+    CAT_NAME((short)6, "catName"),
+    ORDER((short)7, "order"),
+    VALID_WRITE_ID_LIST((short)8, "validWriteIdList"),
+    ID((short)9, "id");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -63,6 +72,12 @@ package org.apache.hadoop.hive.metastore.api;
           return MAX_PARTS;
         case 6: // CAT_NAME
           return CAT_NAME;
+        case 7: // ORDER
+          return ORDER;
+        case 8: // VALID_WRITE_ID_LIST
+          return VALID_WRITE_ID_LIST;
+        case 9: // ID
+          return ID;
         default:
           return null;
       }
@@ -105,8 +120,9 @@ package org.apache.hadoop.hive.metastore.api;
 
   // isset id assignments
   private static final int __MAXPARTS_ISSET_ID = 0;
+  private static final int __ID_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.DEFAULT_PARTITION_NAME,_Fields.MAX_PARTS,_Fields.CAT_NAME};
+  private static final _Fields optionals[] = {_Fields.DEFAULT_PARTITION_NAME,_Fields.MAX_PARTS,_Fields.CAT_NAME,_Fields.ORDER,_Fields.VALID_WRITE_ID_LIST,_Fields.ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -122,12 +138,20 @@ package org.apache.hadoop.hive.metastore.api;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I16)));
     tmpMap.put(_Fields.CAT_NAME, new org.apache.thrift.meta_data.FieldMetaData("catName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ORDER, new org.apache.thrift.meta_data.FieldMetaData("order", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.VALID_WRITE_ID_LIST, new org.apache.thrift.meta_data.FieldMetaData("validWriteIdList", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(PartitionsByExprRequest.class, metaDataMap);
   }
 
   public PartitionsByExprRequest() {
     this.maxParts = (short)-1;
+
+    this.id = -1L;
 
   }
 
@@ -163,6 +187,13 @@ package org.apache.hadoop.hive.metastore.api;
     if (other.isSetCatName()) {
       this.catName = other.catName;
     }
+    if (other.isSetOrder()) {
+      this.order = other.order;
+    }
+    if (other.isSetValidWriteIdList()) {
+      this.validWriteIdList = other.validWriteIdList;
+    }
+    this.id = other.id;
   }
 
   public PartitionsByExprRequest deepCopy() {
@@ -178,6 +209,10 @@ package org.apache.hadoop.hive.metastore.api;
     this.maxParts = (short)-1;
 
     this.catName = null;
+    this.order = null;
+    this.validWriteIdList = null;
+    this.id = -1L;
+
   }
 
   @org.apache.thrift.annotation.Nullable
@@ -330,6 +365,76 @@ package org.apache.hadoop.hive.metastore.api;
     }
   }
 
+  @org.apache.thrift.annotation.Nullable
+  public java.lang.String getOrder() {
+    return this.order;
+  }
+
+  public void setOrder(@org.apache.thrift.annotation.Nullable java.lang.String order) {
+    this.order = order;
+  }
+
+  public void unsetOrder() {
+    this.order = null;
+  }
+
+  /** Returns true if field order is set (has been assigned a value) and false otherwise */
+  public boolean isSetOrder() {
+    return this.order != null;
+  }
+
+  public void setOrderIsSet(boolean value) {
+    if (!value) {
+      this.order = null;
+    }
+  }
+
+  @org.apache.thrift.annotation.Nullable
+  public java.lang.String getValidWriteIdList() {
+    return this.validWriteIdList;
+  }
+
+  public void setValidWriteIdList(@org.apache.thrift.annotation.Nullable java.lang.String validWriteIdList) {
+    this.validWriteIdList = validWriteIdList;
+  }
+
+  public void unsetValidWriteIdList() {
+    this.validWriteIdList = null;
+  }
+
+  /** Returns true if field validWriteIdList is set (has been assigned a value) and false otherwise */
+  public boolean isSetValidWriteIdList() {
+    return this.validWriteIdList != null;
+  }
+
+  public void setValidWriteIdListIsSet(boolean value) {
+    if (!value) {
+      this.validWriteIdList = null;
+    }
+  }
+
+  public long getId() {
+    return this.id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+    setIdIsSet(true);
+  }
+
+  public void unsetId() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
+  }
+
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
+  }
+
+  public void setIdIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
     case DB_NAME:
@@ -384,6 +489,30 @@ package org.apache.hadoop.hive.metastore.api;
       }
       break;
 
+    case ORDER:
+      if (value == null) {
+        unsetOrder();
+      } else {
+        setOrder((java.lang.String)value);
+      }
+      break;
+
+    case VALID_WRITE_ID_LIST:
+      if (value == null) {
+        unsetValidWriteIdList();
+      } else {
+        setValidWriteIdList((java.lang.String)value);
+      }
+      break;
+
+    case ID:
+      if (value == null) {
+        unsetId();
+      } else {
+        setId((java.lang.Long)value);
+      }
+      break;
+
     }
   }
 
@@ -408,6 +537,15 @@ package org.apache.hadoop.hive.metastore.api;
     case CAT_NAME:
       return getCatName();
 
+    case ORDER:
+      return getOrder();
+
+    case VALID_WRITE_ID_LIST:
+      return getValidWriteIdList();
+
+    case ID:
+      return getId();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -431,6 +569,12 @@ package org.apache.hadoop.hive.metastore.api;
       return isSetMaxParts();
     case CAT_NAME:
       return isSetCatName();
+    case ORDER:
+      return isSetOrder();
+    case VALID_WRITE_ID_LIST:
+      return isSetValidWriteIdList();
+    case ID:
+      return isSetId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -502,6 +646,33 @@ package org.apache.hadoop.hive.metastore.api;
         return false;
     }
 
+    boolean this_present_order = true && this.isSetOrder();
+    boolean that_present_order = true && that.isSetOrder();
+    if (this_present_order || that_present_order) {
+      if (!(this_present_order && that_present_order))
+        return false;
+      if (!this.order.equals(that.order))
+        return false;
+    }
+
+    boolean this_present_validWriteIdList = true && this.isSetValidWriteIdList();
+    boolean that_present_validWriteIdList = true && that.isSetValidWriteIdList();
+    if (this_present_validWriteIdList || that_present_validWriteIdList) {
+      if (!(this_present_validWriteIdList && that_present_validWriteIdList))
+        return false;
+      if (!this.validWriteIdList.equals(that.validWriteIdList))
+        return false;
+    }
+
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
+        return false;
+      if (this.id != that.id)
+        return false;
+    }
+
     return true;
   }
 
@@ -532,6 +703,18 @@ package org.apache.hadoop.hive.metastore.api;
     hashCode = hashCode * 8191 + ((isSetCatName()) ? 131071 : 524287);
     if (isSetCatName())
       hashCode = hashCode * 8191 + catName.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetOrder()) ? 131071 : 524287);
+    if (isSetOrder())
+      hashCode = hashCode * 8191 + order.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetValidWriteIdList()) ? 131071 : 524287);
+    if (isSetValidWriteIdList())
+      hashCode = hashCode * 8191 + validWriteIdList.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetId()) ? 131071 : 524287);
+    if (isSetId())
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(id);
 
     return hashCode;
   }
@@ -604,6 +787,36 @@ package org.apache.hadoop.hive.metastore.api;
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.compare(isSetOrder(), other.isSetOrder());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOrder()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.order, other.order);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.compare(isSetValidWriteIdList(), other.isSetValidWriteIdList());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetValidWriteIdList()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.validWriteIdList, other.validWriteIdList);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.compare(isSetId(), other.isSetId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -672,6 +885,32 @@ package org.apache.hadoop.hive.metastore.api;
       } else {
         sb.append(this.catName);
       }
+      first = false;
+    }
+    if (isSetOrder()) {
+      if (!first) sb.append(", ");
+      sb.append("order:");
+      if (this.order == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.order);
+      }
+      first = false;
+    }
+    if (isSetValidWriteIdList()) {
+      if (!first) sb.append(", ");
+      sb.append("validWriteIdList:");
+      if (this.validWriteIdList == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.validWriteIdList);
+      }
+      first = false;
+    }
+    if (isSetId()) {
+      if (!first) sb.append(", ");
+      sb.append("id:");
+      sb.append(this.id);
       first = false;
     }
     sb.append(")");
@@ -779,6 +1018,30 @@ package org.apache.hadoop.hive.metastore.api;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // ORDER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.order = iprot.readString();
+              struct.setOrderIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // VALID_WRITE_ID_LIST
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.validWriteIdList = iprot.readString();
+              struct.setValidWriteIdListIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.id = iprot.readI64();
+              struct.setIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -826,6 +1089,25 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.order != null) {
+        if (struct.isSetOrder()) {
+          oprot.writeFieldBegin(ORDER_FIELD_DESC);
+          oprot.writeString(struct.order);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.validWriteIdList != null) {
+        if (struct.isSetValidWriteIdList()) {
+          oprot.writeFieldBegin(VALID_WRITE_ID_LIST_FIELD_DESC);
+          oprot.writeString(struct.validWriteIdList);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetId()) {
+        oprot.writeFieldBegin(ID_FIELD_DESC);
+        oprot.writeI64(struct.id);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -856,7 +1138,16 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetCatName()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetOrder()) {
+        optionals.set(3);
+      }
+      if (struct.isSetValidWriteIdList()) {
+        optionals.set(4);
+      }
+      if (struct.isSetId()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetDefaultPartitionName()) {
         oprot.writeString(struct.defaultPartitionName);
       }
@@ -865,6 +1156,15 @@ package org.apache.hadoop.hive.metastore.api;
       }
       if (struct.isSetCatName()) {
         oprot.writeString(struct.catName);
+      }
+      if (struct.isSetOrder()) {
+        oprot.writeString(struct.order);
+      }
+      if (struct.isSetValidWriteIdList()) {
+        oprot.writeString(struct.validWriteIdList);
+      }
+      if (struct.isSetId()) {
+        oprot.writeI64(struct.id);
       }
     }
 
@@ -877,7 +1177,7 @@ package org.apache.hadoop.hive.metastore.api;
       struct.setTblNameIsSet(true);
       struct.expr = iprot.readBinary();
       struct.setExprIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(3);
+      java.util.BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.defaultPartitionName = iprot.readString();
         struct.setDefaultPartitionNameIsSet(true);
@@ -889,6 +1189,18 @@ package org.apache.hadoop.hive.metastore.api;
       if (incoming.get(2)) {
         struct.catName = iprot.readString();
         struct.setCatNameIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.order = iprot.readString();
+        struct.setOrderIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.validWriteIdList = iprot.readString();
+        struct.setValidWriteIdListIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.id = iprot.readI64();
+        struct.setIdIsSet(true);
       }
     }
   }

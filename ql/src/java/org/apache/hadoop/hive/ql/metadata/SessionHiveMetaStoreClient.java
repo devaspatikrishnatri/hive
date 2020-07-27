@@ -56,6 +56,8 @@ import org.apache.hadoop.hive.metastore.api.ColumnStatisticsObj;
 import org.apache.hadoop.hive.metastore.api.CreateTableRequest;
 import org.apache.hadoop.hive.metastore.api.EnvironmentContext;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
+import org.apache.hadoop.hive.metastore.api.GetPartitionsPsWithAuthRequest;
+import org.apache.hadoop.hive.metastore.api.GetPartitionsPsWithAuthResponse;
 import org.apache.hadoop.hive.metastore.api.InvalidInputException;
 import org.apache.hadoop.hive.metastore.api.InvalidObjectException;
 import org.apache.hadoop.hive.metastore.api.InvalidOperationException;
@@ -69,6 +71,7 @@ import org.apache.hadoop.hive.metastore.api.PartitionSpec;
 import org.apache.hadoop.hive.metastore.api.PartitionValuesRequest;
 import org.apache.hadoop.hive.metastore.api.PartitionValuesResponse;
 import org.apache.hadoop.hive.metastore.api.PartitionValuesRow;
+import org.apache.hadoop.hive.metastore.api.PartitionsByExprRequest;
 import org.apache.hadoop.hive.metastore.api.PrincipalPrivilegeSet;
 import org.apache.hadoop.hive.metastore.api.SetPartitionsStatsRequest;
 import org.apache.hadoop.hive.metastore.api.TableMeta;
@@ -1090,6 +1093,24 @@ public class SessionHiveMetaStoreClient extends HiveMetaStoreClient implements I
     TempTable tt = getPartitionedTempTable(table);
     List<Partition> partitions = tt.listPartitionsWithAuthInfo(userName, groupNames);
     return getPartitionsForMaxParts(tableName, partitions, maxParts);
+  }
+ 
+  @Override
+  public GetPartitionsPsWithAuthResponse listPartitionsWithAuthInfoRequest(
+      GetPartitionsPsWithAuthRequest req)
+      throws MetaException, TException, NoSuchObjectException {
+    org.apache.hadoop.hive.metastore.api.Table table = getTempTable(req.getDbName(),
+        req.getTblName());
+    if (table == null) {
+      return super.listPartitionsWithAuthInfoRequest(req);
+    }
+    TempTable tt = getPartitionedTempTable(table);
+    List<Partition> partitions = tt
+        .listPartitionsWithAuthInfo(req.getUserName(), req.getGroupNames());
+    GetPartitionsPsWithAuthResponse response = new GetPartitionsPsWithAuthResponse();
+    response.setPartitions(
+        getPartitionsForMaxParts(req.getTblName(), partitions, req.getMaxParts()));
+    return response;
   }
 
   @Override

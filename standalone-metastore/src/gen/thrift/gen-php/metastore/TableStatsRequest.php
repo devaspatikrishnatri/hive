@@ -55,6 +55,11 @@ class TableStatsRequest
             'isRequired' => false,
             'type' => TType::STRING,
         ),
+        7 => array(
+            'var' => 'id',
+            'isRequired' => false,
+            'type' => TType::I64,
+        ),
     );
 
     /**
@@ -81,6 +86,10 @@ class TableStatsRequest
      * @var string
      */
     public $engine = null;
+    /**
+     * @var int
+     */
+    public $id = -1;
 
     public function __construct($vals = null)
     {
@@ -102,6 +111,9 @@ class TableStatsRequest
             }
             if (isset($vals['engine'])) {
                 $this->engine = $vals['engine'];
+            }
+            if (isset($vals['id'])) {
+                $this->id = $vals['id'];
             }
         }
     }
@@ -176,6 +188,13 @@ class TableStatsRequest
                         $xfer += $input->skip($ftype);
                     }
                     break;
+                case 7:
+                    if ($ftype == TType::I64) {
+                        $xfer += $input->readI64($this->id);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
                 default:
                     $xfer += $input->skip($ftype);
                     break;
@@ -225,6 +244,11 @@ class TableStatsRequest
         if ($this->engine !== null) {
             $xfer += $output->writeFieldBegin('engine', TType::STRING, 6);
             $xfer += $output->writeString($this->engine);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->id !== null) {
+            $xfer += $output->writeFieldBegin('id', TType::I64, 7);
+            $xfer += $output->writeI64($this->id);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

@@ -64,6 +64,11 @@ class GetPartitionsByNamesRequest
             'isRequired' => false,
             'type' => TType::STRING,
         ),
+        8 => array(
+            'var' => 'validWriteIdList',
+            'isRequired' => false,
+            'type' => TType::STRING,
+        ),
     );
 
     /**
@@ -94,6 +99,10 @@ class GetPartitionsByNamesRequest
      * @var string
      */
     public $engine = null;
+    /**
+     * @var string
+     */
+    public $validWriteIdList = null;
 
     public function __construct($vals = null)
     {
@@ -118,6 +127,9 @@ class GetPartitionsByNamesRequest
             }
             if (isset($vals['engine'])) {
                 $this->engine = $vals['engine'];
+            }
+            if (isset($vals['validWriteIdList'])) {
+                $this->validWriteIdList = $vals['validWriteIdList'];
             }
         }
     }
@@ -208,6 +220,13 @@ class GetPartitionsByNamesRequest
                         $xfer += $input->skip($ftype);
                     }
                     break;
+                case 8:
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->validWriteIdList);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
                 default:
                     $xfer += $input->skip($ftype);
                     break;
@@ -269,6 +288,11 @@ class GetPartitionsByNamesRequest
         if ($this->engine !== null) {
             $xfer += $output->writeFieldBegin('engine', TType::STRING, 7);
             $xfer += $output->writeString($this->engine);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->validWriteIdList !== null) {
+            $xfer += $output->writeFieldBegin('validWriteIdList', TType::STRING, 8);
+            $xfer += $output->writeString($this->validWriteIdList);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

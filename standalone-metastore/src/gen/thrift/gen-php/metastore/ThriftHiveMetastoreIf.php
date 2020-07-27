@@ -167,6 +167,14 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function get_fields_with_environment_context($db_name, $table_name, \metastore\EnvironmentContext $environment_context);
     /**
+     * @param \metastore\GetFieldsRequest $req
+     * @return \metastore\GetFieldsResponse
+     * @throws \metastore\MetaException
+     * @throws \metastore\UnknownTableException
+     * @throws \metastore\UnknownDBException
+     */
+    public function get_fields_req(\metastore\GetFieldsRequest $req);
+    /**
      * @param string $db_name
      * @param string $table_name
      * @return \metastore\FieldSchema[]
@@ -185,6 +193,14 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\UnknownDBException
      */
     public function get_schema_with_environment_context($db_name, $table_name, \metastore\EnvironmentContext $environment_context);
+    /**
+     * @param \metastore\GetSchemaRequest $req
+     * @return \metastore\GetSchemaResponse
+     * @throws \metastore\MetaException
+     * @throws \metastore\UnknownTableException
+     * @throws \metastore\UnknownDBException
+     */
+    public function get_schema_req(\metastore\GetSchemaRequest $req);
     /**
      * @param \metastore\Table $tbl
      * @throws \metastore\AlreadyExistsException
@@ -584,6 +600,13 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function get_partition($db_name, $tbl_name, array $part_vals);
     /**
+     * @param \metastore\GetPartitionRequest $req
+     * @return \metastore\GetPartitionResponse
+     * @throws \metastore\MetaException
+     * @throws \metastore\NoSuchObjectException
+     */
+    public function get_partition_req(\metastore\GetPartitionRequest $req);
+    /**
      * @param array $partitionSpecs
      * @param string $source_db
      * @param string $source_table_name
@@ -638,6 +661,13 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\MetaException
      */
     public function get_partitions($db_name, $tbl_name, $max_parts);
+    /**
+     * @param \metastore\PartitionsRequest $req
+     * @return \metastore\PartitionsResponse
+     * @throws \metastore\NoSuchObjectException
+     * @throws \metastore\MetaException
+     */
+    public function get_partitions_req(\metastore\PartitionsRequest $req);
     /**
      * @param string $db_name
      * @param string $tbl_name
@@ -697,6 +727,13 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function get_partitions_ps_with_auth($db_name, $tbl_name, array $part_vals, $max_parts, $user_name, array $group_names);
     /**
+     * @param \metastore\GetPartitionsPsWithAuthRequest $req
+     * @return \metastore\GetPartitionsPsWithAuthResponse
+     * @throws \metastore\MetaException
+     * @throws \metastore\NoSuchObjectException
+     */
+    public function get_partitions_ps_with_auth_req(\metastore\GetPartitionsPsWithAuthRequest $req);
+    /**
      * @param string $db_name
      * @param string $tbl_name
      * @param string[] $part_vals
@@ -706,6 +743,13 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\NoSuchObjectException
      */
     public function get_partition_names_ps($db_name, $tbl_name, array $part_vals, $max_parts);
+    /**
+     * @param \metastore\GetPartitionNamesPsRequest $req
+     * @return \metastore\GetPartitionNamesPsResponse
+     * @throws \metastore\MetaException
+     * @throws \metastore\NoSuchObjectException
+     */
+    public function get_partition_names_ps_req(\metastore\GetPartitionNamesPsRequest $req);
     /**
      * @param string $db_name
      * @param string $tbl_name

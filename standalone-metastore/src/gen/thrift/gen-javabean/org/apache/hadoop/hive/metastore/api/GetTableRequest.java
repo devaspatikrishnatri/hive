@@ -20,6 +20,7 @@ package org.apache.hadoop.hive.metastore.api;
   private static final org.apache.thrift.protocol.TField PROCESSOR_CAPABILITIES_FIELD_DESC = new org.apache.thrift.protocol.TField("processorCapabilities", org.apache.thrift.protocol.TType.LIST, (short)8);
   private static final org.apache.thrift.protocol.TField PROCESSOR_IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("processorIdentifier", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField ENGINE_FIELD_DESC = new org.apache.thrift.protocol.TField("engine", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I64, (short)11);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GetTableRequestStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GetTableRequestTupleSchemeFactory();
@@ -33,6 +34,7 @@ package org.apache.hadoop.hive.metastore.api;
   private @org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> processorCapabilities; // optional
   private @org.apache.thrift.annotation.Nullable java.lang.String processorIdentifier; // optional
   private @org.apache.thrift.annotation.Nullable java.lang.String engine; // optional
+  private long id; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -44,7 +46,8 @@ package org.apache.hadoop.hive.metastore.api;
     GET_COLUMN_STATS((short)7, "getColumnStats"),
     PROCESSOR_CAPABILITIES((short)8, "processorCapabilities"),
     PROCESSOR_IDENTIFIER((short)9, "processorIdentifier"),
-    ENGINE((short)10, "engine");
+    ENGINE((short)10, "engine"),
+    ID((short)11, "id");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -78,6 +81,8 @@ package org.apache.hadoop.hive.metastore.api;
           return PROCESSOR_IDENTIFIER;
         case 10: // ENGINE
           return ENGINE;
+        case 11: // ID
+          return ID;
         default:
           return null;
       }
@@ -120,8 +125,9 @@ package org.apache.hadoop.hive.metastore.api;
 
   // isset id assignments
   private static final int __GETCOLUMNSTATS_ISSET_ID = 0;
+  private static final int __ID_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CAPABILITIES,_Fields.CAT_NAME,_Fields.VALID_WRITE_ID_LIST,_Fields.GET_COLUMN_STATS,_Fields.PROCESSOR_CAPABILITIES,_Fields.PROCESSOR_IDENTIFIER,_Fields.ENGINE};
+  private static final _Fields optionals[] = {_Fields.CAPABILITIES,_Fields.CAT_NAME,_Fields.VALID_WRITE_ID_LIST,_Fields.GET_COLUMN_STATS,_Fields.PROCESSOR_CAPABILITIES,_Fields.PROCESSOR_IDENTIFIER,_Fields.ENGINE,_Fields.ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -144,11 +150,15 @@ package org.apache.hadoop.hive.metastore.api;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.ENGINE, new org.apache.thrift.meta_data.FieldMetaData("engine", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GetTableRequest.class, metaDataMap);
   }
 
   public GetTableRequest() {
+    this.id = -1L;
+
   }
 
   public GetTableRequest(
@@ -191,6 +201,7 @@ package org.apache.hadoop.hive.metastore.api;
     if (other.isSetEngine()) {
       this.engine = other.engine;
     }
+    this.id = other.id;
   }
 
   public GetTableRequest deepCopy() {
@@ -209,6 +220,8 @@ package org.apache.hadoop.hive.metastore.api;
     this.processorCapabilities = null;
     this.processorIdentifier = null;
     this.engine = null;
+    this.id = -1L;
+
   }
 
   @org.apache.thrift.annotation.Nullable
@@ -441,6 +454,28 @@ package org.apache.hadoop.hive.metastore.api;
     }
   }
 
+  public long getId() {
+    return this.id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+    setIdIsSet(true);
+  }
+
+  public void unsetId() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
+  }
+
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
+  }
+
+  public void setIdIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
     case DB_NAME:
@@ -515,6 +550,14 @@ package org.apache.hadoop.hive.metastore.api;
       }
       break;
 
+    case ID:
+      if (value == null) {
+        unsetId();
+      } else {
+        setId((java.lang.Long)value);
+      }
+      break;
+
     }
   }
 
@@ -548,6 +591,9 @@ package org.apache.hadoop.hive.metastore.api;
     case ENGINE:
       return getEngine();
 
+    case ID:
+      return getId();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -577,6 +623,8 @@ package org.apache.hadoop.hive.metastore.api;
       return isSetProcessorIdentifier();
     case ENGINE:
       return isSetEngine();
+    case ID:
+      return isSetId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -675,6 +723,15 @@ package org.apache.hadoop.hive.metastore.api;
         return false;
     }
 
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
+        return false;
+      if (this.id != that.id)
+        return false;
+    }
+
     return true;
   }
 
@@ -717,6 +774,10 @@ package org.apache.hadoop.hive.metastore.api;
     hashCode = hashCode * 8191 + ((isSetEngine()) ? 131071 : 524287);
     if (isSetEngine())
       hashCode = hashCode * 8191 + engine.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetId()) ? 131071 : 524287);
+    if (isSetId())
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(id);
 
     return hashCode;
   }
@@ -815,6 +876,16 @@ package org.apache.hadoop.hive.metastore.api;
     }
     if (isSetEngine()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.engine, other.engine);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.compare(isSetId(), other.isSetId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -919,6 +990,12 @@ package org.apache.hadoop.hive.metastore.api;
       } else {
         sb.append(this.engine);
       }
+      first = false;
+    }
+    if (isSetId()) {
+      if (!first) sb.append(", ");
+      sb.append("id:");
+      sb.append(this.id);
       first = false;
     }
     sb.append(")");
@@ -1060,6 +1137,14 @@ package org.apache.hadoop.hive.metastore.api;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 11: // ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.id = iprot.readI64();
+              struct.setIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1137,6 +1222,11 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetId()) {
+        oprot.writeFieldBegin(ID_FIELD_DESC);
+        oprot.writeI64(struct.id);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1178,7 +1268,10 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetEngine()) {
         optionals.set(6);
       }
-      oprot.writeBitSet(optionals, 7);
+      if (struct.isSetId()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetCapabilities()) {
         struct.capabilities.write(oprot);
       }
@@ -1206,6 +1299,9 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetEngine()) {
         oprot.writeString(struct.engine);
       }
+      if (struct.isSetId()) {
+        oprot.writeI64(struct.id);
+      }
     }
 
     @Override
@@ -1215,7 +1311,7 @@ package org.apache.hadoop.hive.metastore.api;
       struct.setDbNameIsSet(true);
       struct.tblName = iprot.readString();
       struct.setTblNameIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(7);
+      java.util.BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.capabilities = new ClientCapabilities();
         struct.capabilities.read(iprot);
@@ -1253,6 +1349,10 @@ package org.apache.hadoop.hive.metastore.api;
       if (incoming.get(6)) {
         struct.engine = iprot.readString();
         struct.setEngineIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.id = iprot.readI64();
+        struct.setIdIsSet(true);
       }
     }
   }

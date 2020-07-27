@@ -76,6 +76,11 @@ class PartitionValuesRequest
             'isRequired' => false,
             'type' => TType::STRING,
         ),
+        10 => array(
+            'var' => 'validWriteIdList',
+            'isRequired' => false,
+            'type' => TType::STRING,
+        ),
     );
 
     /**
@@ -114,6 +119,10 @@ class PartitionValuesRequest
      * @var string
      */
     public $catName = null;
+    /**
+     * @var string
+     */
+    public $validWriteIdList = null;
 
     public function __construct($vals = null)
     {
@@ -144,6 +153,9 @@ class PartitionValuesRequest
             }
             if (isset($vals['catName'])) {
                 $this->catName = $vals['catName'];
+            }
+            if (isset($vals['validWriteIdList'])) {
+                $this->validWriteIdList = $vals['validWriteIdList'];
             }
         }
     }
@@ -250,6 +262,13 @@ class PartitionValuesRequest
                         $xfer += $input->skip($ftype);
                     }
                     break;
+                case 10:
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->validWriteIdList);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
                 default:
                     $xfer += $input->skip($ftype);
                     break;
@@ -321,6 +340,11 @@ class PartitionValuesRequest
         if ($this->catName !== null) {
             $xfer += $output->writeFieldBegin('catName', TType::STRING, 9);
             $xfer += $output->writeString($this->catName);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->validWriteIdList !== null) {
+            $xfer += $output->writeFieldBegin('validWriteIdList', TType::STRING, 10);
+            $xfer += $output->writeString($this->validWriteIdList);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

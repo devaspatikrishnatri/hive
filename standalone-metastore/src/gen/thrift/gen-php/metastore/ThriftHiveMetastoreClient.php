@@ -1375,6 +1375,74 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
         throw new \Exception("get_fields_with_environment_context failed: unknown result");
     }
 
+    public function get_fields_req(\metastore\GetFieldsRequest $req)
+    {
+        $this->send_get_fields_req($req);
+        return $this->recv_get_fields_req();
+    }
+
+    public function send_get_fields_req(\metastore\GetFieldsRequest $req)
+    {
+        $args = new \metastore\ThriftHiveMetastore_get_fields_req_args();
+        $args->req = $req;
+        $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+        if ($bin_accel) {
+            thrift_protocol_write_binary(
+                $this->output_,
+                'get_fields_req',
+                TMessageType::CALL,
+                $args,
+                $this->seqid_,
+                $this->output_->isStrictWrite()
+            );
+        } else {
+            $this->output_->writeMessageBegin('get_fields_req', TMessageType::CALL, $this->seqid_);
+            $args->write($this->output_);
+            $this->output_->writeMessageEnd();
+            $this->output_->getTransport()->flush();
+        }
+    }
+
+    public function recv_get_fields_req()
+    {
+        $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+        if ($bin_accel) {
+            $result = thrift_protocol_read_binary(
+                $this->input_,
+                '\metastore\ThriftHiveMetastore_get_fields_req_result',
+                $this->input_->isStrictRead()
+            );
+        } else {
+            $rseqid = 0;
+            $fname = null;
+            $mtype = 0;
+
+            $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+            if ($mtype == TMessageType::EXCEPTION) {
+                $x = new TApplicationException();
+                $x->read($this->input_);
+                $this->input_->readMessageEnd();
+                throw $x;
+            }
+            $result = new \metastore\ThriftHiveMetastore_get_fields_req_result();
+            $result->read($this->input_);
+            $this->input_->readMessageEnd();
+        }
+        if ($result->success !== null) {
+            return $result->success;
+        }
+        if ($result->o1 !== null) {
+            throw $result->o1;
+        }
+        if ($result->o2 !== null) {
+            throw $result->o2;
+        }
+        if ($result->o3 !== null) {
+            throw $result->o3;
+        }
+        throw new \Exception("get_fields_req failed: unknown result");
+    }
+
     public function get_schema($db_name, $table_name)
     {
         $this->send_get_schema($db_name, $table_name);
@@ -1512,6 +1580,74 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
             throw $result->o3;
         }
         throw new \Exception("get_schema_with_environment_context failed: unknown result");
+    }
+
+    public function get_schema_req(\metastore\GetSchemaRequest $req)
+    {
+        $this->send_get_schema_req($req);
+        return $this->recv_get_schema_req();
+    }
+
+    public function send_get_schema_req(\metastore\GetSchemaRequest $req)
+    {
+        $args = new \metastore\ThriftHiveMetastore_get_schema_req_args();
+        $args->req = $req;
+        $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+        if ($bin_accel) {
+            thrift_protocol_write_binary(
+                $this->output_,
+                'get_schema_req',
+                TMessageType::CALL,
+                $args,
+                $this->seqid_,
+                $this->output_->isStrictWrite()
+            );
+        } else {
+            $this->output_->writeMessageBegin('get_schema_req', TMessageType::CALL, $this->seqid_);
+            $args->write($this->output_);
+            $this->output_->writeMessageEnd();
+            $this->output_->getTransport()->flush();
+        }
+    }
+
+    public function recv_get_schema_req()
+    {
+        $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+        if ($bin_accel) {
+            $result = thrift_protocol_read_binary(
+                $this->input_,
+                '\metastore\ThriftHiveMetastore_get_schema_req_result',
+                $this->input_->isStrictRead()
+            );
+        } else {
+            $rseqid = 0;
+            $fname = null;
+            $mtype = 0;
+
+            $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+            if ($mtype == TMessageType::EXCEPTION) {
+                $x = new TApplicationException();
+                $x->read($this->input_);
+                $this->input_->readMessageEnd();
+                throw $x;
+            }
+            $result = new \metastore\ThriftHiveMetastore_get_schema_req_result();
+            $result->read($this->input_);
+            $this->input_->readMessageEnd();
+        }
+        if ($result->success !== null) {
+            return $result->success;
+        }
+        if ($result->o1 !== null) {
+            throw $result->o1;
+        }
+        if ($result->o2 !== null) {
+            throw $result->o2;
+        }
+        if ($result->o3 !== null) {
+            throw $result->o3;
+        }
+        throw new \Exception("get_schema_req failed: unknown result");
     }
 
     public function create_table(\metastore\Table $tbl)
@@ -4742,6 +4878,71 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
         throw new \Exception("get_partition failed: unknown result");
     }
 
+    public function get_partition_req(\metastore\GetPartitionRequest $req)
+    {
+        $this->send_get_partition_req($req);
+        return $this->recv_get_partition_req();
+    }
+
+    public function send_get_partition_req(\metastore\GetPartitionRequest $req)
+    {
+        $args = new \metastore\ThriftHiveMetastore_get_partition_req_args();
+        $args->req = $req;
+        $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+        if ($bin_accel) {
+            thrift_protocol_write_binary(
+                $this->output_,
+                'get_partition_req',
+                TMessageType::CALL,
+                $args,
+                $this->seqid_,
+                $this->output_->isStrictWrite()
+            );
+        } else {
+            $this->output_->writeMessageBegin('get_partition_req', TMessageType::CALL, $this->seqid_);
+            $args->write($this->output_);
+            $this->output_->writeMessageEnd();
+            $this->output_->getTransport()->flush();
+        }
+    }
+
+    public function recv_get_partition_req()
+    {
+        $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+        if ($bin_accel) {
+            $result = thrift_protocol_read_binary(
+                $this->input_,
+                '\metastore\ThriftHiveMetastore_get_partition_req_result',
+                $this->input_->isStrictRead()
+            );
+        } else {
+            $rseqid = 0;
+            $fname = null;
+            $mtype = 0;
+
+            $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+            if ($mtype == TMessageType::EXCEPTION) {
+                $x = new TApplicationException();
+                $x->read($this->input_);
+                $this->input_->readMessageEnd();
+                throw $x;
+            }
+            $result = new \metastore\ThriftHiveMetastore_get_partition_req_result();
+            $result->read($this->input_);
+            $this->input_->readMessageEnd();
+        }
+        if ($result->success !== null) {
+            return $result->success;
+        }
+        if ($result->o1 !== null) {
+            throw $result->o1;
+        }
+        if ($result->o2 !== null) {
+            throw $result->o2;
+        }
+        throw new \Exception("get_partition_req failed: unknown result");
+    }
+
     public function exchange_partition(array $partitionSpecs, $source_db, $source_table_name, $dest_db, $dest_table_name)
     {
         $this->send_exchange_partition($partitionSpecs, $source_db, $source_table_name, $dest_db, $dest_table_name);
@@ -5093,6 +5294,71 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
             throw $result->o2;
         }
         throw new \Exception("get_partitions failed: unknown result");
+    }
+
+    public function get_partitions_req(\metastore\PartitionsRequest $req)
+    {
+        $this->send_get_partitions_req($req);
+        return $this->recv_get_partitions_req();
+    }
+
+    public function send_get_partitions_req(\metastore\PartitionsRequest $req)
+    {
+        $args = new \metastore\ThriftHiveMetastore_get_partitions_req_args();
+        $args->req = $req;
+        $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+        if ($bin_accel) {
+            thrift_protocol_write_binary(
+                $this->output_,
+                'get_partitions_req',
+                TMessageType::CALL,
+                $args,
+                $this->seqid_,
+                $this->output_->isStrictWrite()
+            );
+        } else {
+            $this->output_->writeMessageBegin('get_partitions_req', TMessageType::CALL, $this->seqid_);
+            $args->write($this->output_);
+            $this->output_->writeMessageEnd();
+            $this->output_->getTransport()->flush();
+        }
+    }
+
+    public function recv_get_partitions_req()
+    {
+        $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+        if ($bin_accel) {
+            $result = thrift_protocol_read_binary(
+                $this->input_,
+                '\metastore\ThriftHiveMetastore_get_partitions_req_result',
+                $this->input_->isStrictRead()
+            );
+        } else {
+            $rseqid = 0;
+            $fname = null;
+            $mtype = 0;
+
+            $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+            if ($mtype == TMessageType::EXCEPTION) {
+                $x = new TApplicationException();
+                $x->read($this->input_);
+                $this->input_->readMessageEnd();
+                throw $x;
+            }
+            $result = new \metastore\ThriftHiveMetastore_get_partitions_req_result();
+            $result->read($this->input_);
+            $this->input_->readMessageEnd();
+        }
+        if ($result->success !== null) {
+            return $result->success;
+        }
+        if ($result->o1 !== null) {
+            throw $result->o1;
+        }
+        if ($result->o2 !== null) {
+            throw $result->o2;
+        }
+        throw new \Exception("get_partitions_req failed: unknown result");
     }
 
     public function get_partitions_with_auth($db_name, $tbl_name, $max_parts, $user_name, array $group_names)
@@ -5501,6 +5767,71 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
         throw new \Exception("get_partitions_ps_with_auth failed: unknown result");
     }
 
+    public function get_partitions_ps_with_auth_req(\metastore\GetPartitionsPsWithAuthRequest $req)
+    {
+        $this->send_get_partitions_ps_with_auth_req($req);
+        return $this->recv_get_partitions_ps_with_auth_req();
+    }
+
+    public function send_get_partitions_ps_with_auth_req(\metastore\GetPartitionsPsWithAuthRequest $req)
+    {
+        $args = new \metastore\ThriftHiveMetastore_get_partitions_ps_with_auth_req_args();
+        $args->req = $req;
+        $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+        if ($bin_accel) {
+            thrift_protocol_write_binary(
+                $this->output_,
+                'get_partitions_ps_with_auth_req',
+                TMessageType::CALL,
+                $args,
+                $this->seqid_,
+                $this->output_->isStrictWrite()
+            );
+        } else {
+            $this->output_->writeMessageBegin('get_partitions_ps_with_auth_req', TMessageType::CALL, $this->seqid_);
+            $args->write($this->output_);
+            $this->output_->writeMessageEnd();
+            $this->output_->getTransport()->flush();
+        }
+    }
+
+    public function recv_get_partitions_ps_with_auth_req()
+    {
+        $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+        if ($bin_accel) {
+            $result = thrift_protocol_read_binary(
+                $this->input_,
+                '\metastore\ThriftHiveMetastore_get_partitions_ps_with_auth_req_result',
+                $this->input_->isStrictRead()
+            );
+        } else {
+            $rseqid = 0;
+            $fname = null;
+            $mtype = 0;
+
+            $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+            if ($mtype == TMessageType::EXCEPTION) {
+                $x = new TApplicationException();
+                $x->read($this->input_);
+                $this->input_->readMessageEnd();
+                throw $x;
+            }
+            $result = new \metastore\ThriftHiveMetastore_get_partitions_ps_with_auth_req_result();
+            $result->read($this->input_);
+            $this->input_->readMessageEnd();
+        }
+        if ($result->success !== null) {
+            return $result->success;
+        }
+        if ($result->o1 !== null) {
+            throw $result->o1;
+        }
+        if ($result->o2 !== null) {
+            throw $result->o2;
+        }
+        throw new \Exception("get_partitions_ps_with_auth_req failed: unknown result");
+    }
+
     public function get_partition_names_ps($db_name, $tbl_name, array $part_vals, $max_parts)
     {
         $this->send_get_partition_names_ps($db_name, $tbl_name, $part_vals, $max_parts);
@@ -5567,6 +5898,71 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
             throw $result->o2;
         }
         throw new \Exception("get_partition_names_ps failed: unknown result");
+    }
+
+    public function get_partition_names_ps_req(\metastore\GetPartitionNamesPsRequest $req)
+    {
+        $this->send_get_partition_names_ps_req($req);
+        return $this->recv_get_partition_names_ps_req();
+    }
+
+    public function send_get_partition_names_ps_req(\metastore\GetPartitionNamesPsRequest $req)
+    {
+        $args = new \metastore\ThriftHiveMetastore_get_partition_names_ps_req_args();
+        $args->req = $req;
+        $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+        if ($bin_accel) {
+            thrift_protocol_write_binary(
+                $this->output_,
+                'get_partition_names_ps_req',
+                TMessageType::CALL,
+                $args,
+                $this->seqid_,
+                $this->output_->isStrictWrite()
+            );
+        } else {
+            $this->output_->writeMessageBegin('get_partition_names_ps_req', TMessageType::CALL, $this->seqid_);
+            $args->write($this->output_);
+            $this->output_->writeMessageEnd();
+            $this->output_->getTransport()->flush();
+        }
+    }
+
+    public function recv_get_partition_names_ps_req()
+    {
+        $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+        if ($bin_accel) {
+            $result = thrift_protocol_read_binary(
+                $this->input_,
+                '\metastore\ThriftHiveMetastore_get_partition_names_ps_req_result',
+                $this->input_->isStrictRead()
+            );
+        } else {
+            $rseqid = 0;
+            $fname = null;
+            $mtype = 0;
+
+            $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+            if ($mtype == TMessageType::EXCEPTION) {
+                $x = new TApplicationException();
+                $x->read($this->input_);
+                $this->input_->readMessageEnd();
+                throw $x;
+            }
+            $result = new \metastore\ThriftHiveMetastore_get_partition_names_ps_req_result();
+            $result->read($this->input_);
+            $this->input_->readMessageEnd();
+        }
+        if ($result->success !== null) {
+            return $result->success;
+        }
+        if ($result->o1 !== null) {
+            throw $result->o1;
+        }
+        if ($result->o2 !== null) {
+            throw $result->o2;
+        }
+        throw new \Exception("get_partition_names_ps_req failed: unknown result");
     }
 
     public function get_partitions_by_filter($db_name, $tbl_name, $filter, $max_parts)

@@ -1325,6 +1325,16 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
   }
 
   @Override
+  public GetPartitionsPsWithAuthResponse listPartitionsWithAuthInfoRequest(GetPartitionsPsWithAuthRequest req)
+      throws MetaException, TException, NoSuchObjectException {
+    GetPartitionsPsWithAuthResponse res = client.get_partitions_ps_with_auth_req(req);
+    List<Partition> parts = fastpath ? res.getPartitions() :
+        deepCopyPartitions(filterHook.filterPartitions(res.getPartitions()));
+    res.setPartitions(parts);
+    return res;
+  }
+
+  @Override
   public List<Partition> listPartitionsWithAuthInfo(String db_name,
       String tbl_name, List<String> part_vals, short max_parts,
       String user_name, List<String> group_names) throws NoSuchObjectException,
@@ -1432,9 +1442,21 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
   }
 
   @Override
+  public GetPartitionResponse getPartitionRequest(GetPartitionRequest req)
+      throws NoSuchObjectException, MetaException, TException {
+    return client.get_partition_req(req);
+  }
+
+  @Override
   public List<Partition> getPartitionsByNames(String db_name, String tbl_name,
-                                              List<String> part_names) throws NoSuchObjectException, MetaException, TException {
+                                              List<String> part_names)
+      throws NoSuchObjectException, MetaException, TException {
     return getPartitionsByNames(db_name, tbl_name, part_names, false, null);
+  }
+
+  @Override public PartitionsResponse getPartitionsRequest(PartitionsRequest req)
+      throws NoSuchObjectException, MetaException, TException {
+    return client.get_partitions_req(req);
   }
 
   @Override
@@ -1645,6 +1667,11 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
       short max) throws NoSuchObjectException, MetaException, TException {
     return filterHook.filterPartitionNames(null, dbName, tblName,
         client.get_partition_names(dbName, tblName, max));
+  }
+
+  @Override public GetPartitionNamesPsResponse listPartitionNamesRequest(GetPartitionNamesPsRequest req)
+      throws NoSuchObjectException, MetaException, TException {
+    return client.get_partition_names_ps_req(req);
   }
 
   @Override
@@ -3502,9 +3529,23 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
   }
 
   @Override
+  public GetFieldsResponse getFieldsRequest(GetFieldsRequest req)
+      throws MetaException, TException, UnknownTableException, UnknownDBException {
+    throw new UnsupportedOperationException("getFieldsRequest is not supported in HiveMetastoreClientPreCatalog. "
+        + "Use HiveMetastoreClient instead");
+  }
+
+  @Override
   public List<FieldSchema> getSchema(String catName, String db, String tableName) throws
       MetaException, TException, UnknownTableException, UnknownDBException {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public GetSchemaResponse getSchemaRequest(GetSchemaRequest req)
+      throws MetaException, TException, UnknownTableException, UnknownDBException {
+    throw new UnsupportedOperationException("getSchemaRequest is not supported in HiveMetastoreClientPreCatalog. "
+        + "Use HiveMetastoreClient instead");
   }
 
   @Override

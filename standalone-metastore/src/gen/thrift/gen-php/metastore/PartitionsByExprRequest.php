@@ -51,6 +51,21 @@ class PartitionsByExprRequest
             'isRequired' => false,
             'type' => TType::STRING,
         ),
+        7 => array(
+            'var' => 'order',
+            'isRequired' => false,
+            'type' => TType::STRING,
+        ),
+        8 => array(
+            'var' => 'validWriteIdList',
+            'isRequired' => false,
+            'type' => TType::STRING,
+        ),
+        9 => array(
+            'var' => 'id',
+            'isRequired' => false,
+            'type' => TType::I64,
+        ),
     );
 
     /**
@@ -77,6 +92,18 @@ class PartitionsByExprRequest
      * @var string
      */
     public $catName = null;
+    /**
+     * @var string
+     */
+    public $order = null;
+    /**
+     * @var string
+     */
+    public $validWriteIdList = null;
+    /**
+     * @var int
+     */
+    public $id = -1;
 
     public function __construct($vals = null)
     {
@@ -98,6 +125,15 @@ class PartitionsByExprRequest
             }
             if (isset($vals['catName'])) {
                 $this->catName = $vals['catName'];
+            }
+            if (isset($vals['order'])) {
+                $this->order = $vals['order'];
+            }
+            if (isset($vals['validWriteIdList'])) {
+                $this->validWriteIdList = $vals['validWriteIdList'];
+            }
+            if (isset($vals['id'])) {
+                $this->id = $vals['id'];
             }
         }
     }
@@ -163,6 +199,27 @@ class PartitionsByExprRequest
                         $xfer += $input->skip($ftype);
                     }
                     break;
+                case 7:
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->order);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 8:
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->validWriteIdList);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 9:
+                    if ($ftype == TType::I64) {
+                        $xfer += $input->readI64($this->id);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
                 default:
                     $xfer += $input->skip($ftype);
                     break;
@@ -205,6 +262,21 @@ class PartitionsByExprRequest
         if ($this->catName !== null) {
             $xfer += $output->writeFieldBegin('catName', TType::STRING, 6);
             $xfer += $output->writeString($this->catName);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->order !== null) {
+            $xfer += $output->writeFieldBegin('order', TType::STRING, 7);
+            $xfer += $output->writeString($this->order);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->validWriteIdList !== null) {
+            $xfer += $output->writeFieldBegin('validWriteIdList', TType::STRING, 8);
+            $xfer += $output->writeString($this->validWriteIdList);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->id !== null) {
+            $xfer += $output->writeFieldBegin('id', TType::I64, 9);
+            $xfer += $output->writeI64($this->id);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

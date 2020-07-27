@@ -82,14 +82,14 @@ class ThriftHiveMetastore_get_tables_ext_result
                 case 0:
                     if ($ftype == TType::LST) {
                         $this->success = array();
-                        $_size1241 = 0;
-                        $_etype1244 = 0;
-                        $xfer += $input->readListBegin($_etype1244, $_size1241);
-                        for ($_i1245 = 0; $_i1245 < $_size1241; ++$_i1245) {
-                            $elem1246 = null;
-                            $elem1246 = new \metastore\ExtendedTableInfo();
-                            $xfer += $elem1246->read($input);
-                            $this->success []= $elem1246;
+                        $_size1311 = 0;
+                        $_etype1314 = 0;
+                        $xfer += $input->readListBegin($_etype1314, $_size1311);
+                        for ($_i1315 = 0; $_i1315 < $_size1311; ++$_i1315) {
+                            $elem1316 = null;
+                            $elem1316 = new \metastore\ExtendedTableInfo();
+                            $xfer += $elem1316->read($input);
+                            $this->success []= $elem1316;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -124,8 +124,8 @@ class ThriftHiveMetastore_get_tables_ext_result
             }
             $xfer += $output->writeFieldBegin('success', TType::LST, 0);
             $output->writeListBegin(TType::STRUCT, count($this->success));
-            foreach ($this->success as $iter1247) {
-                $xfer += $iter1247->write($output);
+            foreach ($this->success as $iter1317) {
+                $xfer += $iter1317->write($output);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();
