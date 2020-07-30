@@ -258,10 +258,10 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: b
-                  filterExpr: ((id = 'Id_2') and (val = 'val_104')) (type: boolean)
+                  filterExpr: ((val = 'val_104') and (id = 'Id_2')) (type: boolean)
                   Statistics: Num rows: 2 Data size: 358 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((id = 'Id_2') and (val = 'val_104')) (type: boolean)
+                    predicate: ((val = 'val_104') and (id = 'Id_2')) (type: boolean)
                     Statistics: Num rows: 1 Data size: 179 Basic stats: COMPLETE Column stats: COMPLETE
                     Select Operator
                       Statistics: Num rows: 1 Data size: 4 Basic stats: COMPLETE Column stats: COMPLETE

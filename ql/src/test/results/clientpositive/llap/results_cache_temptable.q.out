@@ -306,13 +306,13 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: rct_part
-                  filterExpr: ((ds = '2008-04-08') and (UDFToDouble(key) = 0.0D)) (type: boolean)
+                  filterExpr: ((UDFToDouble(key) = 0.0D) and (ds = '2008-04-08')) (type: boolean)
                   Statistics: Num rows: 500 Data size: 175168 Basic stats: COMPLETE Column stats: NONE
                   Filter Operator
-                    predicate: ((ds = '2008-04-08') and (UDFToDouble(key) = 0.0D)) (type: boolean)
-                    Statistics: Num rows: 2 Data size: 700 Basic stats: COMPLETE Column stats: NONE
+                    predicate: ((UDFToDouble(key) = 0.0D) and (ds = '2008-04-08')) (type: boolean)
+                    Statistics: Num rows: 3 Data size: 1051 Basic stats: COMPLETE Column stats: NONE
                     Select Operator
-                      Statistics: Num rows: 2 Data size: 700 Basic stats: COMPLETE Column stats: NONE
+                      Statistics: Num rows: 3 Data size: 1051 Basic stats: COMPLETE Column stats: NONE
                       Group By Operator
                         aggregations: count()
                         minReductionHashAggr: 0.99

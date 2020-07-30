@@ -174,7 +174,7 @@ Stage-0
                       Select Operator [SEL_89] (rows=3529412 width=16)
                         Output:["_col0","_col1","_col2","_col3"]
                         Filter Operator [FIL_88] (rows=3529412 width=187)
-                          predicate:((ca_state) IN ('KY', 'GA', 'NM', 'MT', 'OR', 'IN', 'WI', 'MO', 'WV') and (ca_country = 'United States'))
+                          predicate:((ca_country = 'United States') and (ca_state) IN ('KY', 'GA', 'NM', 'MT', 'OR', 'IN', 'WI', 'MO', 'WV'))
                           TableScan [TS_9] (rows=40000000 width=187)
                             default@customer_address,customer_address, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ca_address_sk","ca_state","ca_country"]
                   <-Reducer 3 [SIMPLE_EDGE]
@@ -188,7 +188,7 @@ Stage-0
                           Select Operator [SEL_86] (rows=29552 width=4)
                             Output:["_col0"]
                             Filter Operator [FIL_85] (rows=29552 width=183)
-                              predicate:((cd_marital_status = 'M') and (cd_education_status = '4 yr Degree'))
+                              predicate:((cd_education_status = '4 yr Degree') and (cd_marital_status = 'M'))
                               TableScan [TS_6] (rows=1861800 width=183)
                                 default@customer_demographics,customer_demographics, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["cd_demo_sk","cd_marital_status","cd_education_status"]
                       <-Reducer 2 [SIMPLE_EDGE]

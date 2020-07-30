@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import java.nio.charset.Charset;
 import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.plan.RelOptCluster;
@@ -809,16 +810,30 @@ public class RexNodeConverter {
       if (value instanceof HiveChar) {
         value = ((HiveChar) value).getValue();
       }
-      calciteLiteral = rexBuilder.makeCharLiteral(asUnicodeString((String) value));
+      final int lengthChar = TypeInfoUtils.getCharacterLengthForType(hiveType);
+      RelDataType charType = rexBuilder.getTypeFactory().createTypeWithCharsetAndCollation(
+          rexBuilder.getTypeFactory().createSqlType(SqlTypeName.CHAR, lengthChar),
+          Charset.forName(ConversionUtil.NATIVE_UTF16_CHARSET_NAME), SqlCollation.IMPLICIT);
+      calciteLiteral = rexBuilder.makeLiteral(
+          asUnicodeString((String) value), charType, false);
       break;
     case VARCHAR:
       if (value instanceof HiveVarchar) {
         value = ((HiveVarchar) value).getValue();
       }
-      calciteLiteral = rexBuilder.makeCharLiteral(asUnicodeString((String) value));
+      final int lengthVarchar = TypeInfoUtils.getCharacterLengthForType(hiveType);
+      RelDataType varcharType = rexBuilder.getTypeFactory().createTypeWithCharsetAndCollation(
+          rexBuilder.getTypeFactory().createSqlType(SqlTypeName.VARCHAR, lengthVarchar),
+          Charset.forName(ConversionUtil.NATIVE_UTF16_CHARSET_NAME), SqlCollation.IMPLICIT);
+      calciteLiteral = rexBuilder.makeLiteral(
+          asUnicodeString((String) value), varcharType, true);
       break;
     case STRING:
-      calciteLiteral = rexBuilder.makeCharLiteral(asUnicodeString((String) value));
+      RelDataType stringType = rexBuilder.getTypeFactory().createTypeWithCharsetAndCollation(
+          rexBuilder.getTypeFactory().createSqlType(SqlTypeName.VARCHAR, Integer.MAX_VALUE),
+          Charset.forName(ConversionUtil.NATIVE_UTF16_CHARSET_NAME), SqlCollation.IMPLICIT);
+      calciteLiteral = rexBuilder.makeLiteral(
+          asUnicodeString((String) value), stringType, true);
       break;
     case DATE:
       final Date date = (Date) value;

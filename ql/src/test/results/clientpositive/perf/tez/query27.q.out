@@ -141,7 +141,7 @@ Stage-0
                                           Select Operator [SEL_107] (rows=14776 width=4)
                                             Output:["_col0"]
                                             Filter Operator [FIL_106] (rows=14776 width=268)
-                                              predicate:((cd_marital_status = 'U') and (cd_education_status = '2 yr Degree') and (cd_gender = 'M') and cd_demo_sk is not null)
+                                              predicate:((cd_education_status = '2 yr Degree') and (cd_marital_status = 'U') and (cd_gender = 'M') and cd_demo_sk is not null)
                                               TableScan [TS_3] (rows=1861800 width=268)
                                                 default@customer_demographics,customer_demographics, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["cd_demo_sk","cd_gender","cd_marital_status","cd_education_status"]
                                       <-Map 1 [SIMPLE_EDGE] vectorized

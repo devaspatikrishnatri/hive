@@ -125,7 +125,7 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: b
-                  filterExpr: ((key < '11') or ((key < '11') and (value > 'val_11')) or ((key < '11') and (value > 'val_11'))) (type: boolean)
+                  filterExpr: ((key < '11') or ((value > 'val_11') and (key < '11')) or ((value > 'val_11') and (key < '11'))) (type: boolean)
                   properties:
                     insideView TRUE
                   Statistics: Num rows: 500 Data size: 89000 Basic stats: COMPLETE Column stats: COMPLETE
@@ -143,7 +143,7 @@ STAGE PLANS:
                         Map-reduce partition columns: _col0 (type: string), _col1 (type: string)
                         Statistics: Num rows: 166 Data size: 29548 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((key < '11') and (value > 'val_11')) (type: boolean)
+                    predicate: ((value > 'val_11') and (key < '11')) (type: boolean)
                     Statistics: Num rows: 55 Data size: 9790 Basic stats: COMPLETE Column stats: COMPLETE
                     Group By Operator
                       aggregations: count(), count(key)
@@ -160,7 +160,7 @@ STAGE PLANS:
                         Statistics: Num rows: 27 Data size: 5238 Basic stats: COMPLETE Column stats: COMPLETE
                         value expressions: _col2 (type: bigint), _col3 (type: bigint)
                   Filter Operator
-                    predicate: ((key < '11') and (value > 'val_11')) (type: boolean)
+                    predicate: ((value > 'val_11') and (key < '11')) (type: boolean)
                     Statistics: Num rows: 55 Data size: 9790 Basic stats: COMPLETE Column stats: COMPLETE
                     Group By Operator
                       keys: key (type: string), value (type: string)
@@ -188,7 +188,7 @@ STAGE PLANS:
                         Map-reduce partition columns: _col0 (type: string), _col1 (type: string)
                         Statistics: Num rows: 166 Data size: 29548 Basic stats: COMPLETE Column stats: COMPLETE
                   Filter Operator
-                    predicate: ((key < '11') and (value > 'val_11')) (type: boolean)
+                    predicate: ((value > 'val_11') and (key < '11')) (type: boolean)
                     Statistics: Num rows: 55 Data size: 9790 Basic stats: COMPLETE Column stats: COMPLETE
                     Group By Operator
                       aggregations: count(), count(key)

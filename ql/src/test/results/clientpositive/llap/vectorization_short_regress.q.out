@@ -1698,7 +1698,7 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: alltypesorc
-                  filterExpr: (((UDFToFloat(cbigint) <= cfloat) and (CAST( csmallint AS decimal(7,2)) >= -26.28)) or ((cdouble <= UDFToDouble(cbigint)) and (cstring1 >= 'ss') and (UDFToDouble(cint) <> cdouble)) or (UDFToInteger(ctinyint) = -89010) or ((CAST( csmallint AS decimal(7,2)) > -26.28) and (cstring2 like 'ss'))) (type: boolean)
+                  filterExpr: (((UDFToFloat(cbigint) <= cfloat) and (CAST( csmallint AS decimal(7,2)) >= -26.28)) or (UDFToInteger(ctinyint) = -89010) or ((cdouble <= UDFToDouble(cbigint)) and (cstring1 >= 'ss') and (UDFToDouble(cint) <> cdouble)) or ((CAST( csmallint AS decimal(7,2)) > -26.28) and (cstring2 like 'ss'))) (type: boolean)
                   Statistics: Num rows: 12288 Data size: 2601650 Basic stats: COMPLETE Column stats: COMPLETE
                   TableScan Vectorization:
                       native: true
@@ -1706,8 +1706,8 @@ STAGE PLANS:
                     Filter Vectorization:
                         className: VectorFilterOperator
                         native: true
-                        predicateExpression: FilterExprOrExpr(children: FilterExprAndExpr(children: FilterDoubleColLessEqualDoubleColumn(col 13:float, col 4:float)(children: CastLongToFloatViaLongToDouble(col 3:bigint) -> 13:float), FilterDecimal64ColGreaterEqualDecimal64Scalar(col 14:decimal(7,2)/DECIMAL_64, val -2628)(children: CastLongToDecimal64(col 1:smallint) -> 14:decimal(7,2)/DECIMAL_64)), FilterExprAndExpr(children: FilterDoubleColLessEqualDoubleColumn(col 5:double, col 15:double)(children: CastLongToDouble(col 3:bigint) -> 15:double), FilterStringGroupColGreaterEqualStringScalar(col 6:string, val ss), FilterDoubleColNotEqualDoubleColumn(col 16:double, col 5:double)(children: CastLongToDouble(col 2:int) -> 16:double)), FilterLongColEqualLongScalar(col 0:int, val -89010)(children: col 0:tinyint), FilterExprAndExpr(children: FilterDecimal64ColGreaterDecimal64Scalar(col 17:decimal(7,2)/DECIMAL_64, val -2628)(children: CastLongToDecimal64(col 1:smallint) -> 17:decimal(7,2)/DECIMAL_64), FilterStringColLikeStringScalar(col 7:string, pattern ss)))
-                    predicate: (((UDFToFloat(cbigint) <= cfloat) and (CAST( csmallint AS decimal(7,2)) >= -26.28)) or ((cdouble <= UDFToDouble(cbigint)) and (cstring1 >= 'ss') and (UDFToDouble(cint) <> cdouble)) or (UDFToInteger(ctinyint) = -89010) or ((CAST( csmallint AS decimal(7,2)) > -26.28) and (cstring2 like 'ss'))) (type: boolean)
+                        predicateExpression: FilterExprOrExpr(children: FilterExprAndExpr(children: FilterDoubleColLessEqualDoubleColumn(col 13:float, col 4:float)(children: CastLongToFloatViaLongToDouble(col 3:bigint) -> 13:float), FilterDecimal64ColGreaterEqualDecimal64Scalar(col 14:decimal(7,2)/DECIMAL_64, val -2628)(children: CastLongToDecimal64(col 1:smallint) -> 14:decimal(7,2)/DECIMAL_64)), FilterLongColEqualLongScalar(col 0:int, val -89010)(children: col 0:tinyint), FilterExprAndExpr(children: FilterDoubleColLessEqualDoubleColumn(col 5:double, col 15:double)(children: CastLongToDouble(col 3:bigint) -> 15:double), FilterStringGroupColGreaterEqualStringScalar(col 6:string, val ss), FilterDoubleColNotEqualDoubleColumn(col 16:double, col 5:double)(children: CastLongToDouble(col 2:int) -> 16:double)), FilterExprAndExpr(children: FilterDecimal64ColGreaterDecimal64Scalar(col 17:decimal(7,2)/DECIMAL_64, val -2628)(children: CastLongToDecimal64(col 1:smallint) -> 17:decimal(7,2)/DECIMAL_64), FilterStringColLikeStringScalar(col 7:string, pattern ss)))
+                    predicate: (((UDFToFloat(cbigint) <= cfloat) and (CAST( csmallint AS decimal(7,2)) >= -26.28)) or (UDFToInteger(ctinyint) = -89010) or ((cdouble <= UDFToDouble(cbigint)) and (cstring1 >= 'ss') and (UDFToDouble(cint) <> cdouble)) or ((CAST( csmallint AS decimal(7,2)) > -26.28) and (cstring2 like 'ss'))) (type: boolean)
                     Statistics: Num rows: 10922 Data size: 2312410 Basic stats: COMPLETE Column stats: COMPLETE
                     Top N Key Operator
                       sort order: +++++++++++++++++++++
@@ -2018,7 +2018,7 @@ STAGE PLANS:
             Map Operator Tree:
                 TableScan
                   alias: alltypesorc
-                  filterExpr: (((cdouble >= UDFToDouble(cfloat)) and (cstring2 <= 'a')) or ((CAST( cint AS decimal(13,3)) <= -1.389) and (csmallint < UDFToShort(ctinyint)) and (UDFToInteger(csmallint) < -6432)) or ((cstring1 like 'ss%') and (CAST( cbigint AS decimal(22,3)) < 10.175))) (type: boolean)
+                  filterExpr: (((CAST( cint AS decimal(13,3)) <= -1.389) and (csmallint < UDFToShort(ctinyint)) and (UDFToInteger(csmallint) < -6432)) or ((cdouble >= UDFToDouble(cfloat)) and (cstring2 <= 'a')) or ((cstring1 like 'ss%') and (CAST( cbigint AS decimal(22,3)) < 10.175))) (type: boolean)
                   Statistics: Num rows: 12288 Data size: 2528254 Basic stats: COMPLETE Column stats: COMPLETE
                   TableScan Vectorization:
                       native: true
@@ -2026,8 +2026,8 @@ STAGE PLANS:
                     Filter Vectorization:
                         className: VectorFilterOperator
                         native: true
-                        predicateExpression: FilterExprOrExpr(children: FilterExprAndExpr(children: FilterDoubleColGreaterEqualDoubleColumn(col 5:double, col 4:double)(children: col 4:float), FilterStringGroupColLessEqualStringScalar(col 7:string, val a)), FilterExprAndExpr(children: FilterDecimal64ColLessEqualDecimal64Scalar(col 13:decimal(13,3)/DECIMAL_64, val -1389)(children: CastLongToDecimal64(col 2:int) -> 13:decimal(13,3)/DECIMAL_64), FilterLongColLessLongColumn(col 1:smallint, col 0:smallint)(children: col 0:tinyint), FilterLongColLessLongScalar(col 1:int, val -6432)(children: col 1:smallint)), FilterExprAndExpr(children: FilterStringColLikeStringScalar(col 6:string, pattern ss%), FilterDecimalColLessDecimalScalar(col 14:decimal(22,3), val 10.175)(children: CastLongToDecimal(col 3:bigint) -> 14:decimal(22,3))))
-                    predicate: (((cdouble >= UDFToDouble(cfloat)) and (cstring2 <= 'a')) or ((CAST( cint AS decimal(13,3)) <= -1.389) and (csmallint < UDFToShort(ctinyint)) and (UDFToInteger(csmallint) < -6432)) or ((cstring1 like 'ss%') and (CAST( cbigint AS decimal(22,3)) < 10.175))) (type: boolean)
+                        predicateExpression: FilterExprOrExpr(children: FilterExprAndExpr(children: FilterDecimal64ColLessEqualDecimal64Scalar(col 13:decimal(13,3)/DECIMAL_64, val -1389)(children: CastLongToDecimal64(col 2:int) -> 13:decimal(13,3)/DECIMAL_64), FilterLongColLessLongColumn(col 1:smallint, col 0:smallint)(children: col 0:tinyint), FilterLongColLessLongScalar(col 1:int, val -6432)(children: col 1:smallint)), FilterExprAndExpr(children: FilterDoubleColGreaterEqualDoubleColumn(col 5:double, col 4:double)(children: col 4:float), FilterStringGroupColLessEqualStringScalar(col 7:string, val a)), FilterExprAndExpr(children: FilterStringColLikeStringScalar(col 6:string, pattern ss%), FilterDecimalColLessDecimalScalar(col 14:decimal(22,3), val 10.175)(children: CastLongToDecimal(col 3:bigint) -> 14:decimal(22,3))))
+                    predicate: (((CAST( cint AS decimal(13,3)) <= -1.389) and (csmallint < UDFToShort(ctinyint)) and (UDFToInteger(csmallint) < -6432)) or ((cdouble >= UDFToDouble(cfloat)) and (cstring2 <= 'a')) or ((cstring1 like 'ss%') and (CAST( cbigint AS decimal(22,3)) < 10.175))) (type: boolean)
                     Statistics: Num rows: 3868 Data size: 795962 Basic stats: COMPLETE Column stats: COMPLETE
                     Top N Key Operator
                       sort order: +++++++++++++++
