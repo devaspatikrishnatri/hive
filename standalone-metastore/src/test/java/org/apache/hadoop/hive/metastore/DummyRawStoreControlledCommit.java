@@ -1345,4 +1345,10 @@ public class DummyRawStoreControlledCommit implements RawStore, Configurable {
   public int markScheduledExecutionsTimedOut(int timeoutSecs) throws InvalidOperationException, MetaException {
     return objectStore.markScheduledExecutionsTimedOut(timeoutSecs);
   }
+
+  @Override
+  public void deleteAllPartitionColumnStatistics(TableName tn, String w) {
+    objectStore.deleteAllPartitionColumnStatistics(tn, w);
+  }
+
 }

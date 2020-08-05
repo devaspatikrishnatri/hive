@@ -395,6 +395,13 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   }
 
   @Override
+  public List<Partition> getPartitionSpecsByFilterAndProjection(Table table,
+      GetPartitionsProjectionSpec projectSpec, GetPartitionsFilterSpec filterSpec)
+      throws MetaException, NoSuchObjectException {
+    return Collections.emptyList();
+  }
+
+  @Override
   public List<Partition> getPartitionsByNames(String catName, String dbName, String tblName,
       List<String> partNames) throws MetaException, NoSuchObjectException {
 
@@ -1324,9 +1331,8 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   }
 
   @Override
-  public List<Partition> getPartitionSpecsByFilterAndProjection(Table table,
-      GetPartitionsProjectionSpec projectSpec, GetPartitionsFilterSpec filterSpec)
-      throws MetaException, NoSuchObjectException {
-    return Collections.emptyList();
+  public void deleteAllPartitionColumnStatistics(TableName tableName, String w) {
+    throw new RuntimeException("unimplemented");
   }
+
 }

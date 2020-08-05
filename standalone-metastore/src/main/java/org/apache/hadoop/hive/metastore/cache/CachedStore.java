@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.DatabaseName;
@@ -792,7 +792,7 @@ public class CachedStore implements RawStore, Configurable {
           // TODO: prewarm and update can probably be merged.
           try {
             update();
-            
+
           } catch (Exception e) {
             LOG.error("periodical refresh fail ", e);
           }
@@ -2066,7 +2066,7 @@ public class CachedStore implements RawStore, Configurable {
     }
     return partitions;
   }
-  
+
   private String getPartNameMatcher(Table table, List<String> partSpecs) throws MetaException {
     List<FieldSchema> partCols = table.getPartitionKeys();
     int numPartKeys = partCols.size();
@@ -3188,4 +3188,10 @@ public class CachedStore implements RawStore, Configurable {
   public int markScheduledExecutionsTimedOut(int timeoutSecs) throws InvalidOperationException, MetaException {
     return rawStore.markScheduledExecutionsTimedOut(timeoutSecs);
   }
+
+  @Override
+  public void deleteAllPartitionColumnStatistics(TableName tn, String w) {
+    rawStore.deleteAllPartitionColumnStatistics(tn, w);
+  }
+
 }

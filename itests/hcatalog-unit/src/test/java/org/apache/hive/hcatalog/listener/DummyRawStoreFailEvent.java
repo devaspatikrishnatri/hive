@@ -423,6 +423,12 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
   }
 
   @Override
+  public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
+                                               String filter, short maxParts) throws MetaException, NoSuchObjectException {
+    return objectStore.getPartitionsByFilter(catName, dbName, tblName, filter, maxParts);
+  }
+
+  @Override
   public List<Partition> getPartitionSpecsByFilterAndProjection(Table table,
       GetPartitionsProjectionSpec projectionSpec, GetPartitionsFilterSpec filterSpec)
       throws MetaException, NoSuchObjectException {
@@ -1390,9 +1396,8 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
     return objectStore.markScheduledExecutionsTimedOut(timeoutSecs);
   }
 
-  @Override
-  public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
-      String filter, short maxParts) throws MetaException, NoSuchObjectException {
-    return objectStore.getPartitionsByFilter(catName, dbName, tblName, filter, maxParts);
+  public void deleteAllPartitionColumnStatistics(TableName tn,String s) {
+    objectStore.deleteAllPartitionColumnStatistics(tn,s);
   }
+
 }
