@@ -24,8 +24,8 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_QUOTEDID_SUPPORT;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(Enclosed.class)
 public class TestReplicationSemanticAnalyzer {
@@ -34,7 +34,7 @@ public class TestReplicationSemanticAnalyzer {
 
   public static HiveConf buildHiveConf() {
     HiveConf conf = new HiveConf();
-    conf.setVar(HIVE_QUOTEDID_SUPPORT, "none");
+    conf.setVar(HIVE_QUOTEDID_SUPPORT, Quotation.NONE.stringValue());
     return conf;
   }
 
