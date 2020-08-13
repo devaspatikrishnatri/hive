@@ -788,6 +788,8 @@ class ReplicationMetricList;
 
 class GetReplicationMetricsRequest;
 
+class GetOpenTxnsRequest;
+
 class MetaException;
 
 class UnknownTableException;
@@ -9155,7 +9157,7 @@ inline std::ostream& operator<<(std::ostream& out, const CompactionRequest& obj)
 }
 
 typedef struct _CompactionInfoStruct__isset {
-  _CompactionInfoStruct__isset() : partitionname(false), runas(false), properties(false), toomanyaborts(false), state(false), workerId(false), start(false), highestWriteId(false), errorMessage(false) {}
+  _CompactionInfoStruct__isset() : partitionname(false), runas(false), properties(false), toomanyaborts(false), state(false), workerId(false), start(false), highestWriteId(false), errorMessage(false), hasoldabort(false) {}
   bool partitionname :1;
   bool runas :1;
   bool properties :1;
@@ -9165,6 +9167,7 @@ typedef struct _CompactionInfoStruct__isset {
   bool start :1;
   bool highestWriteId :1;
   bool errorMessage :1;
+  bool hasoldabort :1;
 } _CompactionInfoStruct__isset;
 
 class CompactionInfoStruct {
@@ -9172,7 +9175,7 @@ class CompactionInfoStruct {
 
   CompactionInfoStruct(const CompactionInfoStruct&);
   CompactionInfoStruct& operator=(const CompactionInfoStruct&);
-  CompactionInfoStruct() : id(0), dbname(), tablename(), partitionname(), type((CompactionType::type)0), runas(), properties(), toomanyaborts(0), state(), workerId(), start(0), highestWriteId(0), errorMessage() {
+  CompactionInfoStruct() : id(0), dbname(), tablename(), partitionname(), type((CompactionType::type)0), runas(), properties(), toomanyaborts(0), state(), workerId(), start(0), highestWriteId(0), errorMessage(), hasoldabort(0) {
   }
 
   virtual ~CompactionInfoStruct() throw();
@@ -9189,6 +9192,7 @@ class CompactionInfoStruct {
   int64_t start;
   int64_t highestWriteId;
   std::string errorMessage;
+  bool hasoldabort;
 
   _CompactionInfoStruct__isset __isset;
 
@@ -9217,6 +9221,8 @@ class CompactionInfoStruct {
   void __set_highestWriteId(const int64_t val);
 
   void __set_errorMessage(const std::string& val);
+
+  void __set_hasoldabort(const bool val);
 
   bool operator == (const CompactionInfoStruct & rhs) const
   {
@@ -9263,6 +9269,10 @@ class CompactionInfoStruct {
     if (__isset.errorMessage != rhs.__isset.errorMessage)
       return false;
     else if (__isset.errorMessage && !(errorMessage == rhs.errorMessage))
+      return false;
+    if (__isset.hasoldabort != rhs.__isset.hasoldabort)
+      return false;
+    else if (__isset.hasoldabort && !(hasoldabort == rhs.hasoldabort))
       return false;
     return true;
   }
@@ -15928,6 +15938,46 @@ class GetReplicationMetricsRequest {
 void swap(GetReplicationMetricsRequest &a, GetReplicationMetricsRequest &b);
 
 inline std::ostream& operator<<(std::ostream& out, const GetReplicationMetricsRequest& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class GetOpenTxnsRequest {
+ public:
+
+  GetOpenTxnsRequest(const GetOpenTxnsRequest&);
+  GetOpenTxnsRequest& operator=(const GetOpenTxnsRequest&);
+  GetOpenTxnsRequest() {
+  }
+
+  virtual ~GetOpenTxnsRequest() throw();
+  std::vector<TxnType::type>  excludeTxnTypes;
+
+  void __set_excludeTxnTypes(const std::vector<TxnType::type> & val);
+
+  bool operator == (const GetOpenTxnsRequest & rhs) const
+  {
+    if (!(excludeTxnTypes == rhs.excludeTxnTypes))
+      return false;
+    return true;
+  }
+  bool operator != (const GetOpenTxnsRequest &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GetOpenTxnsRequest & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(GetOpenTxnsRequest &a, GetOpenTxnsRequest &b);
+
+inline std::ostream& operator<<(std::ostream& out, const GetOpenTxnsRequest& obj)
 {
   obj.printTo(out);
   return out;

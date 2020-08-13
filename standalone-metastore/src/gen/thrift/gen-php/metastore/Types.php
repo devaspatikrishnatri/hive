@@ -21967,6 +21967,10 @@ class CompactionInfoStruct {
    * @var string
    */
   public $errorMessage = null;
+  /**
+   * @var bool
+   */
+  public $hasoldabort = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -22023,6 +22027,10 @@ class CompactionInfoStruct {
           'var' => 'errorMessage',
           'type' => TType::STRING,
           ),
+        14 => array(
+          'var' => 'hasoldabort',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -22064,6 +22072,9 @@ class CompactionInfoStruct {
       }
       if (isset($vals['errorMessage'])) {
         $this->errorMessage = $vals['errorMessage'];
+      }
+      if (isset($vals['hasoldabort'])) {
+        $this->hasoldabort = $vals['hasoldabort'];
       }
     }
   }
@@ -22178,6 +22189,13 @@ class CompactionInfoStruct {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 14:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->hasoldabort);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -22254,6 +22272,11 @@ class CompactionInfoStruct {
     if ($this->errorMessage !== null) {
       $xfer += $output->writeFieldBegin('errorMessage', TType::STRING, 13);
       $xfer += $output->writeString($this->errorMessage);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->hasoldabort !== null) {
+      $xfer += $output->writeFieldBegin('hasoldabort', TType::BOOL, 14);
+      $xfer += $output->writeBool($this->hasoldabort);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -22573,10 +22596,6 @@ class ShowCompactResponseElement {
    * @var string
    */
   public $errorMessage = null;
-  /**
-   * @var bool
-   */
-  public $hasoldabort = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -22637,10 +22656,6 @@ class ShowCompactResponseElement {
           'var' => 'errorMessage',
           'type' => TType::STRING,
           ),
-        14 => array(
-          'var' => 'hasoldabort',
-          'type' => TType::BOOL,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -22685,9 +22700,6 @@ class ShowCompactResponseElement {
       }
       if (isset($vals['errorMessage'])) {
         $this->errorMessage = $vals['errorMessage'];
-      }
-      if (isset($vals['hasoldabort'])) {
-        $this->hasoldabort = $vals['hasoldabort'];
       }
     }
   }
@@ -22809,13 +22821,6 @@ class ShowCompactResponseElement {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 14:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->hasoldabort);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -22897,11 +22902,6 @@ class ShowCompactResponseElement {
     if ($this->errorMessage !== null) {
       $xfer += $output->writeFieldBegin('errorMessage', TType::STRING, 14);
       $xfer += $output->writeString($this->errorMessage);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->hasoldabort !== null) {
-      $xfer += $output->writeFieldBegin('hasoldabort', TType::BOOL, 14);
-      $xfer += $output->writeBool($this->hasoldabort);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -37316,6 +37316,107 @@ class GetReplicationMetricsRequest {
 
 }
 
+class GetOpenTxnsRequest {
+  static $_TSPEC;
+
+  /**
+   * @var int[]
+   */
+  public $excludeTxnTypes = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'excludeTxnTypes',
+          'type' => TType::LST,
+          'etype' => TType::I32,
+          'elem' => array(
+            'type' => TType::I32,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['excludeTxnTypes'])) {
+        $this->excludeTxnTypes = $vals['excludeTxnTypes'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GetOpenTxnsRequest';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::LST) {
+            $this->excludeTxnTypes = array();
+            $_size1057 = 0;
+            $_etype1060 = 0;
+            $xfer += $input->readListBegin($_etype1060, $_size1057);
+            for ($_i1061 = 0; $_i1061 < $_size1057; ++$_i1061)
+            {
+              $elem1062 = null;
+              $xfer += $input->readI32($elem1062);
+              $this->excludeTxnTypes []= $elem1062;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GetOpenTxnsRequest');
+    if ($this->excludeTxnTypes !== null) {
+      if (!is_array($this->excludeTxnTypes)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('excludeTxnTypes', TType::LST, 1);
+      {
+        $output->writeListBegin(TType::I32, count($this->excludeTxnTypes));
+        {
+          foreach ($this->excludeTxnTypes as $iter1063)
+          {
+            $xfer += $output->writeI32($iter1063);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class MetaException extends TException {
   static $_TSPEC;
 
@@ -38480,7 +38581,7 @@ final class Constant extends \Thrift\Type\TConstant {
   }
 
   static protected function init_HMS_API() {
-    return "1.1.0";
+    return "1.2.2";
   }
 
   static protected function init_ACCESSTYPE_NONE() {
