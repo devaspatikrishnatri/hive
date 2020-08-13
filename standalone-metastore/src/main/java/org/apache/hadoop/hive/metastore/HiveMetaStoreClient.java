@@ -3022,17 +3022,23 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
 
   @Override
   public ValidTxnList getValidTxns() throws TException {
-    return TxnUtils.createValidReadTxnList(client.get_open_txns(), 0);
+    GetOpenTxnsRequest getOpenTxnsRequest = new GetOpenTxnsRequest();
+    getOpenTxnsRequest.setExcludeTxnTypes(Arrays.asList(TxnType.READ_ONLY));
+    return TxnUtils.createValidReadTxnList(client.get_open_txns_req(getOpenTxnsRequest), 0);
   }
 
   @Override
   public ValidTxnList getValidTxns(long currentTxn) throws TException {
-    return TxnUtils.createValidReadTxnList(client.get_open_txns(), currentTxn);
+    GetOpenTxnsRequest getOpenTxnsRequest = new GetOpenTxnsRequest();
+    getOpenTxnsRequest.setExcludeTxnTypes(Arrays.asList(TxnType.READ_ONLY));
+    return TxnUtils.createValidReadTxnList(client.get_open_txns_req(getOpenTxnsRequest), currentTxn);
   }
 
   @Override
   public ValidTxnList getValidTxns(long currentTxn, List<TxnType> excludeTxnTypes) throws TException {
-    return TxnUtils.createValidReadTxnList(client.get_open_txns_req(new GetOpenTxnsRequest(excludeTxnTypes)),
+    GetOpenTxnsRequest getOpenTxnsRequest = new GetOpenTxnsRequest();
+    getOpenTxnsRequest.setExcludeTxnTypes(excludeTxnTypes);
+    return TxnUtils.createValidReadTxnList(client.get_open_txns_req(getOpenTxnsRequest),
       currentTxn);
   }
 

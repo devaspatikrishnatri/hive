@@ -26344,8 +26344,6 @@ class GetOpenTxnsRequest:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.excludeTxnTypes is None:
-      raise TProtocol.TProtocolException(message='Required field excludeTxnTypes is unset!')
     return
 
 

@@ -38208,6 +38208,7 @@ GetOpenTxnsRequest::~GetOpenTxnsRequest() throw() {
 
 void GetOpenTxnsRequest::__set_excludeTxnTypes(const std::vector<TxnType::type> & val) {
   this->excludeTxnTypes = val;
+__isset.excludeTxnTypes = true;
 }
 
 uint32_t GetOpenTxnsRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -38222,7 +38223,6 @@ uint32_t GetOpenTxnsRequest::read(::apache::thrift::protocol::TProtocol* iprot) 
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_excludeTxnTypes = false;
 
   while (true)
   {
@@ -38249,7 +38249,7 @@ uint32_t GetOpenTxnsRequest::read(::apache::thrift::protocol::TProtocol* iprot) 
             }
             xfer += iprot->readListEnd();
           }
-          isset_excludeTxnTypes = true;
+          this->__isset.excludeTxnTypes = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -38263,8 +38263,6 @@ uint32_t GetOpenTxnsRequest::read(::apache::thrift::protocol::TProtocol* iprot) 
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_excludeTxnTypes)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -38273,18 +38271,19 @@ uint32_t GetOpenTxnsRequest::write(::apache::thrift::protocol::TProtocol* oprot)
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("GetOpenTxnsRequest");
 
-  xfer += oprot->writeFieldBegin("excludeTxnTypes", ::apache::thrift::protocol::T_LIST, 1);
-  {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->excludeTxnTypes.size()));
-    std::vector<TxnType::type> ::const_iterator _iter1454;
-    for (_iter1454 = this->excludeTxnTypes.begin(); _iter1454 != this->excludeTxnTypes.end(); ++_iter1454)
+  if (this->__isset.excludeTxnTypes) {
+    xfer += oprot->writeFieldBegin("excludeTxnTypes", ::apache::thrift::protocol::T_LIST, 1);
     {
-      xfer += oprot->writeI32((int32_t)(*_iter1454));
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->excludeTxnTypes.size()));
+      std::vector<TxnType::type> ::const_iterator _iter1454;
+      for (_iter1454 = this->excludeTxnTypes.begin(); _iter1454 != this->excludeTxnTypes.end(); ++_iter1454)
+      {
+        xfer += oprot->writeI32((int32_t)(*_iter1454));
+      }
+      xfer += oprot->writeListEnd();
     }
-    xfer += oprot->writeListEnd();
+    xfer += oprot->writeFieldEnd();
   }
-  xfer += oprot->writeFieldEnd();
-
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -38293,19 +38292,22 @@ uint32_t GetOpenTxnsRequest::write(::apache::thrift::protocol::TProtocol* oprot)
 void swap(GetOpenTxnsRequest &a, GetOpenTxnsRequest &b) {
   using ::std::swap;
   swap(a.excludeTxnTypes, b.excludeTxnTypes);
+  swap(a.__isset, b.__isset);
 }
 
 GetOpenTxnsRequest::GetOpenTxnsRequest(const GetOpenTxnsRequest& other1455) {
   excludeTxnTypes = other1455.excludeTxnTypes;
+  __isset = other1455.__isset;
 }
 GetOpenTxnsRequest& GetOpenTxnsRequest::operator=(const GetOpenTxnsRequest& other1456) {
   excludeTxnTypes = other1456.excludeTxnTypes;
+  __isset = other1456.__isset;
   return *this;
 }
 void GetOpenTxnsRequest::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "GetOpenTxnsRequest(";
-  out << "excludeTxnTypes=" << to_string(excludeTxnTypes);
+  out << "excludeTxnTypes="; (__isset.excludeTxnTypes ? (out << to_string(excludeTxnTypes)) : (out << "<null>"));
   out << ")";
 }
 

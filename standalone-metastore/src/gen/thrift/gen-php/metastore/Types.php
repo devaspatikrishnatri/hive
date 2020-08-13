@@ -38581,7 +38581,7 @@ final class Constant extends \Thrift\Type\TConstant {
   }
 
   static protected function init_HMS_API() {
-    return "1.2.2";
+    return "1.2.3";
   }
 
   static protected function init_ACCESSTYPE_NONE() {
