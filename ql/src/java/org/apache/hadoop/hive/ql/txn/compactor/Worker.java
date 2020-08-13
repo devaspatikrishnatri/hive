@@ -131,6 +131,7 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
           } catch (InterruptedException e) {
           }
         }
+        LOG.info("Worker thread finished one loop.");
       } while (!stop.get());
     } finally {
       if (executor != null) {
@@ -346,7 +347,7 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
     }
 
     if (!isEnoughToCompact) {
-      LOG.debug("Not compacting {}; current base: {}, delta files: {}, originals: {}",
+      LOG.info("Not enough files in {} to compact; current base: {}, delta files: {}, originals: {}",
           sd.getLocation(), dir.getBaseDirectory(), deltaInfo, origCount);
     }
     return isEnoughToCompact;
@@ -364,7 +365,7 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
     int numObsoleteDirs = dir.getObsolete().size();
     boolean needsJustCleaning = numObsoleteDirs > 0;
     if (needsJustCleaning) {
-      LOG.debug("{} obsolete directories in {} found; marked for cleaning.", numObsoleteDirs,
+      LOG.info("{} obsolete directories in {} found; marked for cleaning.", numObsoleteDirs,
           sd.getLocation());
     }
     return needsJustCleaning;
@@ -553,6 +554,8 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
           }
         }
         heartbeater.cancel();
+        LOG.info("Completed " + ci.type.toString() + " compaction for " + ci.getFullPartitionName() + " in txn "
+            + JavaUtils.txnIdToString(compactorTxnId) + ", marking as compacted.");
         msc.markCompacted(CompactionInfo.compactionInfoToStruct(ci));
         if (conf.getBoolVar(HiveConf.ConfVars.HIVE_IN_TEST)) {
           mrJob = mr.getMrJob();
