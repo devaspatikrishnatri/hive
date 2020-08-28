@@ -1513,7 +1513,7 @@ public class DagUtils {
     if (!hasChildren) {
       v.addDataSink("out_"+work.getName(), new DataSinkDescriptor(
           OutputDescriptor.create(MROutput.class.getName())
-          .setUserPayload(v.getProcessorDescriptor().getUserPayload()), null, null));
+          .setUserPayload(TezUtils.createUserPayloadFromConf(conf)), null, null));
     }
 
     return v;
