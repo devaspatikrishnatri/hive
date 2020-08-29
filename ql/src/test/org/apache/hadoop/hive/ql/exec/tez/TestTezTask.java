@@ -249,11 +249,42 @@ public class TestTezTask {
     assertTrue(isException);
   }
 
+  public class MockableSampleTezSessionState extends SampleTezSessionState {
+    public MockableSampleTezSessionState(String sessionId, Manager parent, HiveConf conf) {
+      super(sessionId, parent, conf);
+    }
+
+    @Override
+    public TezSession reopen() throws Exception {
+      return super.reopen();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+      super.destroy();
+    }
+
+    @Override
+    public void returnToSessionManager() throws Exception {
+      super.returnToSessionManager();
+    }
+
+    @Override
+    public TezClient getTezClient() {
+      return super.getTezClient();
+    }
+
+    @Override
+    public boolean isDefault() {
+      return super.isDefault();
+    }
+  }
+
   @Test
   public void testSubmitOnPoolSession() throws Exception {
     DAG dag = DAG.create("test");
     // Move session to TezSessionPool, reopen will handle it
-    SampleTezSessionState tezSessionPoolSession = mock(SampleTezSessionState.class);
+    SampleTezSessionState tezSessionPoolSession = mock(MockableSampleTezSessionState.class);
     TezClient tezClient = mock(TezClient.class);
     when(tezSessionPoolSession.reopen()).thenThrow(new HiveException("Dag cannot be submitted"));
     doNothing().when(tezSessionPoolSession).returnToSessionManager();
