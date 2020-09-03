@@ -1288,7 +1288,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
   public void testCheckPointingDataDumpFailureBootstrapDuringIncremental() throws Throwable {
     List<String> dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'");
@@ -1305,7 +1305,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
 
     dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'",
@@ -1487,7 +1487,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     //To force distcp copy
     List<String> dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'");
@@ -1638,7 +1638,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     //Distcp copy
     List<String> dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'");
@@ -1691,7 +1691,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     //To force distcp copy
     List<String> dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'");
@@ -1744,7 +1744,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     //To force distcp copy
     List<String> dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'");
@@ -1854,7 +1854,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     //To force distcp copy
     List<String> dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'");
@@ -1901,7 +1901,7 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     //To force distcp copy
     List<String> dumpClause = Arrays.asList(
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXSIZE.varname + "'='1'",
-            "'" + HiveConf.ConfVars.HIVE_IN_TEST.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_IN_TEST_REPL.varname + "'='false'",
             "'" + HiveConf.ConfVars.HIVE_EXEC_COPYFILE_MAXNUMFILES.varname + "'='0'",
             "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
                     + UserGroupInformation.getCurrentUser().getUserName() + "'");
