@@ -18880,6 +18880,11 @@ void CommitTxnRequest::__set_keyValue(const CommitTxnKeyValue& val) {
 __isset.keyValue = true;
 }
 
+void CommitTxnRequest::__set_exclWriteEnabled(const bool val) {
+  this->exclWriteEnabled = val;
+__isset.exclWriteEnabled = true;
+}
+
 uint32_t CommitTxnRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -18954,6 +18959,14 @@ uint32_t CommitTxnRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->exclWriteEnabled);
+          this->__isset.exclWriteEnabled = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -19005,6 +19018,11 @@ uint32_t CommitTxnRequest::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += this->keyValue.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.exclWriteEnabled) {
+    xfer += oprot->writeFieldBegin("exclWriteEnabled", ::apache::thrift::protocol::T_BOOL, 6);
+    xfer += oprot->writeBool(this->exclWriteEnabled);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -19017,6 +19035,7 @@ void swap(CommitTxnRequest &a, CommitTxnRequest &b) {
   swap(a.writeEventInfos, b.writeEventInfos);
   swap(a.replLastIdInfo, b.replLastIdInfo);
   swap(a.keyValue, b.keyValue);
+  swap(a.exclWriteEnabled, b.exclWriteEnabled);
   swap(a.__isset, b.__isset);
 }
 
@@ -19026,6 +19045,7 @@ CommitTxnRequest::CommitTxnRequest(const CommitTxnRequest& other747) {
   writeEventInfos = other747.writeEventInfos;
   replLastIdInfo = other747.replLastIdInfo;
   keyValue = other747.keyValue;
+  exclWriteEnabled = other747.exclWriteEnabled;
   __isset = other747.__isset;
 }
 CommitTxnRequest& CommitTxnRequest::operator=(const CommitTxnRequest& other748) {
@@ -19034,6 +19054,7 @@ CommitTxnRequest& CommitTxnRequest::operator=(const CommitTxnRequest& other748) 
   writeEventInfos = other748.writeEventInfos;
   replLastIdInfo = other748.replLastIdInfo;
   keyValue = other748.keyValue;
+  exclWriteEnabled = other748.exclWriteEnabled;
   __isset = other748.__isset;
   return *this;
 }
@@ -19045,6 +19066,7 @@ void CommitTxnRequest::printTo(std::ostream& out) const {
   out << ", " << "writeEventInfos="; (__isset.writeEventInfos ? (out << to_string(writeEventInfos)) : (out << "<null>"));
   out << ", " << "replLastIdInfo="; (__isset.replLastIdInfo ? (out << to_string(replLastIdInfo)) : (out << "<null>"));
   out << ", " << "keyValue="; (__isset.keyValue ? (out << to_string(keyValue)) : (out << "<null>"));
+  out << ", " << "exclWriteEnabled="; (__isset.exclWriteEnabled ? (out << to_string(exclWriteEnabled)) : (out << "<null>"));
   out << ")";
 }
 

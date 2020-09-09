@@ -7936,11 +7936,12 @@ inline std::ostream& operator<<(std::ostream& out, const CommitTxnKeyValue& obj)
 }
 
 typedef struct _CommitTxnRequest__isset {
-  _CommitTxnRequest__isset() : replPolicy(false), writeEventInfos(false), replLastIdInfo(false), keyValue(false) {}
+  _CommitTxnRequest__isset() : replPolicy(false), writeEventInfos(false), replLastIdInfo(false), keyValue(false), exclWriteEnabled(true) {}
   bool replPolicy :1;
   bool writeEventInfos :1;
   bool replLastIdInfo :1;
   bool keyValue :1;
+  bool exclWriteEnabled :1;
 } _CommitTxnRequest__isset;
 
 class CommitTxnRequest {
@@ -7948,7 +7949,7 @@ class CommitTxnRequest {
 
   CommitTxnRequest(const CommitTxnRequest&);
   CommitTxnRequest& operator=(const CommitTxnRequest&);
-  CommitTxnRequest() : txnid(0), replPolicy() {
+  CommitTxnRequest() : txnid(0), replPolicy(), exclWriteEnabled(true) {
   }
 
   virtual ~CommitTxnRequest() throw();
@@ -7957,6 +7958,7 @@ class CommitTxnRequest {
   std::vector<WriteEventInfo>  writeEventInfos;
   ReplLastIdInfo replLastIdInfo;
   CommitTxnKeyValue keyValue;
+  bool exclWriteEnabled;
 
   _CommitTxnRequest__isset __isset;
 
@@ -7969,6 +7971,8 @@ class CommitTxnRequest {
   void __set_replLastIdInfo(const ReplLastIdInfo& val);
 
   void __set_keyValue(const CommitTxnKeyValue& val);
+
+  void __set_exclWriteEnabled(const bool val);
 
   bool operator == (const CommitTxnRequest & rhs) const
   {
@@ -7989,6 +7993,10 @@ class CommitTxnRequest {
     if (__isset.keyValue != rhs.__isset.keyValue)
       return false;
     else if (__isset.keyValue && !(keyValue == rhs.keyValue))
+      return false;
+    if (__isset.exclWriteEnabled != rhs.__isset.exclWriteEnabled)
+      return false;
+    else if (__isset.exclWriteEnabled && !(exclWriteEnabled == rhs.exclWriteEnabled))
       return false;
     return true;
   }
