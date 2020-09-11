@@ -114,6 +114,7 @@ public class TestHiveStrictManagedMigration extends TxnCommandsBaseForTests {
    * - default or custom database?
    * @throws Exception
    */
+/*
   @Test
   public void testExternalMove() throws Exception {
     setupExternalTableTest();
@@ -130,6 +131,7 @@ public class TestHiveStrictManagedMigration extends TxnCommandsBaseForTests {
     assertExternalTableLocations(newExtWarehouseDir, new File(EXTERNAL_TABLE_LOCATION));
     assertSDLocationCorrect();
   }
+*/
 
   @Test(expected = IllegalArgumentException.class)
   public void testExternalMoveFailsForIncorrectOptions() throws Throwable {
