@@ -85,7 +85,8 @@ struct LockType {
   enum type {
     SHARED_READ = 1,
     SHARED_WRITE = 2,
-    EXCLUSIVE = 3
+    EXCLUSIVE = 3,
+    EXCL_WRITE = 4
   };
 };
 
@@ -511,6 +512,8 @@ class AbortTxnsRequest;
 class WriteEventInfo;
 
 class ReplLastIdInfo;
+
+class CommitTxnKeyValue;
 
 class CommitTxnRequest;
 
@@ -7882,11 +7885,62 @@ inline std::ostream& operator<<(std::ostream& out, const ReplLastIdInfo& obj)
   return out;
 }
 
+
+class CommitTxnKeyValue {
+ public:
+
+  CommitTxnKeyValue(const CommitTxnKeyValue&);
+  CommitTxnKeyValue& operator=(const CommitTxnKeyValue&);
+  CommitTxnKeyValue() : tableId(0), key(), value() {
+  }
+
+  virtual ~CommitTxnKeyValue() throw();
+  int64_t tableId;
+  std::string key;
+  std::string value;
+
+  void __set_tableId(const int64_t val);
+
+  void __set_key(const std::string& val);
+
+  void __set_value(const std::string& val);
+
+  bool operator == (const CommitTxnKeyValue & rhs) const
+  {
+    if (!(tableId == rhs.tableId))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    if (!(value == rhs.value))
+      return false;
+    return true;
+  }
+  bool operator != (const CommitTxnKeyValue &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const CommitTxnKeyValue & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(CommitTxnKeyValue &a, CommitTxnKeyValue &b);
+
+inline std::ostream& operator<<(std::ostream& out, const CommitTxnKeyValue& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
 typedef struct _CommitTxnRequest__isset {
-  _CommitTxnRequest__isset() : replPolicy(false), writeEventInfos(false), replLastIdInfo(false) {}
+  _CommitTxnRequest__isset() : replPolicy(false), writeEventInfos(false), replLastIdInfo(false), keyValue(false) {}
   bool replPolicy :1;
   bool writeEventInfos :1;
   bool replLastIdInfo :1;
+  bool keyValue :1;
 } _CommitTxnRequest__isset;
 
 class CommitTxnRequest {
@@ -7902,6 +7956,7 @@ class CommitTxnRequest {
   std::string replPolicy;
   std::vector<WriteEventInfo>  writeEventInfos;
   ReplLastIdInfo replLastIdInfo;
+  CommitTxnKeyValue keyValue;
 
   _CommitTxnRequest__isset __isset;
 
@@ -7912,6 +7967,8 @@ class CommitTxnRequest {
   void __set_writeEventInfos(const std::vector<WriteEventInfo> & val);
 
   void __set_replLastIdInfo(const ReplLastIdInfo& val);
+
+  void __set_keyValue(const CommitTxnKeyValue& val);
 
   bool operator == (const CommitTxnRequest & rhs) const
   {
@@ -7928,6 +7985,10 @@ class CommitTxnRequest {
     if (__isset.replLastIdInfo != rhs.__isset.replLastIdInfo)
       return false;
     else if (__isset.replLastIdInfo && !(replLastIdInfo == rhs.replLastIdInfo))
+      return false;
+    if (__isset.keyValue != rhs.__isset.keyValue)
+      return false;
+    else if (__isset.keyValue && !(keyValue == rhs.keyValue))
       return false;
     return true;
   }

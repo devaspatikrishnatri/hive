@@ -83,6 +83,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
 
 /**
  * Hive Metastore Client.
@@ -2349,6 +2350,19 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
   public void commitTxn(long txnid)
       throws NoSuchTxnException, TxnAbortedException, TException {
     client.commit_txn(new CommitTxnRequest(txnid));
+  }
+
+  @Override
+  public void commitTxnWithKeyValue(long txnid, long tableId, String key,
+      String value) throws NoSuchTxnException,
+      TxnAbortedException, TException {
+    CommitTxnRequest ctr = new CommitTxnRequest(txnid);
+    Preconditions.checkNotNull(key, "The key to commit together"
+        + " with the transaction can't be null");
+    Preconditions.checkNotNull(value, "The value to commit together"
+        + " with the transaction can't be null");
+    ctr.setKeyValue(new CommitTxnKeyValue(tableId, key, value));
+    client.commit_txn(ctr);
   }
 
   @Override
