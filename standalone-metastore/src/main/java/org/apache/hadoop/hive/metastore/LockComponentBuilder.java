@@ -44,7 +44,6 @@ public class LockComponentBuilder {
     return this;
   }
 
-  @Deprecated
   public LockComponentBuilder setSemiShared() {
     return setExclWrite();
   }
@@ -67,7 +66,6 @@ public class LockComponentBuilder {
     return this;
   }
 
-  @Deprecated
   public LockComponentBuilder setShared() {
     return setSharedRead();
   }
