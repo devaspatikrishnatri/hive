@@ -67,7 +67,6 @@ public class MsckOperation extends DDLOperation<MsckDesc> {
               partitionExpirySeconds);
         }
       }
-
       // SessionState.get().getCurrentCatalog() does not exists, so using "hive" for now
       MsckInfo msckInfo = new MsckInfo("hive", names[0], names[1], desc.getPartitionsSpecs(), desc.getResFile(),
           desc.isRepairPartitions(), desc.isAddPartitions(), desc.isDropPartitions(), partitionExpirySeconds);

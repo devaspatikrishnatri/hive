@@ -1519,7 +1519,7 @@ public class SessionHiveMetaStoreClient extends HiveMetaStoreClient implements I
   private String generateJDOFilter(org.apache.hadoop.hive.metastore.api.Table table, byte[] expr,
       String defaultPartitionName) throws MetaException {
     ExpressionTree expressionTree = PartFilterExprUtil
-        .makeExpressionTree(PartFilterExprUtil.createExpressionProxy(conf), expr, defaultPartitionName);
+        .makeExpressionTree(PartFilterExprUtil.createExpressionProxy(conf), expr, defaultPartitionName, conf);
     return generateJDOFilter(table, expressionTree == null ? ExpressionTree.EMPTY_TREE : expressionTree);
   }
 
