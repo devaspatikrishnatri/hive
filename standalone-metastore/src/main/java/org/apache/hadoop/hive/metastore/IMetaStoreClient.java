@@ -3330,7 +3330,9 @@ public interface IMetaStoreClient {
    */
   void insertTable(Table table, boolean overwrite) throws MetaException;
 
-    /**
+  long getLatestTxnInConflict(long txnId) throws TException;
+
+  /**
    * A filter provided by the client that determines if a given notification event should be
    * returned.
    */

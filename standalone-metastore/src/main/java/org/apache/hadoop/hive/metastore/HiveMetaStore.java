@@ -8418,6 +8418,11 @@ public class HiveMetaStore extends ThriftHiveMetastore {
     }
 
     @Override
+    public long get_latest_txn_in_conflict(long txnId) throws MetaException {
+      return getTxnHandler().getLatestTxnInConflict(txnId);
+    }
+
+    @Override
     public void commit_txn(CommitTxnRequest rqst) throws TException {
       boolean isReplayedReplTxn = TxnType.REPL_CREATED.equals(rqst.getTxn_type());
       boolean isHiveReplTxn = rqst.isSetReplPolicy() && TxnType.DEFAULT.equals(rqst.getTxn_type());
