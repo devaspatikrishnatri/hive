@@ -2685,6 +2685,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         String dbName = rqst.getDbname();
         String tableName = rqst.getTablename();
         String partName = rqst.getPartname();
+        String txnId = rqst.isSetTxnid() ? String.valueOf(rqst.getTxnid()) : null;
         List<String> params = new ArrayList<>();
 
         StringBuilder filter = new StringBuilder();
@@ -2705,6 +2706,13 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           }
           filter.append("\"HL_PARTITION\"=?");
           params.add(partName);
+        }
+        if (txnId != null && !txnId.isEmpty()) {
+          if (filter.length() > 0) {
+            filter.append(" and ");
+          }
+          filter.append("\"HL_TXNID\"=?");
+          params.add(txnId);
         }
         String whereClause = filter.toString();
 
