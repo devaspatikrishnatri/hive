@@ -279,6 +279,10 @@ import org.apache.hadoop.hive.ql.plan.ExprNodeDescUtils;
 import org.apache.hadoop.hive.ql.plan.GroupByDesc;
 import org.apache.hadoop.hive.ql.plan.HiveOperation;
 import org.apache.hadoop.hive.ql.plan.SelectDesc;
+import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAccessControlException;
+import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAuthzContext;
+import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveOperationType;
+import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeObject;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator.Mode;
@@ -2401,6 +2405,16 @@ public class CalcitePlanner extends SemanticAnalyzer {
         return calcitePreMVRewritingPlan;
       }
 
+      try {
+        if (!checkPrivilegeForMaterializedViews(materializedViewsUsedAfterRewrite)) {
+          // if materialized views do not have appropriate privileges, we shouldn't be using them
+          return calcitePreMVRewritingPlan;
+        }
+      } catch (HiveException e) {
+        LOG.warn("Exception checking privileges for materialized views", e);
+        return calcitePreMVRewritingPlan;
+      }
+
       // A rewriting was produced, we will check whether it was part of an incremental rebuild
       // to try to replace INSERT OVERWRITE by INSERT or MERGE
       if (mvRebuildMode == MaterializationRebuildMode.INSERT_OVERWRITE_REBUILD) {
@@ -2473,7 +2487,39 @@ public class CalcitePlanner extends SemanticAnalyzer {
       return tablesUsed;
     }
 
-    private List<Table> getMaterializedViewsUsed(RelNode plan) {
+    /**
+     * Validate if given materialized view has SELECT privileges for current user
+     * @param cachedMVTableList
+     * @return false if user does not have privilege otherwise true
+     * @throws HiveException
+     */
+    private boolean checkPrivilegeForMaterializedViews(List<Table> cachedMVTableList) throws HiveException {
+      List<HivePrivilegeObject> privObjects = new ArrayList<HivePrivilegeObject>();
+
+      for (Table cachedMVTable:cachedMVTableList) {
+        List<String> colNames =
+            cachedMVTable.getAllCols().stream()
+                .map(FieldSchema::getName)
+                .collect(Collectors.toList());
+
+        HivePrivilegeObject privObject = new HivePrivilegeObject(cachedMVTable.getDbName(),
+            cachedMVTable.getTableName(), colNames);
+        privObjects.add(privObject);
+      }
+
+      try {
+        SessionState.get().getAuthorizerV2().
+            checkPrivileges(HiveOperationType.QUERY, privObjects, privObjects, new HiveAuthzContext.Builder().build());
+      } catch (HiveException e) {
+        if (e instanceof HiveAccessControlException) {
+          return false;
+        }
+        throw e;
+      }
+      return true;
+    }
+
+    protected List<Table> getMaterializedViewsUsed(RelNode plan) {
       List<Table> materializedViewsUsed = new ArrayList<>();
       new RelVisitor() {
         @Override
