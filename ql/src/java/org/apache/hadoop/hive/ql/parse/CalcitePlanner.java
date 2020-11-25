@@ -1888,8 +1888,8 @@ public class CalcitePlanner extends SemanticAnalyzer {
       EnumSet<HiveOperation> viewOperations = EnumSet.of(
               CREATEVIEW, ALTERVIEW_AS, ALTERVIEW_RENAME, ALTERVIEW_PROPERTIES);
       if (conf.getBoolVar(ConfVars.HIVE_MATERIALIZED_VIEW_ENABLE_AUTO_REWRITING) &&
-              !getQB().isMaterializedView() && !ctx.isLoadingMaterializedView() && !getQB().isCTAS() &&
-              !viewOperations.contains(queryState.getHiveOperation())) {
+              !getQB().isMaterializedView() && !ctx.isLoadingMaterializedView() && !getQB().isCTAS()
+              && !getQB().isView()) {
         calcitePreCboPlan = applyMaterializedViewRewriting(planner,
             calcitePreCboPlan, mdProvider.getMetadataProvider(), executorProvider);
       }
