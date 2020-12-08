@@ -953,8 +953,8 @@ public class TestCompactor {
     List<String> matchesNotFound = new ArrayList<>(5);
     matchesNotFound.add(AcidUtils.deleteDeltaSubdir(4, 5) + VISIBILITY_PATTERN);
     matchesNotFound.add(AcidUtils.deltaSubdir(4, 5) + VISIBILITY_PATTERN);
-    matchesNotFound.add(AcidUtils.deleteDeltaSubdir(5, 5, 1));
-    matchesNotFound.add(AcidUtils.deltaSubdir(5, 5, 0));
+    matchesNotFound.add(AcidUtils.deleteDeltaSubdir(5, 5, 0));
+    matchesNotFound.add(AcidUtils.deltaSubdir(5, 5, 1));
     matchesNotFound.add(AcidUtils.baseDir(6) + VISIBILITY_PATTERN);
 
     IMetaStoreClient msClient = new HiveMetaStoreClient(conf);

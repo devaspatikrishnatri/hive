@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.hive.ql.plan;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -64,6 +65,7 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
   private DynamicPartitionCtx dpCtx;
   private String staticSpec; // static partition spec ends with a '/'
   private boolean gatherStats;
+  private String moveTaskId;
 
   // Consider a query like:
   // insert overwrite table T3 select ... from T1 join T2 on T1.key = T2.key;
@@ -105,6 +107,8 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
 
   private Set<FileStatus> filesToFetch = null;
 
+  private Set<String> dynPartitionValues = new HashSet<>();
+
   /**
    * Whether is a HiveServer query, and the destination table is
    * indeed written using a row batching SerDe
@@ -116,6 +120,8 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
   private boolean isDirectInsert = false;
 
   private boolean deleteOfSplitUpdate;
+
+  private AcidUtils.Operation acidOperation = null;
 
   private boolean isQuery = false;
 
@@ -132,7 +138,7 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
       final boolean canBeMerged, final int numFiles, final int totalFiles,
       final List<ExprNodeDesc> partitionCols, final DynamicPartitionCtx dpCtx, Path destPath,
       Long mmWriteId, boolean isMmCtas, boolean isInsertOverwrite, boolean isQuery, boolean isCTASorCM,
-      boolean isDirectInsert, boolean deleteOfSplitUpdate) {
+      boolean isDirectInsert, AcidUtils.Operation acidOperation, boolean deleteOfSplitUpdate) {
     this.dirName = dirName;
     setTableInfo(tableInfo);
     this.compressed = compressed;
@@ -151,6 +157,7 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
     this.isQuery = isQuery;
     this.isCTASorCM = isCTASorCM;
     this.isDirectInsert = isDirectInsert;
+    this.acidOperation = acidOperation;
     this.deleteOfSplitUpdate = deleteOfSplitUpdate;
   }
 
@@ -173,7 +180,7 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
   public Object clone() throws CloneNotSupportedException {
     FileSinkDesc ret = new FileSinkDesc(dirName, tableInfo, compressed, destTableId, multiFileSpray, canBeMerged,
         numFiles, totalFiles, partitionCols, dpCtx, destPath, mmWriteId, isMmCtas, isInsertOverwrite, isQuery,
-        isCTASorCM, isDirectInsert, deleteOfSplitUpdate);
+        isCTASorCM, isDirectInsert, acidOperation, deleteOfSplitUpdate);
     ret.setCompressCodec(compressCodec);
     ret.setCompressType(compressType);
     ret.setGatherStats(gatherStats);
@@ -192,6 +199,8 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
     ret.setIsQuery(isQuery);
     ret.setIsCTASorCM(isCTASorCM);
     ret.setIsDirectInsert(isDirectInsert);
+    ret.setAcidOperation(acidOperation);
+    ret.setMoveTaskId(moveTaskId);
     return ret;
   }
 
@@ -238,6 +247,14 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
   public boolean isDirectInsert() {
     return this.isDirectInsert;
   }
+
+  public void setAcidOperation(AcidUtils.Operation acidOperation) {
+    this.acidOperation = acidOperation;
+   }
+
+   public AcidUtils.Operation getAcidOperation() {
+     return acidOperation;
+   }
 
   public boolean isDeleteOfSplitUpdate() {
     return deleteOfSplitUpdate;
@@ -690,6 +707,22 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
           Objects.equals(getStatsAggPrefix(), otherDesc.getStatsAggPrefix());
     }
     return false;
+  }
+
+  public String getMoveTaskId() {
+    return moveTaskId;
+  }
+
+  public void setMoveTaskId(String moveTaskId) {
+    this.moveTaskId = moveTaskId;
+  }
+
+  public Set<String> getDynPartitionValues() {
+    return dynPartitionValues;
+  }
+
+  public void setDynPartitionValues(Set<String> dynPartitionValues) {
+    this.dynPartitionValues = dynPartitionValues;
   }
 
 }

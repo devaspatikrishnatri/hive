@@ -576,12 +576,12 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
         sawNewDelta = true;
         FileStatus[] buckets = fs.listStatus(status[i].getPath(), FileUtils.HIDDEN_FILES_PATH_FILTER);
         Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
-        Assert.assertTrue(buckets[0].getPath().getName().matches("bucket_0000[01]"));
+        Assert.assertTrue(buckets[0].getPath().getName().matches("bucket_0000[01]_0"));
       } else if (status[i].getPath().getName().matches("delete_delta_.*")) {
         sawNewDeleteDelta = true;
         FileStatus[] buckets = fs.listStatus(status[i].getPath(), FileUtils.HIDDEN_FILES_PATH_FILTER);
         Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
-        Assert.assertTrue(buckets[0].getPath().getName().matches("bucket_0000[01]"));
+        Assert.assertTrue(buckets[0].getPath().getName().matches("bucket_0000[01_0]_0"));
       } else {
         Assert.assertTrue(status[i].getPath().getName().matches("00000[01]_0"));
       }
@@ -740,7 +740,7 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
         if (numDelta == 1) {
           Assert.assertEquals("delta_10000002_10000002_0000", status[i].getPath().getName());
           Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
-          Assert.assertEquals("bucket_00001", buckets[0].getPath().getName());
+          Assert.assertEquals("bucket_00001_0", buckets[0].getPath().getName());
         } else if (numDelta == 2) {
           Assert.assertEquals("delta_10000003_10000003_0000", status[i].getPath().getName());
           Assert.assertEquals(1, buckets.length);
@@ -753,7 +753,7 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
         if (numDeleteDelta == 1) {
           Assert.assertEquals("delete_delta_10000002_10000002_0000", status[i].getPath().getName());
           Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
-          Assert.assertEquals("bucket_00001", buckets[0].getPath().getName());
+          Assert.assertEquals("bucket_00001_0", buckets[0].getPath().getName());
         }
       } else if (status[i].getPath().getName().matches("base_.*")) {
         Assert.assertTrue("base_-9223372036854775808", status[i].getPath().getName().startsWith("base_-9223372036854775808_v0000023"));//_v0000023
@@ -931,7 +931,7 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
         if (numDelta == 1) {
           Assert.assertEquals("delta_10000002_10000002_0000", parent.getName());
           Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
-          Assert.assertEquals("bucket_00001", buckets[0].getPath().getName());
+          Assert.assertEquals("bucket_00001_0", buckets[0].getPath().getName());
         } else if (numDelta == 2) {
           Assert.assertEquals("delta_10000003_10000003_0000", parent.getName());
           Assert.assertEquals(1, buckets.length);
@@ -944,7 +944,7 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
         if (numDeleteDelta == 1) {
           Assert.assertEquals("delete_delta_10000002_10000002_0000", parent.getName());
           Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
-          Assert.assertEquals("bucket_00001", buckets[0].getPath().getName());
+          Assert.assertEquals("bucket_00001_0", buckets[0].getPath().getName());
         }
       } else if (parent.getName().matches("base_.*")) {
         Assert.assertTrue("base_-9223372036854775808", parent.getName().startsWith("base_-9223372036854775808_v0000023"));//_v0000023

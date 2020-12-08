@@ -37,6 +37,7 @@ import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.txn.AcidHouseKeeperService;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
 import org.apache.hadoop.hive.metastore.txn.TxnUtils;
+import org.apache.hadoop.hive.metastore.utils.TestTxnDbUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.apache.hadoop.hive.common.FileUtils;
@@ -1821,15 +1822,15 @@ public class TestDbTxnManager2 {
     final String completedTxnComponentsContents =
         TxnDbUtil.queryToString(conf, "select * from \"COMPLETED_TXN_COMPONENTS\"");
     Assert.assertEquals(completedTxnComponentsContents,
-        2, TxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\""));
+        4, TestTxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\""));
     Assert.assertEquals(completedTxnComponentsContents,
-        2, TxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\" where \"CTC_TXNID\"=6"));
+        4, TestTxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\" where \"CTC_TXNID\"=6"));
     Assert.assertEquals(completedTxnComponentsContents,
-        2, TxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\" where \"CTC_TXNID\"=6 "
+        4, TestTxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\" where \"CTC_TXNID\"=6 "
             + "and \"CTC_TABLE\"='tabmmdp'"));
     // ctc_update_delete value should be "N" for both partitions since these are inserts
     Assert.assertEquals(completedTxnComponentsContents,
-        2, TxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\" where \"CTC_TXNID\"=6 "
+        4, TestTxnDbUtil.countQueryAgent(conf, "select count(*) from \"COMPLETED_TXN_COMPONENTS\" where \"CTC_TXNID\"=6 "
             + "and \"CTC_TABLE\"='tabmmdp' and \"CTC_UPDATE_DELETE\"='N'"));
     dropTable(new String[] {"tabMmDp", "tab_not_acid"});
   }
