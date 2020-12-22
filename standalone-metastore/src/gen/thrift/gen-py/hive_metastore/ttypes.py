@@ -18993,6 +18993,7 @@ class GetTablesRequest:
    - catName
    - processorCapabilities
    - processorIdentifier
+   - projectionSpec
   """
 
   thrift_spec = (
@@ -19003,15 +19004,17 @@ class GetTablesRequest:
     (4, TType.STRING, 'catName', None, None, ), # 4
     (5, TType.LIST, 'processorCapabilities', (TType.STRING,None), None, ), # 5
     (6, TType.STRING, 'processorIdentifier', None, None, ), # 6
+    (7, TType.STRUCT, 'projectionSpec', (GetProjectionsSpec, GetProjectionsSpec.thrift_spec), None, ), # 7
   )
 
-  def __init__(self, dbName=None, tblNames=None, capabilities=None, catName=None, processorCapabilities=None, processorIdentifier=None,):
+  def __init__(self, dbName=None, tblNames=None, capabilities=None, catName=None, processorCapabilities=None, processorIdentifier=None, projectionSpec=None,):
     self.dbName = dbName
     self.tblNames = tblNames
     self.capabilities = capabilities
     self.catName = catName
     self.processorCapabilities = processorCapabilities
     self.processorIdentifier = processorIdentifier
+    self.projectionSpec = projectionSpec
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -19063,6 +19066,12 @@ class GetTablesRequest:
           self.processorIdentifier = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRUCT:
+          self.projectionSpec = GetProjectionsSpec()
+          self.projectionSpec.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -19103,6 +19112,10 @@ class GetTablesRequest:
       oprot.writeFieldBegin('processorIdentifier', TType.STRING, 6)
       oprot.writeString(self.processorIdentifier)
       oprot.writeFieldEnd()
+    if self.projectionSpec is not None:
+      oprot.writeFieldBegin('projectionSpec', TType.STRUCT, 7)
+      self.projectionSpec.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -19120,6 +19133,7 @@ class GetTablesRequest:
     value = (value * 31) ^ hash(self.catName)
     value = (value * 31) ^ hash(self.processorCapabilities)
     value = (value * 31) ^ hash(self.processorIdentifier)
+    value = (value * 31) ^ hash(self.projectionSpec)
     return value
 
   def __repr__(self):
