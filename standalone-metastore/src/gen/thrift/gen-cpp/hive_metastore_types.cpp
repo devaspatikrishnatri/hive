@@ -37347,23 +37347,23 @@ void AlterTableResponse::printTo(std::ostream& out) const {
 }
 
 
-GetPartitionsProjectionSpec::~GetPartitionsProjectionSpec() throw() {
+GetProjectionsSpec::~GetProjectionsSpec() throw() {
 }
 
 
-void GetPartitionsProjectionSpec::__set_fieldList(const std::vector<std::string> & val) {
+void GetProjectionsSpec::__set_fieldList(const std::vector<std::string> & val) {
   this->fieldList = val;
 }
 
-void GetPartitionsProjectionSpec::__set_includeParamKeyPattern(const std::string& val) {
+void GetProjectionsSpec::__set_includeParamKeyPattern(const std::string& val) {
   this->includeParamKeyPattern = val;
 }
 
-void GetPartitionsProjectionSpec::__set_excludeParamKeyPattern(const std::string& val) {
+void GetProjectionsSpec::__set_excludeParamKeyPattern(const std::string& val) {
   this->excludeParamKeyPattern = val;
 }
 
-uint32_t GetPartitionsProjectionSpec::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t GetProjectionsSpec::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -37432,10 +37432,10 @@ uint32_t GetPartitionsProjectionSpec::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t GetPartitionsProjectionSpec::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t GetProjectionsSpec::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("GetPartitionsProjectionSpec");
+  xfer += oprot->writeStructBegin("GetProjectionsSpec");
 
   xfer += oprot->writeFieldBegin("fieldList", ::apache::thrift::protocol::T_LIST, 1);
   {
@@ -37462,7 +37462,7 @@ uint32_t GetPartitionsProjectionSpec::write(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-void swap(GetPartitionsProjectionSpec &a, GetPartitionsProjectionSpec &b) {
+void swap(GetProjectionsSpec &a, GetProjectionsSpec &b) {
   using ::std::swap;
   swap(a.fieldList, b.fieldList);
   swap(a.includeParamKeyPattern, b.includeParamKeyPattern);
@@ -37470,22 +37470,22 @@ void swap(GetPartitionsProjectionSpec &a, GetPartitionsProjectionSpec &b) {
   swap(a.__isset, b.__isset);
 }
 
-GetPartitionsProjectionSpec::GetPartitionsProjectionSpec(const GetPartitionsProjectionSpec& other1411) {
+GetProjectionsSpec::GetProjectionsSpec(const GetProjectionsSpec& other1411) {
   fieldList = other1411.fieldList;
   includeParamKeyPattern = other1411.includeParamKeyPattern;
   excludeParamKeyPattern = other1411.excludeParamKeyPattern;
   __isset = other1411.__isset;
 }
-GetPartitionsProjectionSpec& GetPartitionsProjectionSpec::operator=(const GetPartitionsProjectionSpec& other1412) {
+GetProjectionsSpec& GetProjectionsSpec::operator=(const GetProjectionsSpec& other1412) {
   fieldList = other1412.fieldList;
   includeParamKeyPattern = other1412.includeParamKeyPattern;
   excludeParamKeyPattern = other1412.excludeParamKeyPattern;
   __isset = other1412.__isset;
   return *this;
 }
-void GetPartitionsProjectionSpec::printTo(std::ostream& out) const {
+void GetProjectionsSpec::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
-  out << "GetPartitionsProjectionSpec(";
+  out << "GetProjectionsSpec(";
   out << "fieldList=" << to_string(fieldList);
   out << ", " << "includeParamKeyPattern=" << to_string(includeParamKeyPattern);
   out << ", " << "excludeParamKeyPattern=" << to_string(excludeParamKeyPattern);
@@ -37763,7 +37763,7 @@ void GetPartitionsRequest::__set_groupNames(const std::vector<std::string> & val
 __isset.groupNames = true;
 }
 
-void GetPartitionsRequest::__set_projectionSpec(const GetPartitionsProjectionSpec& val) {
+void GetPartitionsRequest::__set_projectionSpec(const GetProjectionsSpec& val) {
   this->projectionSpec = val;
 }
 

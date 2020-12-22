@@ -36476,7 +36476,7 @@ class AlterTableResponse {
 
 }
 
-class GetPartitionsProjectionSpec {
+class GetProjectionsSpec {
   static $_TSPEC;
 
   /**
@@ -36527,7 +36527,7 @@ class GetPartitionsProjectionSpec {
   }
 
   public function getName() {
-    return 'GetPartitionsProjectionSpec';
+    return 'GetProjectionsSpec';
   }
 
   public function read($input)
@@ -36588,7 +36588,7 @@ class GetPartitionsProjectionSpec {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('GetPartitionsProjectionSpec');
+    $xfer += $output->writeStructBegin('GetProjectionsSpec');
     if ($this->fieldList !== null) {
       if (!is_array($this->fieldList)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -36878,7 +36878,7 @@ class GetPartitionsRequest {
    */
   public $groupNames = null;
   /**
-   * @var \metastore\GetPartitionsProjectionSpec
+   * @var \metastore\GetProjectionsSpec
    */
   public $projectionSpec = null;
   /**
@@ -36920,7 +36920,7 @@ class GetPartitionsRequest {
         7 => array(
           'var' => 'projectionSpec',
           'type' => TType::STRUCT,
-          'class' => '\metastore\GetPartitionsProjectionSpec',
+          'class' => '\metastore\GetProjectionsSpec',
           ),
         8 => array(
           'var' => 'filterSpec',
@@ -37030,7 +37030,7 @@ class GetPartitionsRequest {
           break;
         case 7:
           if ($ftype == TType::STRUCT) {
-            $this->projectionSpec = new \metastore\GetPartitionsProjectionSpec();
+            $this->projectionSpec = new \metastore\GetProjectionsSpec();
             $xfer += $this->projectionSpec->read($input);
           } else {
             $xfer += $input->skip($ftype);
