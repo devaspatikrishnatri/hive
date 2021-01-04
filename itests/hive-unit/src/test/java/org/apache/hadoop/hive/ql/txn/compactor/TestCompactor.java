@@ -37,6 +37,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
+import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.hive.cli.CliSessionState;
 import org.apache.hadoop.hive.conf.Constants;
 import org.apache.hadoop.hive.conf.HiveConf;
@@ -970,6 +971,422 @@ public class TestCompactor {
             Lists.newArrayList(5, 6), 1);
   }
 
+  @Test
+  public void testCleanAbortCompactAfter2ndCommitAbort() throws Exception {
+    String dbName = "default";
+    String tblName = "cws";
+
+    HiveStreamingConnection connection = prepareTableAndConnection(dbName, tblName, 2);
+
+    connection.beginTransaction();
+    connection.write("1,1".getBytes());
+    connection.write("2,2".getBytes());
+    connection.commitTransaction();
+
+    connection.beginTransaction();
+    connection.write("3,2".getBytes());
+    connection.write("3,3".getBytes());
+    connection.abortTransaction();
+
+    assertAndCompactCleanAbort(dbName, tblName, true, true);
+    connection.close();
+  }
+
+  @Test
+  public void testCleanAbortCompactAfter1stCommitAbort() throws Exception {
+    String dbName = "default";
+    String tblName = "cws";
+
+    HiveStreamingConnection connection = prepareTableAndConnection(dbName, tblName, 2);
+
+    connection.beginTransaction();
+    connection.write("1,1".getBytes());
+    connection.write("2,2".getBytes());
+    connection.abortTransaction();
+
+    connection.beginTransaction();
+    connection.write("3,2".getBytes());
+    connection.write("3,3".getBytes());
+    connection.commitTransaction();
+
+    assertAndCompactCleanAbort(dbName, tblName, true, true);
+    connection.close();
+  }
+
+  @Test
+  public void testCleanAbortCompactAfterAbortTwoPartitions() throws Exception {
+    String dbName = "default";
+    String tblName = "cws";
+
+    HiveStreamingConnection connection1 = prepareTableTwoPartitionsAndConnection(dbName, tblName, 1);
+    HiveStreamingConnection connection2 = prepareTableTwoPartitionsAndConnection(dbName, tblName, 1);
+
+    // to skip optimization introduced in HIVE-22122
+    executeStatementOnDriver("truncate table " + tblName, driver);
+
+    connection1.beginTransaction();
+    connection1.write("1,1".getBytes());
+    connection1.write("2,2".getBytes());
+    connection1.abortTransaction();
+
+    connection2.beginTransaction();
+    connection2.write("1,3".getBytes());
+    connection2.write("2,3".getBytes());
+    connection2.write("3,3".getBytes());
+    connection2.abortTransaction();
+
+    assertAndCompactCleanAbort(dbName, tblName, false, false);
+
+    connection1.close();
+    connection2.close();
+  }
+
+  @Test
+  public void testCleanAbortCompactAfterAbort() throws Exception {
+    String dbName = "default";
+    String tblName = "cws";
+
+    // Create three folders with two different transactions
+    HiveStreamingConnection connection1 = prepareTableAndConnection(dbName, tblName, 1);
+    HiveStreamingConnection connection2 = prepareTableAndConnection(dbName, tblName, 1);
+
+    // to skip optimization introduced in HIVE-22122
+    executeStatementOnDriver("truncate table " + tblName, driver);
+
+    connection1.beginTransaction();
+    connection1.write("1,1".getBytes());
+    connection1.write("2,2".getBytes());
+    connection1.abortTransaction();
+
+    connection2.beginTransaction();
+    connection2.write("1,3".getBytes());
+    connection2.write("2,3".getBytes());
+    connection2.write("3,3".getBytes());
+    connection2.abortTransaction();
+
+    assertAndCompactCleanAbort(dbName, tblName, false, false);
+
+    connection1.close();
+    connection2.close();
+  }
+
+  private void assertAndCompactCleanAbort(String dbName, String tblName, boolean partialAbort, boolean singleSession) throws Exception {
+    IMetaStoreClient msClient = new HiveMetaStoreClient(conf);
+    TxnStore txnHandler = TxnUtils.getTxnStore(conf);
+    Table table = msClient.getTable(dbName, tblName);
+    FileSystem fs = FileSystem.get(conf);
+    FileStatus[] stat =
+        fs.listStatus(new Path(table.getSd().getLocation()));
+    if (3 != stat.length) {
+      Assert.fail("Expecting three directories corresponding to three partitions, FileStatus[] stat " + Arrays.toString(stat));
+    }
+
+    int count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS where TC_OPERATION_TYPE='i'");
+    // We should have two rows corresponding to the two aborted transactions
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from TXN_COMPONENTS"), partialAbort ? 1 : 2, count);
+
+    runInitiator(conf);
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from COMPACTION_QUEUE");
+    // Only one job is added to the queue per table. This job corresponds to all the entries for a particular table
+    // with rows in TXN_COMPONENTS
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from COMPACTION_QUEUE"), 1, count);
+    runWorker(conf);
+
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(1, rsp.getCompacts().size());
+    Assert.assertEquals(TxnStore.CLEANING_RESPONSE, rsp.getCompacts().get(0).getState());
+    Assert.assertEquals("cws", rsp.getCompacts().get(0).getTablename());
+    Assert.assertEquals(CompactionType.MINOR, rsp.getCompacts().get(0).getType());
+
+    runCleaner(conf);
+
+    // After the cleaner runs TXN_COMPONENTS and COMPACTION_QUEUE should have zero rows, also the folders should have been deleted.
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from TXN_COMPONENTS"), (singleSession && partialAbort) ? 1 : 0, count);
+
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from COMPACTION_QUEUE");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from COMPACTION_QUEUE"), 0, count);
+
+    RemoteIterator it =
+        fs.listFiles(new Path(table.getSd().getLocation()), true);
+    if (it.hasNext() && !partialAbort) {
+      Assert.fail("Expected cleaner to drop aborted delta & base directories, FileStatus[] stat " + Arrays.toString(stat));
+    }
+
+    rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(1, rsp.getCompacts().size());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+    Assert.assertEquals("cws", rsp.getCompacts().get(0).getTablename());
+    Assert.assertEquals(CompactionType.MINOR, rsp.getCompacts().get(0).getType());
+  }
+
+  @Test
+  public void testCleanAbortCompactSeveralTables() throws Exception {
+    String dbName = "default";
+    String tblName1 = "cws1";
+    String tblName2 = "cws2";
+
+    HiveStreamingConnection connection1 = prepareTableAndConnection(dbName, tblName1, 1);
+    HiveStreamingConnection connection2 = prepareTableAndConnection(dbName, tblName2, 1);
+
+    connection1.beginTransaction();
+    connection1.write("1,1".getBytes());
+    connection1.write("2,2".getBytes());
+    connection1.abortTransaction();
+
+    connection2.beginTransaction();
+    connection2.write("1,1".getBytes());
+    connection2.write("2,2".getBytes());
+    connection2.abortTransaction();
+
+    IMetaStoreClient msClient = new HiveMetaStoreClient(conf);
+    FileSystem fs = FileSystem.get(conf);
+    Table table1 = msClient.getTable(dbName, tblName1);
+    FileStatus[] stat =
+        fs.listStatus(new Path(table1.getSd().getLocation()));
+    if (2 != stat.length) {
+      Assert.fail("Expecting two directories corresponding to two partitions, FileStatus[] stat " + Arrays.toString(stat));
+    }
+    Table table2 = msClient.getTable(dbName, tblName2);
+    stat = fs.listStatus(new Path(table2.getSd().getLocation()));
+    if (2 != stat.length) {
+      Assert.fail("Expecting two directories corresponding to two partitions, FileStatus[] stat " + Arrays.toString(stat));
+    }
+
+    int count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS where TC_OPERATION_TYPE='i'");
+    // We should have two rows corresponding to the two aborted transactions
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from TXN_COMPONENTS"), 2, count);
+
+    runInitiator(conf);
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from COMPACTION_QUEUE");
+    // Only one job is added to the queue per table. This job corresponds to all the entries for a particular table
+    // with rows in TXN_COMPONENTS
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from COMPACTION_QUEUE"), 2, count);
+
+    runWorker(conf);
+    runWorker(conf);
+
+    runCleaner(conf);
+    // After the cleaner runs TXN_COMPONENTS and COMPACTION_QUEUE should have zero rows, also the folders should have been deleted.
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from TXN_COMPONENTS"), 0, count);
+
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from COMPACTION_QUEUE");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from COMPACTION_QUEUE"), 0, count);
+
+    RemoteIterator it =
+        fs.listFiles(new Path(table1.getSd().getLocation()), true);
+    if (it.hasNext()) {
+      Assert.fail("Expected cleaner to drop aborted delta & base directories, FileStatus[] stat " + Arrays.toString(stat));
+    }
+
+    connection1.close();
+    connection2.close();
+  }
+
+  @Test
+  public void testCleanAbortCorrectlyCleaned() throws Exception {
+    // Test that at commit the tables are cleaned properly
+    String dbName = "default";
+    String tblName = "cws";
+    HiveStreamingConnection connection = prepareTableAndConnection(dbName, tblName, 1);
+    connection.beginTransaction();
+    connection.write("1,1".getBytes());
+    connection.write("2,2".getBytes());
+
+    int count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS where TC_OPERATION_TYPE='i'");
+    // We should have 1 row corresponding to the aborted transaction
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from TXN_COMPONENTS"), 1, count);
+
+    connection.commitTransaction();
+
+    // After commit the row should have been deleted
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS where TC_OPERATION_TYPE='i'");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from TXN_COMPONENTS"), 0, count);
+  }
+
+  @Test
+  public void testCleanAbortAndMinorCompact() throws Exception {
+    String dbName = "default";
+    String tblName = "cws";
+
+    HiveStreamingConnection connection = prepareTableAndConnection(dbName, tblName, 1);
+
+    connection.beginTransaction();
+    connection.write("1,1".getBytes());
+    connection.write("2,2".getBytes());
+    connection.abortTransaction();
+
+    executeStatementOnDriver("insert into " + tblName + " partition (a) values (1, '1')", driver);
+    executeStatementOnDriver("delete from " + tblName + " where b=1", driver);
+
+    conf.setIntVar(HiveConf.ConfVars.HIVE_COMPACTOR_DELTA_NUM_THRESHOLD, 0);
+    runInitiator(conf);
+
+    int count = TxnDbUtil.countQueryAgent(conf, "select count(*) from COMPACTION_QUEUE");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from COMPACTION_QUEUE"), 2, count);
+
+    runWorker(conf);
+    runWorker(conf);
+
+    // Cleaning should happen in threads concurrently for the minor compaction and the clean abort one.
+    runCleaner(conf);
+
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from COMPACTION_QUEUE");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from COMPACTION_QUEUE"), 0, count);
+
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS");
+    Assert.assertEquals(TxnDbUtil.queryToString(conf, "select * from TXN_COMPONENTS"), 0, count);
+
+  }
+
+  private HiveStreamingConnection prepareTableAndConnection(String dbName, String tblName, int batchSize) throws Exception {
+    String agentInfo = "UT_" + Thread.currentThread().getName();
+
+    executeStatementOnDriver("drop table if exists " + tblName, driver);
+    executeStatementOnDriver("CREATE TABLE " + tblName + "(b STRING) " +
+        " PARTITIONED BY (a INT)" + //currently ACID requires table to be bucketed
+        " STORED AS ORC  TBLPROPERTIES ('transactional'='true')", driver);
+
+    StrictDelimitedInputWriter writer = StrictDelimitedInputWriter.newBuilder()
+        .withFieldDelimiter(',')
+        .build();
+
+    // Create three folders with two different transactions
+    return HiveStreamingConnection.newBuilder()
+        .withDatabase(dbName)
+        .withTable(tblName)
+        .withAgentInfo(agentInfo)
+        .withHiveConf(conf)
+        .withRecordWriter(writer)
+        .withStreamingOptimizations(true)
+        // Transaction size has to be one or exception should happen.
+        .withTransactionBatchSize(batchSize)
+        .connect();
+  }
+
+  private HiveStreamingConnection prepareTableTwoPartitionsAndConnection(String dbName, String tblName, int batchSize) throws Exception {
+    String agentInfo = "UT_" + Thread.currentThread().getName();
+
+    executeStatementOnDriver("drop table if exists " + tblName, driver);
+    executeStatementOnDriver("CREATE TABLE " + tblName + "(c STRING) " +
+        " PARTITIONED BY (a INT, b INT)" + //currently ACID requires table to be bucketed
+        " STORED AS ORC  TBLPROPERTIES ('transactional'='true')", driver);
+
+    StrictDelimitedInputWriter writer = StrictDelimitedInputWriter.newBuilder()
+        .withFieldDelimiter(',')
+        .build();
+
+    // Create three folders with two different transactions
+    return HiveStreamingConnection.newBuilder()
+        .withDatabase(dbName)
+        .withTable(tblName)
+        .withAgentInfo(agentInfo)
+        .withHiveConf(conf)
+        .withRecordWriter(writer)
+        .withStreamingOptimizations(true)
+        // Transaction size has to be one or exception should happen.
+        .withTransactionBatchSize(batchSize)
+        .connect();
+  }
+
+  /**
+   * There is a special case handled in Compaction Worker that will skip compaction
+   * if there is only one valid delta. But this compaction will be still cleaned up, if there are aborted directories.
+   * @see Worker#isEnoughToCompact
+   * However if no compaction was done, deltas containing mixed aborted / committed writes from streaming can not be cleaned
+   * and the metadata belonging to those aborted transactions can not be removed.
+   * @throws Exception ex
+   */
+  @Test
+  public void testSkippedCompactionCleanerKeepsAborted() throws Exception {
+    String dbName = "default";
+    String tblName = "cws";
+
+    String agentInfo = "UT_" + Thread.currentThread().getName();
+    TxnStore txnHandler = TxnUtils.getTxnStore(conf);
+
+    executeStatementOnDriver("drop table if exists " + tblName, driver);
+    executeStatementOnDriver("CREATE TABLE " + tblName + "(b STRING) " +
+        " PARTITIONED BY (a INT) STORED AS ORC  TBLPROPERTIES ('transactional'='true')", driver);
+    executeStatementOnDriver("alter table " + tblName + " add partition(a=1)", driver);
+
+    StrictDelimitedInputWriter writer = StrictDelimitedInputWriter.newBuilder()
+        .withFieldDelimiter(',')
+        .build();
+
+    // Create initial aborted txn
+    HiveStreamingConnection connection = HiveStreamingConnection.newBuilder()
+        .withDatabase(dbName)
+        .withTable(tblName)
+        .withStaticPartitionValues(Collections.singletonList("1"))
+        .withAgentInfo(agentInfo)
+        .withHiveConf(conf)
+        .withRecordWriter(writer)
+        .withStreamingOptimizations(true)
+        .withTransactionBatchSize(1)
+        .connect();
+
+    connection.beginTransaction();
+    connection.write("3,1".getBytes());
+    connection.write("4,1".getBytes());
+    connection.abortTransaction();
+
+    connection.close();
+
+    // Create a sequence of commit, abort, commit to the same delta folder
+    connection = HiveStreamingConnection.newBuilder()
+        .withDatabase(dbName)
+        .withTable(tblName)
+        .withStaticPartitionValues(Collections.singletonList("1"))
+        .withAgentInfo(agentInfo)
+        .withHiveConf(conf)
+        .withRecordWriter(writer)
+        .withStreamingOptimizations(true)
+        .withTransactionBatchSize(3)
+        .connect();
+
+    connection.beginTransaction();
+    connection.write("1,1".getBytes());
+    connection.write("2,1".getBytes());
+    connection.commitTransaction();
+
+    connection.beginTransaction();
+    connection.write("3,1".getBytes());
+    connection.write("4,1".getBytes());
+    connection.abortTransaction();
+
+    connection.beginTransaction();
+    connection.write("5,1".getBytes());
+    connection.write("6,1".getBytes());
+    connection.commitTransaction();
+
+    connection.close();
+
+    // Check that aborted are not read back
+    driver.run("select * from cws");
+    List res = new ArrayList();
+    driver.getFetchTask().fetch(res);
+    Assert.assertEquals(4, res.size());
+
+    int count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS");
+    Assert.assertEquals("There should be 2 record for two aborted transaction", 2, count);
+
+    // Start a compaction, that will be skipped, because only one valid delta is there
+    driver.run("alter table cws partition(a='1') compact 'minor'");
+    runWorker(conf);
+    // Cleaner should not delete info about aborted txn 2
+    runCleaner(conf);
+    txnHandler.cleanEmptyAbortedTxns();
+    count = TxnDbUtil.countQueryAgent(conf, "select count(*) from TXN_COMPONENTS");
+    Assert.assertEquals("There should be 1 record for the second aborted transaction", 1, count);
+
+    driver.run("select * from cws");
+    res.clear();
+    driver.getFetchTask().fetch(res);
+    Assert.assertEquals(4, res.size());
+
+  }
 
   @Test
   public void mmTable() throws Exception {

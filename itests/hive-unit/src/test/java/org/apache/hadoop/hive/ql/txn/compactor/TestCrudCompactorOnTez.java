@@ -59,6 +59,7 @@ import org.apache.hadoop.hive.ql.hooks.HiveProtoLoggingHook;
 import org.apache.hadoop.hive.ql.hooks.HiveProtoLoggingHook.ExecutionMode;
 import org.apache.hadoop.hive.ql.hooks.TestHiveProtoLoggingHook;
 import org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents;
+import org.apache.hadoop.hive.ql.io.AcidDirectory;
 import org.apache.hadoop.hive.ql.io.AcidUtils;
 import org.apache.hadoop.hive.ql.io.HiveInputFormat;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
@@ -1836,7 +1837,7 @@ public class TestCrudCompactorOnTez extends CompactorOnTezTest {
     QueryCompactor qc = new QueryCompactor() {
       @Override
       void runCompaction(HiveConf hiveConf, Table table, Partition partition, StorageDescriptor storageDescriptor,
-                         ValidWriteIdList writeIds, CompactionInfo compactionInfo, AcidUtils.Directory dir) throws IOException {
+                         ValidWriteIdList writeIds, CompactionInfo compactionInfo, AcidDirectory dir) throws IOException {
       }
 
       @Override
