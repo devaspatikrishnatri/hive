@@ -254,6 +254,7 @@ public final class DbTxnManager extends HiveTxnManagerImpl {
       tableWriteIds.clear();
       isExplicitTransaction = false;
       startTransactionCount = 0;
+      this.queryId = ctx.getConf().get(HiveConf.ConfVars.HIVEQUERYID.varname);
       LOG.info("Opened " + JavaUtils.txnIdToString(txnId));
       ctx.setHeartbeater(startHeartbeat(delay));
       return txnId;
@@ -282,10 +283,7 @@ public final class DbTxnManager extends HiveTxnManagerImpl {
     }
     catch(LockException e) {
       if(e.getCause() instanceof TxnAbortedException) {
-        txnId = 0;
-        stmtId = -1;
-        numStatements = 0;
-        tableWriteIds.clear();
+        resetTxnInfo();
       }
       throw e;
     }
@@ -505,6 +503,14 @@ public final class DbTxnManager extends HiveTxnManagerImpl {
     }
   }
 
+  private void resetTxnInfo() {
+    txnId = 0;
+    stmtId = -1;
+    numStatements = 0;
+    tableWriteIds.clear();
+    queryId = null;
+  }
+
   @Override
   public void replCommitTxn(CommitTxnRequest rqst) throws LockException {
     try {
@@ -525,10 +531,7 @@ public final class DbTxnManager extends HiveTxnManagerImpl {
       throw new LockException(ErrorMsg.METASTORE_COMMUNICATION_FAILED.getMsg(), e);
     } finally {
       if (rqst.isSetReplLastIdInfo()) {
-        txnId = 0;
-        stmtId = -1;
-        numStatements = 0;
-        tableWriteIds.clear();
+        resetTxnInfo();
       }
     }
   }
@@ -556,10 +559,7 @@ public final class DbTxnManager extends HiveTxnManagerImpl {
       throw new LockException(ErrorMsg.METASTORE_COMMUNICATION_FAILED.getMsg(),
           e);
     } finally {
-      txnId = 0;
-      stmtId = -1;
-      numStatements = 0;
-      tableWriteIds.clear();
+      resetTxnInfo();
     }
   }
   @Override
@@ -604,10 +604,7 @@ public final class DbTxnManager extends HiveTxnManagerImpl {
       throw new LockException(ErrorMsg.METASTORE_COMMUNICATION_FAILED.getMsg(),
           e);
     } finally {
-      txnId = 0;
-      stmtId = -1;
-      numStatements = 0;
-      tableWriteIds.clear();
+      resetTxnInfo();
     }
   }
 
@@ -1157,5 +1154,10 @@ public final class DbTxnManager extends HiveTxnManagerImpl {
         }
       }
     }
+  }
+
+  @Override
+  public String getQueryid() {
+    return queryId;
   }
 }

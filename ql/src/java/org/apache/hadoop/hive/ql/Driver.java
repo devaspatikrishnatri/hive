@@ -1126,7 +1126,10 @@ public class Driver implements IDriver {
     }
     boolean isTxnOpen = driverContext != null
         && driverContext.getTxnManager() != null
-        && driverContext.getTxnManager().isTxnOpen();
+        && driverContext.getTxnManager().isTxnOpen()
+        && org.apache.commons.lang3.StringUtils.equals(
+            driverContext.getQueryState().getQueryId(),
+            driverContext.getTxnManager().getQueryid());
     if (!hiveLocks.isEmpty() || isTxnOpen) {
       try {
         releaseLocksAndCommitOrRollback(false);

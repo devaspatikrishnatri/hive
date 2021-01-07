@@ -430,4 +430,9 @@ class DummyTxnManager extends HiveTxnManagerImpl {
     }
     return locks;
   }
+
+  @Override
+  public String getQueryid() {
+    return null;
+  }
 }
