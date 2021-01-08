@@ -18,11 +18,12 @@
 
 package org.apache.hadoop.hive.ql.ddl.misc.msck;
 
-import org.apache.hadoop.hive.ql.ddl.DDLOperationContext;
 import org.apache.hadoop.hive.ql.exec.Utilities;
+import static org.apache.hadoop.hive.metastore.Msck.getProxyClass;
 
 import java.io.IOException;
 
+import org.apache.hadoop.hive.common.TableName;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
 import org.apache.hadoop.hive.metastore.Msck;
 import org.apache.hadoop.hive.metastore.MsckInfo;
@@ -32,6 +33,7 @@ import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.ql.ddl.DDLOperation;
+import org.apache.hadoop.hive.ql.ddl.DDLOperationContext;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
 import org.apache.thrift.TException;
@@ -52,6 +54,7 @@ public class MsckOperation extends DDLOperation<MsckDesc> {
     try {
       Msck msck = new Msck(false, false);
       msck.init(context.getDb().getConf());
+      msck.updateExpressionProxy(getProxyClass(context.getDb().getConf()));
 
       String[] names = Utilities.getDbTableName(desc.getTableName());
 
