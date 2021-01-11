@@ -73,10 +73,10 @@ import org.apache.hadoop.hive.ql.exec.vector.StructColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.TimestampColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatchCtx;
-import org.apache.hadoop.hive.ql.io.AcidDirectory;
 import org.apache.hadoop.hive.ql.io.AcidInputFormat;
 import org.apache.hadoop.hive.ql.io.AcidOutputFormat;
 import org.apache.hadoop.hive.ql.io.AcidUtils;
+import org.apache.hadoop.hive.ql.io.AcidUtils.Directory;
 import org.apache.hadoop.hive.ql.io.BucketCodec;
 import org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;
 import org.apache.hadoop.hive.ql.io.HiveInputFormat;
@@ -774,14 +774,7 @@ public class TestInputOutputFormat {
 
       conf.set("bucket_count", "4");
       //set up props for read
-      conf.setBoolean(hive_metastoreConstants.TABLE_IS_TRANSACTIONAL, true);
-      AcidUtils.setAcidOperationalProperties(conf, true, null);
-      conf.set(ValidTxnList.VALID_TXNS_KEY,
-          new ValidReadTxnList(new long[0], new BitSet(), 1000, Long.MAX_VALUE).writeToString());
-      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS,
-        TestVectorizedOrcAcidRowBatchReader.DummyRow.getColumnNamesProperty());
-      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES,
-        TestVectorizedOrcAcidRowBatchReader.DummyRow.getColumnTypesProperty());
+      setupAcidProperties(conf, RowType.DUMMYROW);
       conf.setBoolean(HiveConf.ConfVars.HIVE_VECTORIZATION_ENABLED.varname, true);
       MockPath mockPath = new MockPath(fs, "mock:/a");
       conf.set("mapred.input.dir", mockPath.toString());
@@ -1004,13 +997,13 @@ public class TestInputOutputFormat {
 
   public List<SplitStrategy<?>> createOrCombineStrategies(OrcInputFormat.Context context,
       MockFileSystem fs, String path, OrcInputFormat.CombinedCtx combineCtx) throws IOException {
-    AcidDirectory adi = createAdi(context, fs, path);
+    Directory adi = createAdi(context, fs, path);
     return OrcInputFormat.determineSplitStrategies(combineCtx, context,
-        adi.getFs(), adi.getPath(), adi.getBaseAndDeltaFiles(), adi.getDeleteDeltas(),
+        adi.getFs(), adi.getPath(), adi.getFiles(), adi.getDeleteDeltas(),
         null, null, true);
   }
 
-  public AcidDirectory createAdi(
+  public Directory createAdi(
       OrcInputFormat.Context context, final MockFileSystem fs, String path) throws IOException {
     return new OrcInputFormat.FileGenerator(
         context, () -> fs, new MockPath(fs, path), false, null).call();
@@ -1018,9 +1011,9 @@ public class TestInputOutputFormat {
 
   private List<OrcInputFormat.SplitStrategy<?>> createSplitStrategies(
       OrcInputFormat.Context context, OrcInputFormat.FileGenerator gen) throws IOException {
-    AcidDirectory adi = gen.call();
+    Directory adi = gen.call();
     return OrcInputFormat.determineSplitStrategies(
-        null, context, adi.getFs(), adi.getPath(), adi.getBaseAndDeltaFiles(), adi.getDeleteDeltas(),
+        null, context, adi.getFs(), adi.getPath(), adi.getFiles(), adi.getDeleteDeltas(),
         null, null, true);
   }
 
@@ -2402,8 +2395,7 @@ public class TestInputOutputFormat {
     StructObjectInspector inspector = new BigRowInspector();
     JobConf conf = createMockExecutionEnvironment(workDir, new Path("mock:///"),
         "vectorizationAcid", inspector, true, 1);
-    conf.set(ValidTxnList.VALID_TXNS_KEY,
-        new ValidReadTxnList(new long[0], new BitSet(), 1000, Long.MAX_VALUE).writeToString());
+    setupAcidProperties(conf, RowType.BIGROW);
 
     // write the orc file to the mock file system
     Path partDir = new Path(conf.get("mapred.input.dir"));
@@ -2424,9 +2416,6 @@ public class TestInputOutputFormat {
     InputSplit[] splits = inputFormat.getSplits(conf, 10);
     assertEquals(1, splits.length);
 
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, BigRow.getColumnNamesProperty());
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, BigRow.getColumnTypesProperty());
-    HiveConf.setBoolVar(conf, HiveConf.ConfVars.HIVE_TRANSACTIONAL_TABLE_SCAN, true);
 
     org.apache.hadoop.mapred.RecordReader<NullWritable, VectorizedRowBatch>
         reader = inputFormat.getRecordReader(splits[0], conf, Reporter.NULL);
@@ -2603,8 +2592,7 @@ public class TestInputOutputFormat {
 
     // call getsplits
     conf.setInt(hive_metastoreConstants.BUCKET_COUNT, BUCKETS);
-    conf.set(ValidTxnList.VALID_TXNS_KEY,
-        new ValidReadTxnList(new long[0], new BitSet(), 1000, Long.MAX_VALUE).writeToString());
+    setupAcidProperties(conf, RowType.MYROW);
     HiveInputFormat<?,?> inputFormat =
         new CombineHiveInputFormat<WritableComparable, Writable>();
     InputSplit[] splits = inputFormat.getSplits(conf, 1);
@@ -2865,7 +2853,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktable
     // call-2: open - mock:/mocktable/0_0
     // call-3: open - mock:/mocktable/0_1
-    assertEquals(5, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     assertEquals(2, splits.length);
     // revert back to local fs
@@ -2923,7 +2911,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktbl
     // call-2: open - mock:/mocktbl/0_0
     // call-3: open - mock:/mocktbl/0_1
-    assertEquals(5, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     // force BI to avoid reading footers
     conf.set(HiveConf.ConfVars.HIVE_ORC_SPLIT_STRATEGY.varname, "BI");
@@ -2941,7 +2929,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl
-    assertEquals(3, readOpsDelta);
+    assertEquals(1, readOpsDelta);
 
     // enable cache and use default strategy
     conf.set(ConfVars.HIVE_ORC_CACHE_STRIPE_DETAILS_MEMORY_SIZE.varname, "10Mb");
@@ -2962,7 +2950,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktbl
     // call-2: open - mock:/mocktbl/0_0
     // call-3: open - mock:/mocktbl/0_1
-    assertEquals(5, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     for (FileSystem.Statistics statistics : FileSystem.getAllStatistics()) {
       if (statistics.getScheme().equalsIgnoreCase("mock")) {
@@ -2978,7 +2966,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl
-    assertEquals(3, readOpsDelta);
+    assertEquals(1, readOpsDelta);
 
     // revert back to local fs
     conf.set("fs.defaultFS", "file:///");
@@ -3034,7 +3022,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktable
     // call-2: open - mock:/mocktbl1/0_0
     // call-3: open - mock:/mocktbl1/0_1
-    assertEquals(5, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     // change file length and look for cache misses
 
@@ -3073,7 +3061,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktable
     // call-2: open - mock:/mocktbl1/0_0
     // call-3: open - mock:/mocktbl1/0_1
-    assertEquals(5, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     for (FileSystem.Statistics statistics : FileSystem.getAllStatistics()) {
       if (statistics.getScheme().equalsIgnoreCase("mock")) {
@@ -3089,7 +3077,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl1
-    assertEquals(3, readOpsDelta);
+    assertEquals(1, readOpsDelta);
 
     // revert back to local fs
     conf.set("fs.defaultFS", "file:///");
@@ -3146,7 +3134,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktbl2
     // call-2: open - mock:/mocktbl2/0_0
     // call-3: open - mock:/mocktbl2/0_1
-    assertEquals(5, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     // change file modification time and look for cache misses
     FileSystem fs1 = FileSystem.get(conf);
@@ -3167,7 +3155,7 @@ public class TestInputOutputFormat {
     }
     // call-1: getAcidState - mock:/mocktbl2
     // call-2: open - mock:/mocktbl2/0_1
-    assertEquals(4, readOpsDelta);
+    assertEquals(2, readOpsDelta);
 
     // touch the next file
     fs1 = FileSystem.get(conf);
@@ -3188,7 +3176,7 @@ public class TestInputOutputFormat {
     }
     // call-1: getAcidState - mock:/mocktbl2
     // call-2: open - mock:/mocktbl2/0_0
-    assertEquals(4, readOpsDelta);
+    assertEquals(2, readOpsDelta);
 
     for (FileSystem.Statistics statistics : FileSystem.getAllStatistics()) {
       if (statistics.getScheme().equalsIgnoreCase("mock")) {
@@ -3204,7 +3192,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl2
-    assertEquals(3, readOpsDelta);
+    assertEquals(1, readOpsDelta);
 
     // revert back to local fs
     conf.set("fs.defaultFS", "file:///");
@@ -3504,10 +3492,7 @@ public class TestInputOutputFormat {
   public void testACIDReaderNoFooterSerialize() throws Exception {
     MockFileSystem fs = new MockFileSystem(conf);
     MockPath mockPath = new MockPath(fs, "mock:///mocktable5");
-    conf.set(ConfVars.HIVE_TRANSACTIONAL_TABLE_SCAN.varname, "true");
-    conf.setBoolean(hive_metastoreConstants.TABLE_IS_TRANSACTIONAL, true);
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, MyRow.getColumnNamesProperty());
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, MyRow.getColumnTypesProperty());
+    setupAcidProperties(conf, RowType.MYROW);
     conf.set("hive.orc.splits.include.file.footer", "false");
     conf.set("mapred.input.dir", mockPath.toString());
     conf.set("fs.defaultFS", "mock:///");
@@ -3579,10 +3564,7 @@ public class TestInputOutputFormat {
   public void testACIDReaderFooterSerialize() throws Exception {
     MockFileSystem fs = new MockFileSystem(conf);
     MockPath mockPath = new MockPath(fs, "mock:///mocktable6");
-    conf.set(ConfVars.HIVE_TRANSACTIONAL_TABLE_SCAN.varname, "true");
-    conf.setBoolean(hive_metastoreConstants.TABLE_IS_TRANSACTIONAL, true);
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, MyRow.getColumnNamesProperty());
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, MyRow.getColumnTypesProperty());
+    setupAcidProperties(conf, RowType.MYROW);
     conf.set("hive.orc.splits.include.file.footer", "true");
     conf.set("mapred.input.dir", mockPath.toString());
     conf.set("fs.defaultFS", "mock:///");
@@ -3660,8 +3642,8 @@ public class TestInputOutputFormat {
     conf.set("fs.mock.impl", MockFileSystem.class.getName());
     FileSystem fs = FileSystem.get(conf);
     MockPath mockPath = new MockPath(fs, "mock:///mocktable7");
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, MyRow.getColumnNamesProperty());
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, MyRow.getColumnTypesProperty());
+    //set up props for read
+    setupAcidProperties(conf, RowType.MYROW);
     conf.set("hive.orc.splits.include.file.footer", "false");
     conf.set("mapred.input.dir", mockPath.toString());
     StructObjectInspector inspector;
@@ -3687,12 +3669,6 @@ public class TestInputOutputFormat {
       ru.insert(options.getMinimumWriteId(), new MyRow(i, 2 * i));
     }
     ru.close(false);//this deletes the side file
-
-    //set up props for read
-    conf.setBoolean(hive_metastoreConstants.TABLE_IS_TRANSACTIONAL, true);
-    AcidUtils.setAcidOperationalProperties(conf, true, null);
-    conf.set(ValidTxnList.VALID_TXNS_KEY,
-        new ValidReadTxnList(new long[0], new BitSet(), 1000, Long.MAX_VALUE).writeToString());
 
 
     OrcInputFormat orcInputFormat = new OrcInputFormat();
@@ -3735,8 +3711,8 @@ public class TestInputOutputFormat {
     conf.set("fs.mock.impl", MockFileSystem.class.getName());
     FileSystem fs = FileSystem.get(conf);//ensures that FS object is cached so that everyone uses the same instance
     MockPath mockPath = new MockPath(fs, "mock:///mocktable8");
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, MyRow.getColumnNamesProperty());
-    conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, MyRow.getColumnTypesProperty());
+    //set up props for read
+    setupAcidProperties(conf, RowType.MYROW);
     conf.set("hive.orc.splits.include.file.footer", "true");
     conf.set("mapred.input.dir", mockPath.toString());
     StructObjectInspector inspector;
@@ -3762,12 +3738,6 @@ public class TestInputOutputFormat {
       ru.insert(options.getMinimumWriteId(), new MyRow(i, 2 * i));
     }
     ru.close(false);//this deletes the side file
-
-    //set up props for read
-    conf.setBoolean(hive_metastoreConstants.TABLE_IS_TRANSACTIONAL, true);
-    AcidUtils.setAcidOperationalProperties(conf, true, null);
-    conf.set(ValidTxnList.VALID_TXNS_KEY,
-        new ValidReadTxnList(new long[0], new BitSet(), 1000, Long.MAX_VALUE).writeToString());
 
     OrcInputFormat orcInputFormat = new OrcInputFormat();
     InputSplit[] splits = orcInputFormat.getSplits(conf, 2);
@@ -4340,6 +4310,33 @@ public class TestInputOutputFormat {
     result = splitsForStreamingAcidTable(files);
     files.clear();
     assertEquals(450, result.get(0).getLength());
+  }
 
+  enum RowType {
+    DUMMYROW,
+    MYROW,
+    BIGROW;
+  }
+
+  private void setupAcidProperties(JobConf conf, RowType rowType) {
+    switch (rowType){
+
+    case DUMMYROW:
+      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, TestVectorizedOrcAcidRowBatchReader.DummyRow.getColumnNamesProperty());
+      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, TestVectorizedOrcAcidRowBatchReader.DummyRow.getColumnTypesProperty());
+      break;
+    case MYROW:
+      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, MyRow.getColumnNamesProperty());
+      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, MyRow.getColumnTypesProperty());
+      break;
+    case BIGROW:
+      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS, BigRow.getColumnNamesProperty());
+      conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, BigRow.getColumnTypesProperty());
+      break;
+    }
+    conf.setBoolean(hive_metastoreConstants.TABLE_IS_TRANSACTIONAL, true);
+    conf.set(ValidTxnList.VALID_TXNS_KEY,
+        new ValidReadTxnList(new long[0], new BitSet(), 1000, Long.MAX_VALUE).writeToString());
+    AcidUtils.setAcidOperationalProperties(conf, true, AcidUtils.AcidOperationalProperties.getDefault());
   }
 }
