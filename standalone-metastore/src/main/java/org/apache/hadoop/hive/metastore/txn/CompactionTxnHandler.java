@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Extends the transaction handler with methods needed only by the compactor threads.  These
@@ -1043,7 +1044,7 @@ class CompactionTxnHandler extends TxnHandler {
     try {
       try {
         dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
-        pStmt = dbConn.prepareStatement("SELECT \"CC_STATE\" FROM \"COMPLETED_COMPACTIONS\" WHERE " +
+        pStmt = dbConn.prepareStatement("SELECT \"CC_STATE\", \"CC_ENQUEUE_TIME\" FROM \"COMPLETED_COMPACTIONS\" WHERE " +
           "\"CC_DATABASE\" = ? AND " +
           "\"CC_TABLE\" = ? " +
           (ci.partName != null ? "AND \"CC_PARTITION\" = ?" : "") +
@@ -1056,8 +1057,13 @@ class CompactionTxnHandler extends TxnHandler {
         rs = pStmt.executeQuery();
         int numFailed = 0;
         int numTotal = 0;
+        long lastEnqueueTime = -1;
         int failedThreshold = MetastoreConf.getIntVar(conf, ConfVars.COMPACTOR_INITIATOR_FAILED_THRESHOLD);
         while(rs.next() && ++numTotal <= failedThreshold) {
+          long enqueueTime = rs.getLong(2);
+          if (enqueueTime > lastEnqueueTime) {
+            lastEnqueueTime = enqueueTime;
+          }
           if(rs.getString(1).charAt(0) == FAILED_STATE) {
             numFailed++;
           }
@@ -1065,7 +1071,11 @@ class CompactionTxnHandler extends TxnHandler {
             numFailed--;
           }
         }
-        return numFailed == failedThreshold;
+        // If the last attempt was too long ago, ignore the failed threshold and try compaction again
+        long retryTime = MetastoreConf.getTimeVar(conf,
+            ConfVars.COMPACTOR_INITIATOR_FAILED_RETRY_TIME, TimeUnit.MILLISECONDS);
+        boolean needsRetry = (retryTime > 0) && (lastEnqueueTime + retryTime < System.currentTimeMillis());
+        return (numFailed == failedThreshold) && !needsRetry;
       }
       catch (SQLException e) {
         LOG.error("Unable to check for failed compactions " + e.getMessage());
