@@ -3618,6 +3618,11 @@ public class HiveConf extends Configuration {
     HIVE_SERVER2_OPERATION_LOG_CLEANUP_DELAY("hive.server2.operation.log.cleanup.delay", "300s",
       new TimeValidator(TimeUnit.SECONDS), "When a query is cancelled (via kill query, query timeout or triggers),\n" +
       " operation logs gets cleaned up after this delay"),
+    HIVE_SERVER2_OPERATION_LOG_PURGEPOLICY_TIMETOLIVE("hive.server2.operation.log.purgePolicy.timeToLive",
+        "60s", new TimeValidator(TimeUnit.SECONDS),
+        "Number of seconds the appender, which has been dynamically created by Log4J framework for the " +
+        "operation log, should survive without having any events sent to it. For more details, check " +
+        "Log4J's IdlePurgePolicy."),
 
     // HS2 connections guard rails
     HIVE_SERVER2_LIMIT_CONNECTIONS_PER_USER("hive.server2.limit.connections.per.user", 0,
@@ -5105,7 +5110,7 @@ public class HiveConf extends Configuration {
 
     HIVE_DESCRIBE_PARTITIONED_TABLE_IGNORE_STATS("hive.describe.partitionedtable.ignore.stats", false,
         "Disable partitioned table stats collection for 'DESCRIBE FORMATTED' or 'DESCRIBE EXTENDED' commands."),
-    
+
     /* BLOBSTORE section */
 
     HIVE_BLOBSTORE_SUPPORTED_SCHEMES("hive.blobstore.supported.schemes", "s3,s3a,s3n",
