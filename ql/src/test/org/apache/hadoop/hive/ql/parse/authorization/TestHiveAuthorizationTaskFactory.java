@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 import org.apache.hadoop.hive.metastore.api.PrincipalType;
-import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.QueryState;
 import org.apache.hadoop.hive.ql.ddl.DDLWork;
 import org.apache.hadoop.hive.ql.ddl.privilege.PrincipalDesc;
@@ -458,7 +457,7 @@ public class TestHiveAuthorizationTaskFactory {
   }
 
   private DDLWork analyze(String command) throws Exception {
-    return AuthorizationTestUtil.analyze(command, queryState, db, new Context(queryState.getConf()));
+    return AuthorizationTestUtil.analyze(command, queryState, db);
   }
 
 
