@@ -94,7 +94,7 @@ public class TestTezTask {
     when(path.getFileSystem(any(Configuration.class))).thenReturn(fs);
     when(utils.getTezDir(any(Path.class))).thenReturn(path);
     when(
-        utils.createVertex(any(JobConf.class), any(BaseWork.class), any(Path.class),
+        utils.createVertex(any(HiveConf.class), any(JobConf.class), any(BaseWork.class), any(Path.class),
             any(FileSystem.class), any(Context.class),
             anyBoolean(), any(TezWork.class), any(VertexType.class), any(Map.class))).thenAnswer(
         new Answer<Vertex>() {
@@ -102,7 +102,7 @@ public class TestTezTask {
           @Override
           public Vertex answer(InvocationOnMock invocation) throws Throwable {
             Object[] args = invocation.getArguments();
-            return Vertex.create(((BaseWork)args[1]).getName(),
+            return Vertex.create(((BaseWork)args[2]).getName(),
                 mock(ProcessorDescriptor.class), 0, mock(Resource.class));
           }
         });

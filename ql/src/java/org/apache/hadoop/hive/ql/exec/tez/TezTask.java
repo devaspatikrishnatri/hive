@@ -495,7 +495,7 @@ public class TezTask extends Task<TezWork> {
         // Regular vertices
         JobConf wxConf = utils.initializeVertexConf(conf, ctx, w);
         checkOutputSpec(w, wxConf);
-        Vertex wx = utils.createVertex(wxConf, w, scratchDir, fs, ctx, !isFinal,
+        Vertex wx = utils.createVertex(this.conf, wxConf, w, scratchDir, fs, ctx, !isFinal,
             work, work.getVertexType(w), vertexResources);
         if (work.getChildren(w).size() > 1) {
           String value = wxConf.get(TezRuntimeConfiguration.TEZ_RUNTIME_IO_SORT_MB);
