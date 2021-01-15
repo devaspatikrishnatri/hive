@@ -27,10 +27,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestValuesClause {
   ParseDriver parseDriver = new ParseDriver();
+
   @Test
   public void testParseValues() throws Exception {
     ASTNode tree = parseDriver.parse(
-            "VALUES(1,2,3),(4,5,6)", null).getTree();
+            "VALUES(1,2,3),(4,5,6)", null);//.getTree();
 
     ASTNode queryNode = (ASTNode) tree.getChild(0);
     Assert.assertEquals(EXPECTED_VALUES_CLAUSE_TREE, queryNode.dump());
@@ -38,7 +39,7 @@ public class TestValuesClause {
 
   @Test
   public void testParseValuesAsSubQuery() throws Exception {
-    ASTNode tree = parseDriver.parse("SELECT * FROM (VALUES(1,2,3),(4,5,6)) as foo", null).getTree();
+    ASTNode tree = parseDriver.parse("SELECT * FROM (VALUES(1,2,3),(4,5,6)) as foo", null);
 
     ASTNode queryNode = (ASTNode) tree.getChild(0);
     ASTNode fromNode = (ASTNode) queryNode.getChild(0);
@@ -51,7 +52,7 @@ public class TestValuesClause {
   @Test
   public void testParseValuesAsSubQueryWhenJoined() throws Exception {
     ASTNode tree = parseDriver.parse("SELECT * FROM (VALUES(1,2,3),(4,5,6)) as foo\n" +
-            "JOIN (VALUES(1,'a'),(4,'b')) as bar ON foo.col1 = bar.col1", null).getTree();
+            "JOIN (VALUES(1,'a'),(4,'b')) as bar ON foo.col1 = bar.col1", null);
 
     ASTNode queryNode = (ASTNode) tree.getChild(0);
     ASTNode fromNode = (ASTNode) queryNode.getChild(0);
@@ -84,4 +85,21 @@ public class TestValuesClause {
           "                     4\n" +
           "                     5\n" +
           "                     6\n";
+
+  @Test
+  public void testParseValuesInUnion() throws Exception {
+    parseDriver.parse("values(1,2,3),(4,5,6)\n" +
+            "union all\n" +
+            "values(1,2,3),(4,5,6)", null);
+  }
+
+  @Test
+  public void testParseInsertValues() throws Exception {
+    parseDriver.parse("INSERT INTO t1(a, b) VALUES (1,2),(3,4)", null);
+  }
+
+  @Test
+  public void testParseInsertFromValuesAsSubQuery() throws Exception {
+    parseDriver.parse("insert into table FOO select a,b from (values(1,2),(3,4)) as BAR", null);
+  }
 }
