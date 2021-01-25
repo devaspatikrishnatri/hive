@@ -77,7 +77,6 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
   private static final int TXN_ID_NOT_SET = -1;
 
   private String workerName;
-  private JobConf mrJob; // the MR job for compaction
 
   /**
    * Get the hostname that this worker is run on.  Made static and public so that other classes
@@ -166,10 +165,6 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
     name.append(getId());
     this.workerName = name.toString();
     setName(name.toString());
-  }
-
-  public JobConf getMrJob() {
-    return mrJob;
   }
 
   static final class StatsUpdater {
@@ -562,9 +557,6 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
         LOG.info("Completed " + ci.type.toString() + " compaction for " + ci.getFullPartitionName() + " in txn "
             + JavaUtils.txnIdToString(compactorTxnId) + ", marking as compacted.");
         msc.markCompacted(CompactionInfo.compactionInfoToStruct(ci));
-        if (conf.getBoolVar(HiveConf.ConfVars.HIVE_IN_TEST)) {
-          mrJob = mr.getMrJob();
-        }
       } catch (Exception e) {
         LOG.error("Caught exception while trying to compact " + ci +
             ".  Marking failed to avoid repeated failures", e);
