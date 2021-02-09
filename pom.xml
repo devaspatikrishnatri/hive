@@ -211,6 +211,7 @@
     <spark.version>2.4.5</spark.version>
     <scala.binary.version>2.11</scala.binary.version>
     <scala.version>2.11.8</scala.version>
+    <spark.scala.version>2.11</spark.scala.version>
     <tempus-fugit.version>1.1</tempus-fugit.version>
     <snappy.version>1.1.4</snappy.version>
     <wadl-resourcedoc-doclet.version>1.4</wadl-resourcedoc-doclet.version>
@@ -1038,7 +1039,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.spark</groupId>
-        <artifactId>spark-core_${scala.binary.version}</artifactId>
+        <artifactId>spark-core_${spark.scala.version}</artifactId>
         <version>${spark.version}</version>
         <exclusions>
           <exclusion>
