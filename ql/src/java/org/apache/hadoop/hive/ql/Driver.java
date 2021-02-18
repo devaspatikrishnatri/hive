@@ -320,6 +320,7 @@ public class Driver implements IDriver {
       //sorting makes tests easier to write since file names and ROW__IDs depend on statementId
       //so this makes (file name -> data) mapping stable
       acidSinks.sort(Comparator.comparing(FileSinkDesc::getDirName));
+      int maxStmtId = -1;
       for (FileSinkDesc desc : acidSinks) {
         TableDesc tableInfo = desc.getTableInfo();
         final TableName tn = HiveTableName.ofNullable(tableInfo.getTableName());
@@ -333,11 +334,17 @@ public class Driver implements IDriver {
          * {@link org.apache.hadoop.hive.ql.exec.AbstractFileMergeOperator#UNION_SUDBIR_PREFIX}
          */
         desc.setStatementId(driverContext.getTxnManager().getStmtIdAndIncrement());
+        maxStmtId = Math.max(desc.getStatementId(), maxStmtId);
         String unionAllSubdir = "/" + AbstractFileMergeOperator.UNION_SUDBIR_PREFIX;
         if(desc.getInsertOverwrite() && desc.getDirName().toString().contains(unionAllSubdir) &&
           desc.isFullAcidTable()) {
           throw new UnsupportedOperationException("QueryId=" + driverContext.getPlan().getQueryId() +
             " is not supported due to OVERWRITE and UNION ALL.  Please use truncate + insert");
+        }
+      }
+      if (HiveConf.getBoolVar(driverContext.getConf(), ConfVars.HIVE_EXTEND_BUCKET_ID_RANGE)) {
+        for (FileSinkDesc each : acidSinks) {
+          each.setMaxStmtId(maxStmtId);
         }
       }
     }
