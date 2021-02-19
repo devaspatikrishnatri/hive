@@ -483,7 +483,7 @@ public class Initiator extends MetaStoreCompactorThread {
   private boolean isEligibleForCompaction(CompactionInfo ci, ShowCompactResponse currentCompactions) {
     try {
       LOG.info("Checking to see if we should compact " + ci.getFullPartitionName());
-      
+
       // Check if we have already initiated or are working on a compaction for this table/partition.
       // Also make sure we haven't exceeded configured number of consecutive failures.
       // If any of the above applies, skip it.
@@ -491,7 +491,7 @@ public class Initiator extends MetaStoreCompactorThread {
       if (foundCurrentOrFailedCompactions(currentCompactions, ci)) {
         return false;
       }
-      
+
       Table t = resolveTable(ci);
       if (t == null) {
         LOG.info("Can't find table " + ci.getFullTableName() + ", assuming it's a temp " +
@@ -507,7 +507,14 @@ public class Initiator extends MetaStoreCompactorThread {
         LOG.info("Table " + tableName(t) + " marked " + hive_metastoreConstants.TABLE_NO_AUTO_COMPACT +
             "=true so we will not compact it.");
         return false;
-      } else if (replIsCompactionDisabledForTable(t) || checkDynPartitioning(t, ci)) {
+      }
+      if (AcidUtils.isInsertOnlyTable(t.getParameters()) && !HiveConf
+          .getBoolVar(conf, HiveConf.ConfVars.HIVE_COMPACTOR_COMPACT_MM)) {
+        LOG.info("Table " + tableName(t) + " is insert only and " + HiveConf.ConfVars.HIVE_COMPACTOR_COMPACT_MM.varname
+            + "=false so we will not compact it.");
+        return false;
+      }
+      if (replIsCompactionDisabledForTable(t) || checkDynPartitioning(t, ci)) {
         return false;
       }
 
