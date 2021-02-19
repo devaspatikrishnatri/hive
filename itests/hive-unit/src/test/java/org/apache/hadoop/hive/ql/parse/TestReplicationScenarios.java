@@ -327,7 +327,7 @@ public class TestReplicationScenarios {
    * appropriately. This tests bootstrap behaviour primarily.
    */
   @Test
-  public void testBasic() throws IOException {
+  public void testBasic() throws IOException, SemanticException {
     String name = testName.getMethodName();
     String dbName = createDB(name, driver);
     run("CREATE TABLE " + dbName + ".unptned(a string) STORED AS TEXTFILE", driver);
@@ -487,7 +487,7 @@ public class TestReplicationScenarios {
     confTemp.setBoolVar(HiveConf.ConfVars.REPL_RETAIN_CUSTOM_LOCATIONS_FOR_DB_ON_TARGET, false);
     ReplLoadWork replLoadWork = new ReplLoadWork(confTemp, loadPath.toString(), sourceDb, replicadb,
             null, null, isIncrementalDump, Long.valueOf(tuple.lastReplId),
-        0L, metricCollector);
+        0L, metricCollector, false);
     Task replLoadTask = TaskFactory.get(replLoadWork, confTemp);
     replLoadTask.initialize(null, null, new TaskQueue(driver.getContext()), driver.getContext());
     replLoadTask.executeTask(null);
