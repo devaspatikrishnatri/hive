@@ -1,4 +1,5 @@
 --! qt:disabled:disabled in HIVE-20741
+--! qt:disabled:CDPD-1666
 
 CREATE TABLE kafka_n0 (contents STRING);
 LOAD DATA LOCAL INPATH '../../data/files/text-en.txt' INTO TABLE kafka_n0;

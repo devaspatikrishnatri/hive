@@ -1,4 +1,6 @@
 --! qt:disabled:multi_insert_stuff HIVE-23565
+--! qt:disabled:CDPD-1666
+--! qt:disabled:multi_insert_stuff HIVE-23565
 --! qt:dataset:src
 set hive.stats.column.autogather=false;
 set hive.mapred.mode=nonstrict;

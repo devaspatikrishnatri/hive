@@ -60,6 +60,7 @@ import static org.junit.Assert.*;
 /**
  * TestJdbcWithMiniLlap for Arrow format
  */
+@Ignore("unstable HIVE-23549")
 public class TestJdbcWithMiniLlapArrow extends BaseJdbcWithMiniLlap {
 
   private static MiniHS2 miniHS2 = null;

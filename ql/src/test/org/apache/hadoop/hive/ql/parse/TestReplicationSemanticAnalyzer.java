@@ -26,9 +26,17 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Enclosed.class)
 public class TestReplicationSemanticAnalyzer {
   private static ParseDriver driver = new ParseDriver();
+  private static HiveConf hiveConf = buildHiveConf();
 
-  private static ASTNode parse(String command) throws ParseException {
-    return (ASTNode) driver.parse(command).getChild(0);
+  public static HiveConf buildHiveConf() {
+    HiveConf conf = new HiveConf();
+    return conf;
+  }
+
+  private static ASTNode parse(String command) throws Exception {
+    SessionState.start(hiveConf);
+    Context context = new Context(hiveConf);
+    return (ASTNode) driver.parse(command, context).getChild(0);
   }
 
   private static void assertWithClause(ASTNode root, int replConfigIndex) {

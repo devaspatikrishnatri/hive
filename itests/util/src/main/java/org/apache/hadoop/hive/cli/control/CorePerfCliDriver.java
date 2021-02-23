@@ -18,6 +18,10 @@
 
 package org.apache.hadoop.hive.cli.control;
 
+
+
+
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -34,6 +38,11 @@ import org.apache.hadoop.hive.ql.processors.CommandProcessorException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.internal.AssumptionViolatedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+
 
 /**
  * This is the TestPerformance Cli Driver for integrating performance regression tests as part of

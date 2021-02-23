@@ -45,6 +45,7 @@ import org.junit.Test;
 /**
  * TestMetastoreVersion.
  */
+@org.junit.Ignore("hive-test-kube migration")
 public class TestMetastoreVersion {
   private static final Logger LOG = LoggerFactory.getLogger(TestMetastoreVersion.class);
   protected HiveConf hiveConf;

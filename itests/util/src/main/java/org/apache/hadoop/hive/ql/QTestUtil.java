@@ -82,6 +82,7 @@ import org.apache.hadoop.hive.ql.qoption.QTestDisabledHandler;
 import org.apache.hadoop.hive.ql.qoption.QTestOptionDispatcher;
 import org.apache.hadoop.hive.ql.qoption.QTestReplaceHandler;
 import org.apache.hadoop.hive.ql.qoption.QTestSysDbHandler;
+import org.apache.hadoop.hive.ql.qoption.QTestTransactional;
 import org.apache.hadoop.hive.ql.qoption.QTestTimezoneHandler;
 import org.apache.hadoop.hive.ql.scheduled.QTestScheduledQueryCleaner;
 import org.apache.hadoop.hive.ql.scheduled.QTestScheduledQueryServiceProvider;
@@ -221,6 +222,7 @@ public class QTestUtil {
     initConf();
 
     sem = new SemanticAnalyzer(queryState);
+    conf.setVar(ConfVars.HIVE_QUERY_RESULTS_CACHE_DIRECTORY, "/tmp/hive/_resultscache_" + ProcessUtils.getPid());
 
     datasetHandler = new QTestDatasetHandler(conf);
     testFiles = datasetHandler.getDataDir(conf);
@@ -230,6 +232,7 @@ public class QTestUtil {
     dispatcher.register("dataset", datasetHandler);
     dispatcher.register("replace", replaceHandler);
     dispatcher.register("sysdb", new QTestSysDbHandler());
+    dispatcher.register("transactional", new QTestTransactional());
     dispatcher.register("scheduledqueryservice", new QTestScheduledQueryServiceProvider(conf));
     dispatcher.register("scheduledquerycleaner", new QTestScheduledQueryCleaner());
     dispatcher.register("timezone", new QTestTimezoneHandler());

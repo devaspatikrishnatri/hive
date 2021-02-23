@@ -58,6 +58,7 @@ import java.util.stream.IntStream;
 /**
  * Test Transactional Writer.
  */
+@org.junit.Ignore("hive-test-kube migration flaky")
 public class TransactionalKafkaWriterTest {
 
   private static final String TOPIC = "TOPIC_TEST";

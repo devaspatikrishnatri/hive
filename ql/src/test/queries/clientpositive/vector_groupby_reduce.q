@@ -1,4 +1,5 @@
 --! qt:disabled:Disabled in HIVE-21396
+--! qt:disabled:CDPD-1666
 
 set hive.mapred.mode=nonstrict;
 set hive.explain.user=false;

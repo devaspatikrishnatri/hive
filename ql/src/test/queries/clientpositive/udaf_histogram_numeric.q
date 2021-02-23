@@ -1,4 +1,5 @@
 --! qt:disabled:disabled in HIVE-20715
+--! qt:disabled:CDPD-1666
 
 --! qt:dataset:src
 

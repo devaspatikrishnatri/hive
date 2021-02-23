@@ -1,3 +1,4 @@
+--! qt:disabled:CDPD-1666
 --! qt:disabled:unstable; fails sometimes HIVE-23450
 --! qt:dataset:part
 
