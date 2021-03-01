@@ -75,6 +75,8 @@ hive_metastoreConstants::hive_metastoreConstants() {
 
   JDBC_CONFIG_PREFIX = "hive.sql.";
 
+  TABLE_IS_CTAS = "created_with_ctas";
+
 }
 
 }}} // namespace

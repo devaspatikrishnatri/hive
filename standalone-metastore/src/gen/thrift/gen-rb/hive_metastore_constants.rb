@@ -71,3 +71,5 @@ DRUID_CONFIG_PREFIX = %q"druid."
 
 JDBC_CONFIG_PREFIX = %q"hive.sql."
 
+TABLE_IS_CTAS = %q"created_with_ctas"
+

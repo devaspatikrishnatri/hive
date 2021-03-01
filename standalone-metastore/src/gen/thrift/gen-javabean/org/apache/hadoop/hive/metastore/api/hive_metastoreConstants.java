@@ -100,4 +100,6 @@ import org.slf4j.LoggerFactory;
 
   public static final String JDBC_CONFIG_PREFIX = "hive.sql.";
 
+  public static final String TABLE_IS_CTAS = "created_with_ctas";
+
 }
