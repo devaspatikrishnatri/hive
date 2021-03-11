@@ -2896,7 +2896,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
           SessionState.setCurrentSessionState(parentSession);
           LOG.info("New loading path = " + entry.getKey() + " withPartSpec " + fullPartSpec);
 
-          List<Path> newFiles = Lists.newArrayList();
+          List<Path> newFiles = Collections.synchronizedList(new ArrayList<>());
           Partition oldPartition = partitionDetails.partition;
           // load the partition
           Partition partition = loadPartitionInternal(entry.getKey(), tbl,
