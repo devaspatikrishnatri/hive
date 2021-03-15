@@ -1676,7 +1676,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       try {
         db = getMS().getDatabase(request.getCatalogName(), request.getName());
         firePreEvent(new PreReadDatabaseEvent(db, this));
-        if (processorCapabilities != null && transformer != null) {
+        if (transformer != null && !isInTest) {
           db = transformer.transformDatabase(db, processorCapabilities, processorId);
         }
       } catch (MetaException | NoSuchObjectException e) {
@@ -2185,6 +2185,9 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       List<String> processorCapabilities = req.getProcessorCapabilities();
       String processorId = req.getProcessorIdentifier();
 
+      if (!tbl.isSetCatName()) {
+        tbl.setCatName(getDefaultCatalog(conf));
+      }
       if (transformer != null && !isInTest) {
         tbl = transformer.transformCreateTable(tbl, processorCapabilities, processorId);
       }
@@ -2238,9 +2241,6 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       Database db = null;
       boolean isReplicated = false;
       try {
-        if (!tbl.isSetCatName()) {
-          tbl.setCatName(getDefaultCatalog(conf));
-        }
         firePreEvent(new PreCreateTableEvent(tbl, this));
 
         ms.openTransaction();
