@@ -42,6 +42,7 @@ import org.apache.hadoop.hive.metastore.api.hive_metastoreConstants;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.metrics.Metrics;
 import org.apache.hadoop.hive.metastore.metrics.MetricsConstants;
+import org.apache.hadoop.hive.metastore.metrics.PerfLogger;
 import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
 import org.apache.hadoop.hive.metastore.txn.TxnUtils;
@@ -103,6 +104,7 @@ public class Initiator extends MetaStoreCompactorThread {
       // much easier.  The stop value is only for testing anyway and not used when called from
       // HiveMetaStore.
       do {
+        PerfLogger perfLogger = PerfLogger.getPerfLogger(false);
         long startedAt = -1;
         TxnStore.MutexAPI.LockHandle handle = null;
 
@@ -110,6 +112,9 @@ public class Initiator extends MetaStoreCompactorThread {
         // don't doom the entire thread.
         try {
           handle = txnHandler.getMutexAPI().acquireLock(TxnStore.MUTEX_KEY.Initiator.name());
+          if (metricsEnabled) {
+            perfLogger.PerfLogBegin(CLASS_NAME, MetricsConstants.COMPACTION_INITIATOR_CYCLE);
+          }
           startedAt = System.currentTimeMillis();
 
           long compactionInterval = (prevStart < 0) ? prevStart : (startedAt - prevStart)/1000;
@@ -170,8 +175,11 @@ public class Initiator extends MetaStoreCompactorThread {
               StringUtils.stringifyException(t));
         }
         finally {
-          if(handle != null) {
+          if (handle != null) {
             handle.releaseLocks();
+          }
+          if (metricsEnabled) {
+            perfLogger.PerfLogEnd(CLASS_NAME, MetricsConstants.COMPACTION_INITIATOR_CYCLE);
           }
         }
 
