@@ -197,6 +197,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
   private static final String COMPL_TXN_COMPONENTS_INSERT_QUERY = "INSERT INTO \"COMPLETED_TXN_COMPONENTS\" " +
           "(\"CTC_TXNID\"," + " \"CTC_DATABASE\", \"CTC_TABLE\", \"CTC_PARTITION\", \"CTC_WRITEID\", \"CTC_UPDATE_DELETE\")" +
           " VALUES (%s, ?, ?, ?, ?, %s)";
+  private static final String SELECT_METRICS_INFO_QUERY =
+          "SELECT COUNT(*) FROM \"TXN_TO_WRITE_ID\" UNION ALL SELECT COUNT(*) FROM \"COMPLETED_TXN_COMPONENTS\"";
 
   private List<TransactionalMetaStoreEventListener> transactionalListeners;
 
@@ -3180,6 +3182,34 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       return response;
     } catch (RetryException e) {
       return showCompact(rqst);
+    }
+  }
+
+  public MetricsInfo getMetricsInfo() throws MetaException {
+    Connection dbConn = null;
+    Statement stmt = null;
+    try {
+      MetricsInfo metrics = new MetricsInfo();
+      try {
+        dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
+        stmt = dbConn.createStatement();
+
+        ResultSet rs = stmt.executeQuery(SELECT_METRICS_INFO_QUERY);
+        rs.next();
+        metrics.setTxnToWriteIdRowCount(rs.getInt(1));
+        rs.next();
+        metrics.setCompletedTxnsRowCount(rs.getInt(1));
+        return metrics;
+      } catch (SQLException e) {
+        LOG.error("Unable to getMetricsInfo", e);
+        checkRetryable(dbConn, e, "getMetricsInfo");
+        throw new MetaException("Unable to execute getMetricsInfo() " + StringUtils.stringifyException(e));
+      } finally {
+        closeStmt(stmt);
+        closeDbConn(dbConn);
+      }
+    } catch (RetryException e) {
+      return getMetricsInfo();
     }
   }
 
