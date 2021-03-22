@@ -37,6 +37,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
+import org.apache.thrift.TConfiguration;
 
 /**
  * TestTCTLSeparatedProtocol.
@@ -165,7 +166,7 @@ public class TestTCTLSeparatedProtocol {
 
     prot.writeStructEnd();
     trans.flush();
-    byte[] b = new byte[3 * 1024];
+    byte[] b = new byte[1024];
     int len = trans.read(b, 0, b.length);
     String test = new String(b, 0, len);
 
@@ -428,7 +429,7 @@ public class TestTCTLSeparatedProtocol {
 
     prot.writeStructEnd();
 
-    byte b[] = new byte[3 * 1024];
+    byte b[] = new byte[1024];
     int len = trans.read(b, 0, b.length);
     String written = new String(b, 0, len);
 
@@ -510,6 +511,17 @@ public class TestTCTLSeparatedProtocol {
       @Override
       public void write(byte[] buf, int off, int len) throws TTransportException {
       }
+
+      @Override
+      public void checkReadBytesAvailable(long size) throws TTransportException{
+      }
+
+      @Override
+      public void updateKnownMessageSize(long size) throws TTransportException{
+      }
+
+      @Override
+      public TConfiguration getConfiguration(){ return null; }
     });
     separatedProtocol.initialize(null, new Properties());
     try {
