@@ -26,6 +26,7 @@ public class MetricsConstants {
   public static final String TOTAL_API_CALLS = "total_api_calls";
   public static final String COMPACTION_INITIATOR_CYCLE = "compaction_initiator_cycle";
   public static final String COMPACTION_CLEANER_CYCLE = "compaction_cleaner_cycle";
+  public static final String COMPACTION_WORKER_CYCLE = "compaction_worker_cycle";
 
   public static final String CREATE_TOTAL_DATABASES = "create_total_count_dbs";
   public static final String CREATE_TOTAL_TABLES = "create_total_count_tables";

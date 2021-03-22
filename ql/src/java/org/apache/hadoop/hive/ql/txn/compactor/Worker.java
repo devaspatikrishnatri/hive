@@ -36,7 +36,9 @@ import org.apache.hadoop.hive.metastore.api.TxnType;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.ql.DriverUtils;
 import org.apache.hadoop.hive.ql.io.AcidDirectory;
+import org.apache.hadoop.hive.metastore.metrics.MetricsConstants;
 import org.apache.hadoop.hive.ql.io.AcidUtils;
+import org.apache.hadoop.hive.ql.log.PerfLogger;
 import org.apache.hive.common.util.Ref;
 import org.apache.tez.dag.api.TezConfiguration;
 import org.apache.thrift.TException;
@@ -389,12 +391,14 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
    * in case of timeout.
    * @param computeStats If true then for MR compaction the stats are regenerated
    * @return Returns true, if there was compaction in the queue, and we started working on it.
-   * @throws InterruptedException is thrown when the process is interrupted because of timeout for example
    */
   @VisibleForTesting
-  protected Boolean findNextCompactionAndExecute(boolean computeStats) throws InterruptedException {
+  protected Boolean findNextCompactionAndExecute(boolean computeStats) {
     // Make sure nothing escapes this run method and kills the metastore at large,
     // so wrap it in a big catch Throwable statement.
+    PerfLogger perfLogger = SessionState.getPerfLogger(false);
+    String workerMetric = null;
+
     CompactionHeartbeater heartbeater = null;
     long compactorTxnId = TXN_ID_NOT_SET;
     CompactionInfo ci = null;
@@ -419,8 +423,10 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
           return false;
         }
       }
-
       checkInterrupt();
+
+      workerMetric = MetricsConstants.COMPACTION_WORKER_CYCLE + "_" + ci.type;
+      perfLogger.PerfLogBegin(CLASS_NAME, workerMetric);
 
       // Find the table we will be working with.
       Table t1 = null;
@@ -598,6 +604,9 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
       commitTxnIfSet(compactorTxnId);
       if (heartbeater != null) {
         heartbeater.cancel();
+      }
+      if (workerMetric != null) {
+        perfLogger.PerfLogEnd(CLASS_NAME, workerMetric);
       }
     }
     return true;
