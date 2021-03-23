@@ -3368,6 +3368,8 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     }
     cr.setType(type);
     cr.setProperties(tblproperties);
+    cr.setInitiatorId(JavaUtils.hostname() + "-manual");
+    cr.setInitiatorVersion(HiveMetaStoreClient.class.getPackage().getImplementationVersion());
     return client.compact2(cr);
   }
 
@@ -4059,9 +4061,15 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     return client.get_runtime_stats(req);
   }
 
+  @Deprecated
   @Override
   public OptionalCompactionInfoStruct findNextCompact(String workerId) throws MetaException, TException {
-    return client.find_next_compact(workerId);
+    return client.find_next_compact(workerId, null);
+  }
+
+  @Override
+  public OptionalCompactionInfoStruct findNextCompact(String workerId, String workerVersion) throws MetaException, TException {
+    return client.find_next_compact(workerId, workerVersion);
   }
 
   @Override

@@ -3278,6 +3278,6 @@ public abstract class TestHiveMetaStore {
 
   @Test
   public void testHMSAPIVersion() throws TException {
-    assertEquals(client.getHMSAPIVersion(), "1.2.9");
+    assertEquals("1.2.11", client.getHMSAPIVersion());
   }
 }

@@ -22126,6 +22126,16 @@ void CompactionRequest::__set_properties(const std::map<std::string, std::string
 __isset.properties = true;
 }
 
+void CompactionRequest::__set_initiatorId(const std::string& val) {
+  this->initiatorId = val;
+__isset.initiatorId = true;
+}
+
+void CompactionRequest::__set_initiatorVersion(const std::string& val) {
+  this->initiatorVersion = val;
+__isset.initiatorVersion = true;
+}
+
 uint32_t CompactionRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -22215,6 +22225,22 @@ uint32_t CompactionRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->initiatorId);
+          this->__isset.initiatorId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->initiatorVersion);
+          this->__isset.initiatorVersion = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -22274,6 +22300,16 @@ uint32_t CompactionRequest::write(::apache::thrift::protocol::TProtocol* oprot) 
     }
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.initiatorId) {
+    xfer += oprot->writeFieldBegin("initiatorId", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->initiatorId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.initiatorVersion) {
+    xfer += oprot->writeFieldBegin("initiatorVersion", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeString(this->initiatorVersion);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -22287,6 +22323,8 @@ void swap(CompactionRequest &a, CompactionRequest &b) {
   swap(a.type, b.type);
   swap(a.runas, b.runas);
   swap(a.properties, b.properties);
+  swap(a.initiatorId, b.initiatorId);
+  swap(a.initiatorVersion, b.initiatorVersion);
   swap(a.__isset, b.__isset);
 }
 
@@ -22297,6 +22335,8 @@ CompactionRequest::CompactionRequest(const CompactionRequest& other870) {
   type = other870.type;
   runas = other870.runas;
   properties = other870.properties;
+  initiatorId = other870.initiatorId;
+  initiatorVersion = other870.initiatorVersion;
   __isset = other870.__isset;
 }
 CompactionRequest& CompactionRequest::operator=(const CompactionRequest& other871) {
@@ -22306,6 +22346,8 @@ CompactionRequest& CompactionRequest::operator=(const CompactionRequest& other87
   type = other871.type;
   runas = other871.runas;
   properties = other871.properties;
+  initiatorId = other871.initiatorId;
+  initiatorVersion = other871.initiatorVersion;
   __isset = other871.__isset;
   return *this;
 }
@@ -22318,6 +22360,8 @@ void CompactionRequest::printTo(std::ostream& out) const {
   out << ", " << "type=" << to_string(type);
   out << ", " << "runas="; (__isset.runas ? (out << to_string(runas)) : (out << "<null>"));
   out << ", " << "properties="; (__isset.properties ? (out << to_string(properties)) : (out << "<null>"));
+  out << ", " << "initiatorId="; (__isset.initiatorId ? (out << to_string(initiatorId)) : (out << "<null>"));
+  out << ", " << "initiatorVersion="; (__isset.initiatorVersion ? (out << to_string(initiatorVersion)) : (out << "<null>"));
   out << ")";
 }
 
@@ -23081,6 +23125,21 @@ void ShowCompactResponseElement::__set_enqueueTime(const int64_t val) {
 __isset.enqueueTime = true;
 }
 
+void ShowCompactResponseElement::__set_workerVersion(const std::string& val) {
+  this->workerVersion = val;
+__isset.workerVersion = true;
+}
+
+void ShowCompactResponseElement::__set_initiatorId(const std::string& val) {
+  this->initiatorId = val;
+__isset.initiatorId = true;
+}
+
+void ShowCompactResponseElement::__set_initiatorVersion(const std::string& val) {
+  this->initiatorVersion = val;
+__isset.initiatorVersion = true;
+}
+
 uint32_t ShowCompactResponseElement::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -23228,6 +23287,30 @@ uint32_t ShowCompactResponseElement::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->workerVersion);
+          this->__isset.workerVersion = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 17:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->initiatorId);
+          this->__isset.initiatorId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 18:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->initiatorVersion);
+          this->__isset.initiatorVersion = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -23324,6 +23407,21 @@ uint32_t ShowCompactResponseElement::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeI64(this->enqueueTime);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.workerVersion) {
+    xfer += oprot->writeFieldBegin("workerVersion", ::apache::thrift::protocol::T_STRING, 16);
+    xfer += oprot->writeString(this->workerVersion);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.initiatorId) {
+    xfer += oprot->writeFieldBegin("initiatorId", ::apache::thrift::protocol::T_STRING, 17);
+    xfer += oprot->writeString(this->initiatorId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.initiatorVersion) {
+    xfer += oprot->writeFieldBegin("initiatorVersion", ::apache::thrift::protocol::T_STRING, 18);
+    xfer += oprot->writeString(this->initiatorVersion);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -23346,6 +23444,9 @@ void swap(ShowCompactResponseElement &a, ShowCompactResponseElement &b) {
   swap(a.id, b.id);
   swap(a.errorMessage, b.errorMessage);
   swap(a.enqueueTime, b.enqueueTime);
+  swap(a.workerVersion, b.workerVersion);
+  swap(a.initiatorId, b.initiatorId);
+  swap(a.initiatorVersion, b.initiatorVersion);
   swap(a.__isset, b.__isset);
 }
 
@@ -23365,6 +23466,9 @@ ShowCompactResponseElement::ShowCompactResponseElement(const ShowCompactResponse
   id = other882.id;
   errorMessage = other882.errorMessage;
   enqueueTime = other882.enqueueTime;
+  workerVersion = other882.workerVersion;
+  initiatorId = other882.initiatorId;
+  initiatorVersion = other882.initiatorVersion;
   __isset = other882.__isset;
 }
 ShowCompactResponseElement& ShowCompactResponseElement::operator=(const ShowCompactResponseElement& other883) {
@@ -23383,6 +23487,9 @@ ShowCompactResponseElement& ShowCompactResponseElement::operator=(const ShowComp
   id = other883.id;
   errorMessage = other883.errorMessage;
   enqueueTime = other883.enqueueTime;
+  workerVersion = other883.workerVersion;
+  initiatorId = other883.initiatorId;
+  initiatorVersion = other883.initiatorVersion;
   __isset = other883.__isset;
   return *this;
 }
@@ -23404,6 +23511,9 @@ void ShowCompactResponseElement::printTo(std::ostream& out) const {
   out << ", " << "id="; (__isset.id ? (out << to_string(id)) : (out << "<null>"));
   out << ", " << "errorMessage="; (__isset.errorMessage ? (out << to_string(errorMessage)) : (out << "<null>"));
   out << ", " << "enqueueTime="; (__isset.enqueueTime ? (out << to_string(enqueueTime)) : (out << "<null>"));
+  out << ", " << "workerVersion="; (__isset.workerVersion ? (out << to_string(workerVersion)) : (out << "<null>"));
+  out << ", " << "initiatorId="; (__isset.initiatorId ? (out << to_string(initiatorId)) : (out << "<null>"));
+  out << ", " << "initiatorVersion="; (__isset.initiatorVersion ? (out << to_string(initiatorVersion)) : (out << "<null>"));
   out << ")";
 }
 

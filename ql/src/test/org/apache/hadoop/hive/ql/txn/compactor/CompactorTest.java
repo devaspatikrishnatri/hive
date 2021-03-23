@@ -101,6 +101,7 @@ import org.apache.hadoop.hive.ql.txn.compactor.CompactorTestUtilities.CompactorT
 public abstract class CompactorTest {
   static final private String CLASS_NAME = CompactorTest.class.getName();
   static final private Logger LOG = LoggerFactory.getLogger(CLASS_NAME);
+  public static final String WORKER_VERSION = "4.0.0";
 
   protected TxnStore txnHandler;
   protected IMetaStoreClient ms;
@@ -639,7 +640,7 @@ public abstract class CompactorTest {
 
   protected long compactInTxn(CompactionRequest rqst) throws Exception {
     txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
+    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
     ci.runAs = System.getProperty("user.name");
     long compactorTxnId = openTxn(TxnType.COMPACTION);
     // Need to create a valid writeIdList to set the highestWriteId in ci

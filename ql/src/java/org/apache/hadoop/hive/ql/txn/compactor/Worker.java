@@ -96,8 +96,9 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
       throw new RuntimeException(e);
     }
   }
-  // TODO: this doesn;t check if compaction is already running (even though Initiator does but we
-  // don't go  through Initiator for user initiated compactions)
+
+  // TODO: this doesn't check if compaction is already running (even though Initiator does but we
+  // don't go through Initiator for user initiated compactions)
   @Override
   public void run() {
     LOG.info("Starting Worker thread");
@@ -175,12 +176,8 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
   @Override
   public void init(AtomicBoolean stop) throws Exception {
     super.init(stop);
-
-    StringBuilder name = new StringBuilder(hostname());
-    name.append("-");
-    name.append(getId());
-    this.workerName = name.toString();
-    setName(name.toString());
+    this.workerName = getWorkerId();
+    setName(workerName);
   }
 
   static final class StatsUpdater {
@@ -411,7 +408,7 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
           return false;
         }
       }
-      ci = CompactionInfo.optionalCompactionInfoStructToInfo(msc.findNextCompact(workerName));
+      ci = CompactionInfo.optionalCompactionInfoStructToInfo(msc.findNextCompact(workerName, runtimeVersion));
       LOG.debug("Processing compaction request " + ci);
 
       if (ci == null && !stop.get()) {
@@ -677,5 +674,12 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
     if (Thread.interrupted()) {
       throw new InterruptedException("Compaction execution is interrupted");
     }
+  }
+
+  private String getWorkerId() {
+    StringBuilder name = new StringBuilder(this.hostName);
+    name.append("-");
+    name.append(getId());
+    return name.toString();
   }
 }

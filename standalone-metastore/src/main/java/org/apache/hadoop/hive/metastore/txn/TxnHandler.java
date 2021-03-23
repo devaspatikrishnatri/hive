@@ -3030,7 +3030,15 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         if (rqst.getProperties() != null) {
           buf.append(", \"CQ_TBLPROPERTIES\"");
         }
-        if (rqst.getRunas() != null) buf.append(", \"CQ_RUN_AS\"");
+        if (rqst.getRunas() != null) {
+          buf.append(", \"CQ_RUN_AS\"");
+        }
+        if (rqst.getInitiatorId() != null) {
+          buf.append(", \"CQ_INITIATOR_ID\"");
+        }
+        if (rqst.getInitiatorVersion() != null) {
+          buf.append(", \"CQ_INITIATOR_VERSION\"");
+        }
         buf.append(") values (");
         buf.append(id);
         buf.append(", ?");
@@ -3069,6 +3077,14 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         if (rqst.getRunas() != null) {
           buf.append(", ?");
           params.add(rqst.getRunas());
+        }
+        if (rqst.getInitiatorId() != null) {
+          buf.append(", ?");
+          params.add(rqst.getInitiatorId());
+        }
+        if (rqst.getInitiatorVersion() != null) {
+          buf.append(", ?");
+          params.add(rqst.getInitiatorVersion());
         }
         buf.append(")");
         String s = buf.toString();
@@ -3123,14 +3139,13 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
               "\"CQ_STATE\", \"CQ_TYPE\", \"CQ_WORKER_ID\", " +
           //-1 because 'null' literal doesn't work for all DBs...
           "\"CQ_START\", -1 \"CC_END\", \"CQ_RUN_AS\", \"CQ_HADOOP_JOB_ID\", \"CQ_ID\", \"CQ_ERROR_MESSAGE\", " +
-          "\"CQ_ENQUEUE_TIME\" " +
+          "\"CQ_ENQUEUE_TIME\", \"CQ_WORKER_VERSION\", \"CQ_INITIATOR_ID\", \"CQ_INITIATOR_VERSION\" " +
           "FROM \"COMPACTION_QUEUE\" UNION ALL " +
           "SELECT \"CC_DATABASE\", \"CC_TABLE\", \"CC_PARTITION\", \"CC_STATE\", \"CC_TYPE\", \"CC_WORKER_ID\", " +
           "\"CC_START\", \"CC_END\", \"CC_RUN_AS\", \"CC_HADOOP_JOB_ID\", \"CC_ID\", \"CC_ERROR_MESSAGE\", " +
-          "\"CC_ENQUEUE_TIME\" " +
-          "FROM \"COMPLETED_COMPACTIONS\""; //todo: sort by cq_id?
-        //what I want is order by cc_end desc, cc_start asc
-        // (but derby has a bug https://issues.apache.org/jira/browse/DERBY-6013)
+          "\"CC_ENQUEUE_TIME\", \"CC_WORKER_VERSION\", \"CC_INITIATOR_ID\", \"CC_INITIATOR_VERSION\" " +
+          " FROM \"COMPLETED_COMPACTIONS\""; //todo: sort by cq_id?
+        //what I want is order by cc_end desc, cc_start asc (but derby has a bug https://issues.apache.org/jira/browse/DERBY-6013)
         //to sort so that currently running jobs are at the end of the list (bottom of screen)
         //and currently running ones are in sorted by start time
         //w/o order by likely currently running compactions will be first (LHS of Union)
@@ -3165,6 +3180,9 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           if (!rs.wasNull()) {
             e.setEnqueueTime(enqueueTime);
           }
+          e.setWorkerVersion(rs.getString(14));
+          e.setInitiatorId(rs.getString(15));
+          e.setInitiatorVersion(rs.getString(16));
           response.addToCompacts(e);
         }
         LOG.debug("Going to rollback");

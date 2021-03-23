@@ -26,6 +26,7 @@ import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.ShowCompactRequest;
 import org.apache.hadoop.hive.metastore.api.ShowCompactResponse;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
 import org.junit.After;
 import org.junit.Assert;
@@ -63,7 +64,11 @@ public class TestCleaner extends CompactorTest {
     burnThroughTransactions("default", "camtc", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "camtc", CompactionType.MAJOR);
-    compactInTxn(rqst);
+    txnHandler.compact(rqst);
+    CompactionInfo ci = txnHandler.findNextToCompact("fred", "4.0.0");
+    ci.runAs = System.getProperty("user.name");
+    txnHandler.updateCompactorState(ci, openTxn());
+    txnHandler.markCompacted(ci);
 
     startCleaner();
 

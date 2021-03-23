@@ -22,6 +22,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.FileUtils;
+import org.apache.hadoop.hive.common.ServerUtils;
 import org.apache.hadoop.hive.common.ValidReadTxnList;
 import org.apache.hadoop.hive.common.ValidTxnList;
 import org.apache.hadoop.hive.common.ValidWriteIdList;
@@ -251,7 +252,7 @@ public class Initiator extends MetaStoreCompactorThread {
   }
 
   private void recoverFailedCompactions(boolean remoteOnly) throws MetaException {
-    if (!remoteOnly) txnHandler.revokeFromLocalWorkers(Worker.hostname());
+    if (!remoteOnly) txnHandler.revokeFromLocalWorkers(ServerUtils.hostname());
     txnHandler.revokeTimedoutWorkers(HiveConf.getTimeVar(conf,
         HiveConf.ConfVars.HIVE_COMPACTOR_WORKER_TIMEOUT, TimeUnit.MILLISECONDS));
   }
@@ -431,6 +432,8 @@ public class Initiator extends MetaStoreCompactorThread {
     CompactionRequest rqst = new CompactionRequest(ci.dbname, ci.tableName, type);
     if (ci.partName != null) rqst.setPartitionname(ci.partName);
     rqst.setRunas(runAs);
+    rqst.setInitiatorId(getInitiatorId(Thread.currentThread().getId()));
+    rqst.setInitiatorVersion(this.runtimeVersion);
     LOG.info("Requesting compaction: " + rqst);
     CompactionResponse resp = txnHandler.compact(rqst);
     if(resp.isAccepted()) {
@@ -515,9 +518,9 @@ public class Initiator extends MetaStoreCompactorThread {
     long oldestEnqueueTime = Long.MAX_VALUE;
 
     // Get the last compaction for each db/table/partition
-    for(ShowCompactResponseElement element : showCompactResponse.getCompacts()) {
+    for (ShowCompactResponseElement element : showCompactResponse.getCompacts()) {
       String key = element.getDbname() + "/" + element.getTablename() +
-          (element.getPartitionname() != null ? "/" + element.getPartitionname() : "");
+              (element.getPartitionname() != null ? "/" + element.getPartitionname() : "");
       // If new key, add the element, if there is an existing one, change to the element if the element.id is greater than old.id
       lastElements.compute(key, (k, old) -> (old == null) ? element : (element.getId() > old.getId() ? element : old));
       if (TxnStore.INITIATED_RESPONSE.equals(element.getState()) && oldestEnqueueTime > element.getEnqueueTime()) {
@@ -527,7 +530,7 @@ public class Initiator extends MetaStoreCompactorThread {
 
     // Get the current count for each state
     Map<String, Long> counts = lastElements.values().stream()
-        .collect(Collectors.groupingBy(e -> e.getState(), Collectors.counting()));
+            .collect(Collectors.groupingBy(e -> e.getState(), Collectors.counting()));
 
     // Update metrics
     for (int i = 0; i < TxnStore.COMPACTION_STATES.length; ++i) {
@@ -543,7 +546,14 @@ public class Initiator extends MetaStoreCompactorThread {
       Metrics.getOrCreateGauge(MetricsConstants.COMPACTION_OLDEST_ENQUEUE_AGE).set(0);
     } else {
       Metrics.getOrCreateGauge(MetricsConstants.COMPACTION_OLDEST_ENQUEUE_AGE)
-          .set((int) ((System.currentTimeMillis() - oldestEnqueueTime) / 1000L));
+              .set((int) ((System.currentTimeMillis() - oldestEnqueueTime) / 1000L));
     }
+  }
+
+  private String getInitiatorId(long threadId) {
+    StringBuilder name = new StringBuilder(this.hostName);
+    name.append("-");
+    name.append(threadId);
+    return name.toString();
   }
 }
