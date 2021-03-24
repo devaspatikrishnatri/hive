@@ -17,11 +17,15 @@
  */
 package org.apache.hadoop.hive.ql.parse;
 
+import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hadoop.hive.ql.Context;
+import org.apache.hadoop.hive.ql.session.SessionState;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_QUOTEDID_SUPPORT;
 
 @RunWith(Enclosed.class)
 public class TestReplicationSemanticAnalyzer {
@@ -30,6 +34,7 @@ public class TestReplicationSemanticAnalyzer {
 
   public static HiveConf buildHiveConf() {
     HiveConf conf = new HiveConf();
+    conf.setVar(HIVE_QUOTEDID_SUPPORT, "none");
     return conf;
   }
 
@@ -99,7 +104,7 @@ public class TestReplicationSemanticAnalyzer {
   public static class ReplDump {
 
     @Test
-    public void parseDbPattern() throws ParseException {
+    public void parseDbPattern() throws Exception {
       ASTNode root = parse("repl dump `*`");
       assertEquals("TOK_REPL_DUMP", root.getText());
       assertEquals(1, root.getChildCount());
@@ -109,13 +114,13 @@ public class TestReplicationSemanticAnalyzer {
     }
 
     @Test
-    public void parseDb() throws ParseException {
+    public void parseDb() throws Exception {
       ASTNode root = parse("repl dump testDb");
       assertDatabase(1, root);
     }
 
     @Test
-    public void parseTableName() throws ParseException {
+    public void parseTableName() throws Exception {
       ASTNode root = parse("repl dump testDb.'test_table'");
       assertDatabase(2, root);
       assertTableName(root);
@@ -125,14 +130,14 @@ public class TestReplicationSemanticAnalyzer {
   public static class ReplDumpWithClause {
 
     @Test
-    public void parseDb() throws ParseException {
+    public void parseDb() throws Exception {
       ASTNode root = parse("repl dump testDb with ('key.1'='value.1','key.2'='value.2')");
       assertDatabase(2, root);
       assertWithClause(root, 1);
     }
 
     @Test
-    public void parseTableName() throws ParseException {
+    public void parseTableName() throws Exception {
       ASTNode root =
           parse("repl dump testDb.'test_table' with ('key.1'='value.1','key.2'='value.2')");
       assertDatabase(3, root);
@@ -144,20 +149,20 @@ public class TestReplicationSemanticAnalyzer {
   public static class ReplLoad {
 
     @Test
-    public void parseFromLocation() throws ParseException {
+    public void parseFromLocation() throws Exception {
       ASTNode root = parse("repl load testDbName");
       assertFromLocation(1, root);
     }
 
     @Test
-    public void parseTargetDbName() throws ParseException {
+    public void parseTargetDbName() throws Exception {
       ASTNode root = parse("repl load testDbName into targetTestDbName");
       assertFromLocation(2, root);
       assertTargetDatabaseName(root);
     }
 
     @Test
-    public void parseWithClause() throws ParseException {
+    public void parseWithClause() throws Exception {
       ASTNode root = parse("repl load testDbName into targetTestDbName"
           + " with ('mapred.job.queue.name'='repl','hive.repl.approx.max.load.tasks'='100')");
       assertFromLocation(3, root);
@@ -202,13 +207,13 @@ public class TestReplicationSemanticAnalyzer {
   public static class ReplStatus {
 
     @Test
-    public void parseTargetDbName() throws ParseException {
+    public void parseTargetDbName() throws Exception {
       ASTNode root = parse("repl status targetTestDbName");
       assertTargetDatabaseName(root);
     }
 
     @Test
-    public void parseWithClause() throws ParseException {
+    public void parseWithClause() throws Exception {
       ASTNode root = parse("repl status targetTestDbName with"
           + "('hive.metastore.uris'='thrift://localhost:12341')");
       assertTargetDatabaseName(root);

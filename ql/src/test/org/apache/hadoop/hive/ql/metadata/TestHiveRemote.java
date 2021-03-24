@@ -60,7 +60,7 @@ public class TestHiveRemote extends TestHive {
   }
 
   @Override
-  protected void tearDown() throws IOException {
+  public void tearDown() throws IOException {
     SessionState.get().close();
     hm.close(false);
   }
