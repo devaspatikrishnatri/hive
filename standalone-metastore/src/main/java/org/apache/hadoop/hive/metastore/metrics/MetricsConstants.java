@@ -27,6 +27,8 @@ public class MetricsConstants {
   public static final String COMPACTION_INITIATOR_CYCLE = "compaction_initiator_cycle";
   public static final String COMPACTION_CLEANER_CYCLE = "compaction_cleaner_cycle";
   public static final String COMPACTION_WORKER_CYCLE = "compaction_worker_cycle";
+  public static final String OLDEST_OPEN_TXN_ID = "oldest_open_txn_id";
+  public static final String OLDEST_OPEN_TXN_AGE = "oldest_open_txn_age_in_sec";
 
   public static final String CREATE_TOTAL_DATABASES = "create_total_count_dbs";
   public static final String CREATE_TOTAL_TABLES = "create_total_count_tables";
