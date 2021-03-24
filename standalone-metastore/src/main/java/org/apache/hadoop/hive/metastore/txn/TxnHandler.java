@@ -212,6 +212,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
 
   // (End user) Transaction timeout, in milliseconds.
   private long timeout;
+  private long replicationTxnTimeout;
 
   private String identifierQuoteString; // quotes to use for quoting tables, where necessary
   private long retryInterval;
@@ -285,6 +286,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     numOpenTxns = Metrics.getOrCreateGauge(MetricsConstants.NUM_OPEN_TXNS);
 
     timeout = MetastoreConf.getTimeVar(conf, ConfVars.TXN_TIMEOUT, TimeUnit.MILLISECONDS);
+    replicationTxnTimeout = MetastoreConf.getTimeVar(conf, ConfVars.REPL_TXN_TIMEOUT, TimeUnit.MILLISECONDS);
     retryInterval = MetastoreConf.getTimeVar(conf, ConfVars.HMS_HANDLER_INTERVAL,
         TimeUnit.MILLISECONDS);
     retryLimit = MetastoreConf.getIntVar(conf, ConfVars.HMS_HANDLER_ATTEMPTS);
@@ -4704,9 +4706,14 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       timeOutLocks(dbConn);
       while(true) {
         stmt = dbConn.createStatement();
-        String s = " \"TXN_ID\" FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN  +
-            " AND \"TXN_LAST_HEARTBEAT\" <  " + TxnDbUtil.getEpochFn(dbProduct) + "-" + timeout +
-            " AND \"TXN_TYPE\" != " + TxnType.REPL_CREATED.getValue();
+        String s = " \"TXN_ID\" FROM \"TXNS\" WHERE \"TXN_STATE\" = " + TxnStatus.OPEN +
+          " AND (" +
+          "\"TXN_TYPE\" != " + TxnType.REPL_CREATED.getValue() +
+          " AND \"TXN_LAST_HEARTBEAT\" <  " + TxnDbUtil.getEpochFn(dbProduct) + "-" + timeout +
+          " OR " +
+          " \"TXN_TYPE\" = " + TxnType.REPL_CREATED.getValue() +
+          " AND \"TXN_LAST_HEARTBEAT\" <  " + TxnDbUtil.getEpochFn(dbProduct) + "-" + replicationTxnTimeout +
+          ")";
         //safety valve for extreme cases
         s = sqlGenerator.addLimitClause(10 * TIMED_OUT_TXN_ABORT_BATCH_SIZE, s);
         LOG.debug("Going to execute query <" + s + ">");
@@ -4755,6 +4762,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       close(rs, stmt, dbConn);
     }
   }
+
   @Override
   @RetrySemantics.ReadOnly
   public void countOpenTxns() throws MetaException {
