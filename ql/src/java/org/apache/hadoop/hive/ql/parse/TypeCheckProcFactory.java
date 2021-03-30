@@ -1305,10 +1305,17 @@ public class TypeCheckProcFactory {
     private static ExprNodeDesc interpretNodeAsStruct(ExprNodeDesc columnDesc, ExprNodeDesc valueDesc)
         throws SemanticException {
       if(columnDesc instanceof ExprNodeColumnDesc) {
-        ExprNodeColumnDesc exprNodeColumnDesc = (ExprNodeColumnDesc) columnDesc;
-        final PrimitiveTypeInfo typeInfo =
-            TypeInfoFactory.getPrimitiveTypeInfo(exprNodeColumnDesc.getTypeString().toLowerCase());
-        return interpretNodeAs(typeInfo, valueDesc);
+        final TypeInfo info = columnDesc.getTypeInfo();
+        switch (info.getCategory()) {
+          case MAP:
+          case LIST:
+          case UNION:
+          case STRUCT:
+            return valueDesc;
+          case PRIMITIVE:
+            PrimitiveTypeInfo primitiveInfo = TypeInfoFactory.getPrimitiveTypeInfo(info.getTypeName().toLowerCase());
+            return interpretNodeAs(primitiveInfo, valueDesc);
+        }
       }
       if (ExprNodeDescUtils.isStructUDF(columnDesc) && ExprNodeDescUtils.isConstantStruct(valueDesc)) {
         List<ExprNodeDesc> columnChilds = ((ExprNodeGenericFuncDesc) columnDesc).getChildren();
