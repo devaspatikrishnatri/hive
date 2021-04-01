@@ -377,7 +377,12 @@ public class CDHMetaStoreSchemaInfo extends MetaStoreSchemaInfo {
   }
 
   protected String getFirstThreeHiveVersion(String version) {
-    String[] strArray = version.split("\\.", 4);
+    String[] strArray;
+    if (version.indexOf("-cdh") > -1) {
+      strArray = (version.split("-", 2)[0]).split("\\.",4);
+    } else {
+      strArray = version.split("\\.", 4);
+    }
     StringBuilder sb = new StringBuilder();
     String seperator = "";
     // The version at least consists of 3 numbers
