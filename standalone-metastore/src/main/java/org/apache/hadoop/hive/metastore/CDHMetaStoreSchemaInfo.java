@@ -35,6 +35,7 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public class CDHMetaStoreSchemaInfo extends MetaStoreSchemaInfo {
   private static String CDH_VERSION_UPGRADE_LIST = "cdh.upgrade.order";
+  private static String CDH6_TO_CDH7_BYPASS_PATH = "2.1.1-cdh6.2.0-to-3.1.3000.7.1.0.0";
 
   private static final Log LOG = LogFactory.getLog(CDHMetaStoreSchemaInfo.class.getName());
 
@@ -126,6 +127,12 @@ public class CDHMetaStoreSchemaInfo extends MetaStoreSchemaInfo {
                                       List<String> cdhScriptList) {
     if (cdhScriptList == null || cdhScriptList.isEmpty()) {
       return;
+    }
+    // OPSAPS-59252 Proper 1-timer hack. We add a special upgrade path from CDH6 to CDH7.
+    // CDH6 has changes that are somewhat newer than HDP2.x releases, so there were all sorts of failures
+    // using conventional upgrade path. This is a one-timer path to bypass
+    if (fromVersion.equalsIgnoreCase("2.1.1-cdh6.2.0")) {
+      cdhScriptList.add(0, generateUpgradeFileName(CDH6_TO_CDH7_BYPASS_PATH));
     }
     // given a cdh hive upgrade path, find the starting and ending hive versions
     // of the CDH upgrade script.
@@ -244,6 +251,13 @@ public class CDHMetaStoreSchemaInfo extends MetaStoreSchemaInfo {
               && fromCdhVersion.compareTo(toVersionFromUpgradePath) >= 0) {
         LOG.info("Current version is higher than or equal to " + toVersionFromUpgradePath
                 + " Skipping file " + cdhSchemaVersions[i]);
+        continue;
+      }
+
+      String initialVersion = cdhSchemaVersions[i].split("-to-")[0];
+      if (from.compareTo(initialVersion) > 0) {
+        LOG.info("Current version is higher than or equal to " + initialVersion
+            + " Skipping file " + cdhSchemaVersions[i]);
         continue;
       }
       String scriptFile = generateUpgradeFileName(cdhSchemaVersions[i]);
@@ -377,7 +391,12 @@ public class CDHMetaStoreSchemaInfo extends MetaStoreSchemaInfo {
   }
 
   protected String getFirstThreeHiveVersion(String version) {
-    String[] strArray = version.split("\\.", 4);
+    String[] strArray;
+    if (version.indexOf("-cdh") > -1) {
+      strArray = (version.split("-", 2)[0]).split("\\.",4);
+    } else {
+      strArray = version.split("\\.", 4);
+    }
     StringBuilder sb = new StringBuilder();
     String seperator = "";
     // The version at least consists of 3 numbers
