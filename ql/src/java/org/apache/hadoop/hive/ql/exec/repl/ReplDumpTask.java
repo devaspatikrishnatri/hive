@@ -654,33 +654,35 @@ public class ReplDumpTask extends Task<ReplDumpWork> implements Serializable {
         Path dbRootData = new Path(bootstrapRoot, EximUtil.DATA_PATH_NAME + File.separator + dbName);
         boolean dataCopyAtLoad = conf.getBoolVar(HiveConf.ConfVars.REPL_RUN_DATA_COPY_TASKS_ON_TARGET);
         try (Writer writer = new Writer(dumpRoot, conf)) {
-          for (String tableName : Utils.matchesTbl(hiveDb, dbName, work.replScope)) {
-            try {
-              Table table = hiveDb.getTable(dbName, tableName);
+          for (String matchedDbName : Utils.matchesDb(hiveDb, work.dbNameOrPattern)) {
+            for (String tableName : Utils.matchesTbl(hiveDb, matchedDbName, work.replScope)) {
+              try {
+                Table table = hiveDb.getTable(matchedDbName, tableName);
 
-              // Dump external table locations if required.
-              if (TableType.EXTERNAL_TABLE.equals(table.getTableType())
-                      && shouldDumpExternalTableLocation()) {
-                writer.dataLocationDump(table, extTableFileList, conf);
-              }
+                // Dump external table locations if required.
+                if (TableType.EXTERNAL_TABLE.equals(table.getTableType())
+                        && shouldDumpExternalTableLocation()) {
+                  writer.dataLocationDump(table, extTableFileList, conf);
+                }
 
-              // Dump the table to be bootstrapped if required.
-              if (shouldBootstrapDumpTable(table)) {
-                HiveWrapper.Tuple<Table> tableTuple = new HiveWrapper(hiveDb, dbName).table(table);
-                dumpTable(dbName, tableName, validTxnList, dbRootMetadata, dbRootData, bootDumpBeginReplId,
-                        hiveDb, tableTuple, managedTblList, dataCopyAtLoad);
+                // Dump the table to be bootstrapped if required.
+                if (shouldBootstrapDumpTable(table)) {
+                  HiveWrapper.Tuple<Table> tableTuple = new HiveWrapper(hiveDb, matchedDbName).table(table);
+                  dumpTable(matchedDbName, tableName, validTxnList, dbRootMetadata, dbRootData, bootDumpBeginReplId,
+                          hiveDb, tableTuple, managedTblList, dataCopyAtLoad);
+                }
+                if (tableList != null && isTableSatifiesConfig(table)) {
+                  tableList.add(tableName);
+                }
+              } catch (InvalidTableException te) {
+                // Repl dump shouldn't fail if the table is dropped/renamed while dumping it.
+                // Just log a debug message and skip it.
+                LOG.debug(te.getMessage());
               }
-              if (tableList != null && isTableSatifiesConfig(table)) {
-                tableList.add(tableName);
-              }
-            } catch (InvalidTableException te) {
-              // Repl dump shouldn't fail if the table is dropped/renamed while dumping it.
-              // Just log a debug message and skip it.
-              LOG.debug(te.getMessage());
             }
           }
+          dumpTableListToDumpLocation(tableList, dumpRoot, dbName, conf);
         }
-        dumpTableListToDumpLocation(tableList, dumpRoot, dbName, conf);
       }
       setDataCopyIterators(extTableFileList, managedTblList);
       work.getMetricCollector().reportStageEnd(getName(), Status.SUCCESS, lastReplId);
