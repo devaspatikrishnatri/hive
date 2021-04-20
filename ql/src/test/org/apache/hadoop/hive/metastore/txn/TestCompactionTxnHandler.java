@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -340,6 +341,131 @@ public class TestCompactionTxnHandler {
     assertNotNull(ci);
     ci.errorMessage = errorMessage;
     txnHandler.markFailed(ci);
+  }
+
+  private void addSucceededCompaction(String dbName, String tableName, String partitionName, CompactionType type)
+          throws MetaException {
+    CompactionRequest rqst = new CompactionRequest(dbName, tableName, type);
+    CompactionInfo ci;
+    if (partitionName != null) {
+      rqst.setPartitionname(partitionName);
+    }
+    txnHandler.compact(rqst);
+    ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    assertNotNull(ci);
+    txnHandler.markCleaned(ci);
+  }
+
+  private void addDidNotInitiateCompaction(String dbName, String tableName, String partitionName,
+          CompactionType type, String errorMessage) throws MetaException {
+    CompactionInfo ci = new CompactionInfo(dbName, tableName, partitionName, type);
+    ci.errorMessage = errorMessage;
+    ci.id = 0;
+    txnHandler.markFailed(ci);
+  }
+
+  @Test
+  public void testPurgeCompactionHistory() throws Exception {
+    MetastoreConf.setLongVar(conf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_SUCCEEDED, 2);
+    MetastoreConf.setLongVar(conf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_DID_NOT_INITIATE, 2);
+    MetastoreConf.setLongVar(conf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_FAILED, 2);
+    txnHandler.setConf(conf);
+
+    String dbName = "default";
+    String tableName = "tpch";
+    String part1 = "(p=1)";
+    String part2 = "(p=2)";
+
+    // 3 successful compactions on p=1
+    addSucceededCompaction(dbName, tableName, part1, CompactionType.MAJOR);
+    addSucceededCompaction(dbName, tableName, part1, CompactionType.MAJOR);
+    addSucceededCompaction(dbName, tableName, part1, CompactionType.MAJOR);
+
+    // 3 failed on p=1
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part1, "message");
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part1, "message");
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part1, "message");
+    //4 failed on p=2
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part2, "message");
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part2, "message");
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part2, "message");
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part2, "message");
+
+    // 3 did not initiate on p=1
+    addDidNotInitiateCompaction(dbName, tableName, part1, CompactionType.MAJOR, "message");
+    addDidNotInitiateCompaction(dbName, tableName, part1, CompactionType.MAJOR, "message");
+    addDidNotInitiateCompaction(dbName, tableName, part1, CompactionType.MAJOR, "message");
+
+    countCompactionsInHistory(dbName, tableName, part1, 3, 3, 3);
+    countCompactionsInHistory(dbName, tableName, part2, 0, 4, 0);
+
+    txnHandler.purgeCompactionHistory();
+
+    countCompactionsInHistory(dbName, tableName, part1, 2, 2, 2);
+    countCompactionsInHistory(dbName, tableName, part2, 0, 2, 0);
+  }
+
+  @Test
+  public void testPurgeCompactionHistoryTimeout() throws Exception {
+    MetastoreConf.setLongVar(conf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_SUCCEEDED, 2);
+    MetastoreConf.setLongVar(conf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_DID_NOT_INITIATE, 2);
+    MetastoreConf.setLongVar(conf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_FAILED, 2);
+    MetastoreConf.setTimeVar(conf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_TIMEOUT, 1, TimeUnit.MILLISECONDS);
+    txnHandler.setConf(conf);
+
+    String dbName = "default";
+    String tableName = "tpch";
+    String part1 = "(p=1)";
+
+    addFailedCompaction(dbName, tableName, CompactionType.MINOR, part1, "message");
+    addDidNotInitiateCompaction(dbName, tableName, part1, CompactionType.MINOR, "message");
+    addSucceededCompaction(dbName, tableName, part1, CompactionType.MINOR);
+    addFailedCompaction(dbName, tableName, CompactionType.MINOR, part1, "message");
+    addDidNotInitiateCompaction(dbName, tableName, part1, CompactionType.MINOR, "message");
+
+    countCompactionsInHistory(dbName, tableName, part1, 1, 2, 2);
+
+    txnHandler.purgeCompactionHistory();
+
+    // the oldest 2 compactions should be cleaned
+    countCompactionsInHistory(dbName, tableName, part1, 1, 1, 1);
+
+    addSucceededCompaction(dbName, tableName, part1, CompactionType.MAJOR);
+
+    txnHandler.purgeCompactionHistory();
+
+    // only 2 succeeded compactions should be left
+    countCompactionsInHistory(dbName, tableName, part1, 2, 0, 0);
+
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part1, "message");
+    addDidNotInitiateCompaction(dbName, tableName, part1, CompactionType.MAJOR, "message");
+    addSucceededCompaction(dbName, tableName, part1, CompactionType.MINOR);
+
+    // succeeded minor compaction shouldn't cause cleanup, but the oldest succeeded will be cleaned up
+    txnHandler.purgeCompactionHistory();
+    countCompactionsInHistory(dbName, tableName, part1, 2, 1, 1);
+
+    addFailedCompaction(dbName, tableName, CompactionType.MAJOR, part1, "message");
+    addDidNotInitiateCompaction(dbName, tableName, part1, CompactionType.MAJOR, "message");
+    addSucceededCompaction(dbName, tableName, part1, CompactionType.MAJOR);
+
+    // only 2 succeeded compactions should be left
+    txnHandler.purgeCompactionHistory();
+    countCompactionsInHistory(dbName, tableName, part1, 2, 0, 0);
+    checkShowCompaction(dbName, tableName, part1, "succeeded", null);
+  }
+
+  private void countCompactionsInHistory(String dbName, String tableName, String partition,
+          int expectedSucceeded, int expectedFailed, int expectedDidNotInitiate)
+          throws MetaException {
+    ShowCompactResponse resp = txnHandler.showCompact(new ShowCompactRequest());
+    List<ShowCompactResponseElement> filteredToPartition = resp.getCompacts().stream()
+            .filter(e -> e.getDbname().equals(dbName) && e.getTablename().equals(tableName) &&
+                    (partition == null || partition.equals(e.getPartitionname()))).collect(Collectors.toList());
+
+    assertEquals(expectedSucceeded, filteredToPartition.stream().filter(e -> e.getState().equals(TxnStore.SUCCEEDED_RESPONSE)).count());
+    assertEquals(expectedFailed, filteredToPartition.stream().filter(e -> e.getState().equals(TxnStore.FAILED_RESPONSE)).count());
+    assertEquals(expectedDidNotInitiate, filteredToPartition.stream().filter(e -> e.getState().equals(TxnStore.DID_NOT_INITIATE_RESPONSE)).count());
   }
 
   @Test
