@@ -17,6 +17,8 @@
  */
 package org.apache.hadoop.hive.ql.txn.compactor;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.FileUtils;
 import org.apache.hadoop.hive.common.ValidTxnList;
 import org.apache.hadoop.hive.metastore.ReplChangeManager;
@@ -27,6 +29,7 @@ import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsResponse;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.ql.io.AcidDirectory;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
+import org.apache.hadoop.hive.metastore.metrics.Metrics;
 import org.apache.hadoop.hive.metastore.metrics.MetricsConstants;
 import org.apache.hadoop.hive.metastore.metrics.PerfLogger;
 import org.apache.hadoop.hive.metastore.txn.TxnUtils;
@@ -64,6 +67,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.hadoop.hive.conf.Constants.COMPACTOR_CLEANER_THREAD_NAME_FORMAT;
 import static org.apache.hadoop.hive.metastore.HiveMetaStore.HMSHandler.getMSForConf;
@@ -95,6 +99,8 @@ public class Cleaner extends MetaStoreCompactorThread {
   public void run() {
     try {
       boolean metricsEnabled = MetastoreConf.getBoolVar(conf, MetastoreConf.ConfVars.METRICS_ENABLED);
+      Pair<AtomicInteger, AtomicInteger> ratio =
+          Metrics.getOrCreateRatio(MetricsConstants.COMPACTION_FAILED_CLEANER_RATIO);
       do {
         TxnStore.MutexAPI.LockHandle handle = null;
         long startedAt = -1;
@@ -102,6 +108,9 @@ public class Cleaner extends MetaStoreCompactorThread {
         // so wrap it in a big catch Throwable statement.
         try {
           handle = txnHandler.getMutexAPI().acquireLock(TxnStore.MUTEX_KEY.Cleaner.name());
+          if (metricsEnabled) {
+            ratio.getRight().incrementAndGet();
+          }
           startedAt = System.currentTimeMillis();
           long minOpenTxnId = txnHandler.findMinOpenTxnId();
           List<CompletableFuture> cleanerList = new ArrayList<>();
@@ -111,6 +120,10 @@ public class Cleaner extends MetaStoreCompactorThread {
           }
           CompletableFuture.allOf(cleanerList.toArray(new CompletableFuture[0])).join();
         } catch (Throwable t) {
+          // the lock timeout on AUX lock, should be ignored.
+          if (metricsEnabled && handle != null) {
+            ratio.getLeft().incrementAndGet();
+          }
           LOG.error("Caught an exception in the main loop of compactor cleaner, " +
                   StringUtils.stringifyException(t));
         } finally {
