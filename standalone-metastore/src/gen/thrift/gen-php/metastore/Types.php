@@ -27418,6 +27418,10 @@ class GetTablesRequest {
    * @var \metastore\GetProjectionsSpec
    */
   public $projectionSpec = null;
+  /**
+   * @var string
+   */
+  public $tablesPattern = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -27460,6 +27464,10 @@ class GetTablesRequest {
           'type' => TType::STRUCT,
           'class' => '\metastore\GetProjectionsSpec',
           ),
+        8 => array(
+          'var' => 'tablesPattern',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -27483,6 +27491,9 @@ class GetTablesRequest {
       }
       if (isset($vals['projectionSpec'])) {
         $this->projectionSpec = $vals['projectionSpec'];
+      }
+      if (isset($vals['tablesPattern'])) {
+        $this->tablesPattern = $vals['tablesPattern'];
       }
     }
   }
@@ -27577,6 +27588,13 @@ class GetTablesRequest {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tablesPattern);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -27653,6 +27671,11 @@ class GetTablesRequest {
       }
       $xfer += $output->writeFieldBegin('projectionSpec', TType::STRUCT, 7);
       $xfer += $this->projectionSpec->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tablesPattern !== null) {
+      $xfer += $output->writeFieldBegin('tablesPattern', TType::STRING, 8);
+      $xfer += $output->writeString($this->tablesPattern);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
