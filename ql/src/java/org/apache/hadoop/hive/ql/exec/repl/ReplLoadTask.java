@@ -68,6 +68,7 @@ import org.apache.hadoop.hive.ql.parse.repl.load.MetaData;
 import org.apache.hadoop.hive.ql.parse.repl.metric.ReplicationMetricCollector;
 import org.apache.hadoop.hive.ql.parse.repl.metric.event.Status;
 import org.apache.hadoop.hive.ql.plan.api.StageType;
+import org.apache.hadoop.mapreduce.JobContext;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -126,6 +127,9 @@ public class ReplLoadTask extends Task<ReplLoadWork> implements Serializable {
       }
       work.setRootTask(this);
       this.parentTasks = null;
+      // Set distCp custom name corresponding to the replication policy.
+      String mapRedCustomName = ReplUtils.getDistCpCustomName(conf);
+      conf.set(JobContext.JOB_NAME, mapRedCustomName);
       if (shouldLoadAtlasMetadata()) {
         addAtlasLoadTask();
       }
