@@ -1,3 +1,13 @@
+-- upgrading to 2.1.1000
+SELECT 'Upgrading MetaStore schema from 2.1.0 to 2.1.1000';
+
+-- \i 037-HIVE-10562.postgres.sql;
+ALTER TABLE "NOTIFICATION_LOG" ADD COLUMN "MESSAGE_FORMAT" VARCHAR(16) NULL;
+
+UPDATE "VERSION" SET "SCHEMA_VERSION"='2.1.1000', "VERSION_COMMENT"='Hive release version 2.1.1000' where "VER_ID"=1;
+SELECT 'Finished upgrading MetaStore schema from 2.1.0 to 2.1.1000';
+
+-- upgrading to 2.1.2000
 SELECT 'Upgrading MetaStore schema from 2.1.1000 to 2.1.2000';
 
 \i 043-HIVE-16997.postgres.sql;
@@ -6,6 +16,7 @@ SELECT 'Upgrading MetaStore schema from 2.1.1000 to 2.1.2000';
 UPDATE "VERSION" SET "SCHEMA_VERSION"='2.1.2000', "VERSION_COMMENT"='Hive release version 2.1.2000' where "VER_ID"=1;
 SELECT 'Finished upgrading MetaStore schema from 2.1.1000 to 2.1.2000';
 
+-- upgrading to 3.0.0
 SELECT 'Upgrading MetaStore schema from 2.1.2000 to 3.0.0';
 
 --\i 036-HIVE-14496.postgres.sql;
