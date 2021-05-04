@@ -713,13 +713,13 @@ package org.apache.hadoop.hive.metastore.api;
           case 2: // FILES_ADDED
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list796 = iprot.readListBegin();
-                struct.filesAdded = new java.util.ArrayList<java.lang.String>(_list796.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem797;
-                for (int _i798 = 0; _i798 < _list796.size; ++_i798)
+                org.apache.thrift.protocol.TList _list812 = iprot.readListBegin();
+                struct.filesAdded = new java.util.ArrayList<java.lang.String>(_list812.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem813;
+                for (int _i814 = 0; _i814 < _list812.size; ++_i814)
                 {
-                  _elem797 = iprot.readString();
-                  struct.filesAdded.add(_elem797);
+                  _elem813 = iprot.readString();
+                  struct.filesAdded.add(_elem813);
                 }
                 iprot.readListEnd();
               }
@@ -731,13 +731,13 @@ package org.apache.hadoop.hive.metastore.api;
           case 3: // FILES_ADDED_CHECKSUM
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list799 = iprot.readListBegin();
-                struct.filesAddedChecksum = new java.util.ArrayList<java.lang.String>(_list799.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem800;
-                for (int _i801 = 0; _i801 < _list799.size; ++_i801)
+                org.apache.thrift.protocol.TList _list815 = iprot.readListBegin();
+                struct.filesAddedChecksum = new java.util.ArrayList<java.lang.String>(_list815.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem816;
+                for (int _i817 = 0; _i817 < _list815.size; ++_i817)
                 {
-                  _elem800 = iprot.readString();
-                  struct.filesAddedChecksum.add(_elem800);
+                  _elem816 = iprot.readString();
+                  struct.filesAddedChecksum.add(_elem816);
                 }
                 iprot.readListEnd();
               }
@@ -749,13 +749,13 @@ package org.apache.hadoop.hive.metastore.api;
           case 4: // SUB_DIRECTORY_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list802 = iprot.readListBegin();
-                struct.subDirectoryList = new java.util.ArrayList<java.lang.String>(_list802.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem803;
-                for (int _i804 = 0; _i804 < _list802.size; ++_i804)
+                org.apache.thrift.protocol.TList _list818 = iprot.readListBegin();
+                struct.subDirectoryList = new java.util.ArrayList<java.lang.String>(_list818.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem819;
+                for (int _i820 = 0; _i820 < _list818.size; ++_i820)
                 {
-                  _elem803 = iprot.readString();
-                  struct.subDirectoryList.add(_elem803);
+                  _elem819 = iprot.readString();
+                  struct.subDirectoryList.add(_elem819);
                 }
                 iprot.readListEnd();
               }
@@ -767,13 +767,13 @@ package org.apache.hadoop.hive.metastore.api;
           case 5: // PARTITION_VAL
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list805 = iprot.readListBegin();
-                struct.partitionVal = new java.util.ArrayList<java.lang.String>(_list805.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem806;
-                for (int _i807 = 0; _i807 < _list805.size; ++_i807)
+                org.apache.thrift.protocol.TList _list821 = iprot.readListBegin();
+                struct.partitionVal = new java.util.ArrayList<java.lang.String>(_list821.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem822;
+                for (int _i823 = 0; _i823 < _list821.size; ++_i823)
                 {
-                  _elem806 = iprot.readString();
-                  struct.partitionVal.add(_elem806);
+                  _elem822 = iprot.readString();
+                  struct.partitionVal.add(_elem822);
                 }
                 iprot.readListEnd();
               }
@@ -804,9 +804,9 @@ package org.apache.hadoop.hive.metastore.api;
         oprot.writeFieldBegin(FILES_ADDED_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.filesAdded.size()));
-          for (java.lang.String _iter808 : struct.filesAdded)
+          for (java.lang.String _iter824 : struct.filesAdded)
           {
-            oprot.writeString(_iter808);
+            oprot.writeString(_iter824);
           }
           oprot.writeListEnd();
         }
@@ -817,9 +817,9 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldBegin(FILES_ADDED_CHECKSUM_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.filesAddedChecksum.size()));
-            for (java.lang.String _iter809 : struct.filesAddedChecksum)
+            for (java.lang.String _iter825 : struct.filesAddedChecksum)
             {
-              oprot.writeString(_iter809);
+              oprot.writeString(_iter825);
             }
             oprot.writeListEnd();
           }
@@ -831,9 +831,9 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldBegin(SUB_DIRECTORY_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.subDirectoryList.size()));
-            for (java.lang.String _iter810 : struct.subDirectoryList)
+            for (java.lang.String _iter826 : struct.subDirectoryList)
             {
-              oprot.writeString(_iter810);
+              oprot.writeString(_iter826);
             }
             oprot.writeListEnd();
           }
@@ -845,9 +845,9 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldBegin(PARTITION_VAL_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.partitionVal.size()));
-            for (java.lang.String _iter811 : struct.partitionVal)
+            for (java.lang.String _iter827 : struct.partitionVal)
             {
-              oprot.writeString(_iter811);
+              oprot.writeString(_iter827);
             }
             oprot.writeListEnd();
           }
@@ -873,9 +873,9 @@ package org.apache.hadoop.hive.metastore.api;
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       {
         oprot.writeI32(struct.filesAdded.size());
-        for (java.lang.String _iter812 : struct.filesAdded)
+        for (java.lang.String _iter828 : struct.filesAdded)
         {
-          oprot.writeString(_iter812);
+          oprot.writeString(_iter828);
         }
       }
       java.util.BitSet optionals = new java.util.BitSet();
@@ -898,27 +898,27 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetFilesAddedChecksum()) {
         {
           oprot.writeI32(struct.filesAddedChecksum.size());
-          for (java.lang.String _iter813 : struct.filesAddedChecksum)
+          for (java.lang.String _iter829 : struct.filesAddedChecksum)
           {
-            oprot.writeString(_iter813);
+            oprot.writeString(_iter829);
           }
         }
       }
       if (struct.isSetSubDirectoryList()) {
         {
           oprot.writeI32(struct.subDirectoryList.size());
-          for (java.lang.String _iter814 : struct.subDirectoryList)
+          for (java.lang.String _iter830 : struct.subDirectoryList)
           {
-            oprot.writeString(_iter814);
+            oprot.writeString(_iter830);
           }
         }
       }
       if (struct.isSetPartitionVal()) {
         {
           oprot.writeI32(struct.partitionVal.size());
-          for (java.lang.String _iter815 : struct.partitionVal)
+          for (java.lang.String _iter831 : struct.partitionVal)
           {
-            oprot.writeString(_iter815);
+            oprot.writeString(_iter831);
           }
         }
       }
@@ -928,13 +928,13 @@ package org.apache.hadoop.hive.metastore.api;
     public void read(org.apache.thrift.protocol.TProtocol prot, InsertEventRequestData struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       {
-        org.apache.thrift.protocol.TList _list816 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-        struct.filesAdded = new java.util.ArrayList<java.lang.String>(_list816.size);
-        @org.apache.thrift.annotation.Nullable java.lang.String _elem817;
-        for (int _i818 = 0; _i818 < _list816.size; ++_i818)
+        org.apache.thrift.protocol.TList _list832 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+        struct.filesAdded = new java.util.ArrayList<java.lang.String>(_list832.size);
+        @org.apache.thrift.annotation.Nullable java.lang.String _elem833;
+        for (int _i834 = 0; _i834 < _list832.size; ++_i834)
         {
-          _elem817 = iprot.readString();
-          struct.filesAdded.add(_elem817);
+          _elem833 = iprot.readString();
+          struct.filesAdded.add(_elem833);
         }
       }
       struct.setFilesAddedIsSet(true);
@@ -945,39 +945,39 @@ package org.apache.hadoop.hive.metastore.api;
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list819 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.filesAddedChecksum = new java.util.ArrayList<java.lang.String>(_list819.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem820;
-          for (int _i821 = 0; _i821 < _list819.size; ++_i821)
+          org.apache.thrift.protocol.TList _list835 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.filesAddedChecksum = new java.util.ArrayList<java.lang.String>(_list835.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem836;
+          for (int _i837 = 0; _i837 < _list835.size; ++_i837)
           {
-            _elem820 = iprot.readString();
-            struct.filesAddedChecksum.add(_elem820);
+            _elem836 = iprot.readString();
+            struct.filesAddedChecksum.add(_elem836);
           }
         }
         struct.setFilesAddedChecksumIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list822 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.subDirectoryList = new java.util.ArrayList<java.lang.String>(_list822.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem823;
-          for (int _i824 = 0; _i824 < _list822.size; ++_i824)
+          org.apache.thrift.protocol.TList _list838 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.subDirectoryList = new java.util.ArrayList<java.lang.String>(_list838.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem839;
+          for (int _i840 = 0; _i840 < _list838.size; ++_i840)
           {
-            _elem823 = iprot.readString();
-            struct.subDirectoryList.add(_elem823);
+            _elem839 = iprot.readString();
+            struct.subDirectoryList.add(_elem839);
           }
         }
         struct.setSubDirectoryListIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list825 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.partitionVal = new java.util.ArrayList<java.lang.String>(_list825.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem826;
-          for (int _i827 = 0; _i827 < _list825.size; ++_i827)
+          org.apache.thrift.protocol.TList _list841 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.partitionVal = new java.util.ArrayList<java.lang.String>(_list841.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem842;
+          for (int _i843 = 0; _i843 < _list841.size; ++_i843)
           {
-            _elem826 = iprot.readString();
-            struct.partitionVal.add(_elem826);
+            _elem842 = iprot.readString();
+            struct.partitionVal.add(_elem842);
           }
         }
         struct.setPartitionValIsSet(true);

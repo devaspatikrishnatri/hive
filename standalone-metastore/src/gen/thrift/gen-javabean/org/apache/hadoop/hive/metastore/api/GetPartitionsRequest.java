@@ -936,13 +936,13 @@ package org.apache.hadoop.hive.metastore.api;
           case 6: // GROUP_NAMES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1184 = iprot.readListBegin();
-                struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1184.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem1185;
-                for (int _i1186 = 0; _i1186 < _list1184.size; ++_i1186)
+                org.apache.thrift.protocol.TList _list1200 = iprot.readListBegin();
+                struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1200.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem1201;
+                for (int _i1202 = 0; _i1202 < _list1200.size; ++_i1202)
                 {
-                  _elem1185 = iprot.readString();
-                  struct.groupNames.add(_elem1185);
+                  _elem1201 = iprot.readString();
+                  struct.groupNames.add(_elem1201);
                 }
                 iprot.readListEnd();
               }
@@ -1016,9 +1016,9 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldBegin(GROUP_NAMES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.groupNames.size()));
-            for (java.lang.String _iter1187 : struct.groupNames)
+            for (java.lang.String _iter1203 : struct.groupNames)
             {
-              oprot.writeString(_iter1187);
+              oprot.writeString(_iter1203);
             }
             oprot.writeListEnd();
           }
@@ -1096,9 +1096,9 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetGroupNames()) {
         {
           oprot.writeI32(struct.groupNames.size());
-          for (java.lang.String _iter1188 : struct.groupNames)
+          for (java.lang.String _iter1204 : struct.groupNames)
           {
-            oprot.writeString(_iter1188);
+            oprot.writeString(_iter1204);
           }
         }
       }
@@ -1136,13 +1136,13 @@ package org.apache.hadoop.hive.metastore.api;
       }
       if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list1189 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1189.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem1190;
-          for (int _i1191 = 0; _i1191 < _list1189.size; ++_i1191)
+          org.apache.thrift.protocol.TList _list1205 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1205.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem1206;
+          for (int _i1207 = 0; _i1207 < _list1205.size; ++_i1207)
           {
-            _elem1190 = iprot.readString();
-            struct.groupNames.add(_elem1190);
+            _elem1206 = iprot.readString();
+            struct.groupNames.add(_elem1206);
           }
         }
         struct.setGroupNamesIsSet(true);

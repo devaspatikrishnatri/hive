@@ -201,14 +201,14 @@ class SchemaVersion
                 case 4:
                     if ($ftype == TType::LST) {
                         $this->cols = array();
-                        $_size945 = 0;
-                        $_etype948 = 0;
-                        $xfer += $input->readListBegin($_etype948, $_size945);
-                        for ($_i949 = 0; $_i949 < $_size945; ++$_i949) {
-                            $elem950 = null;
-                            $elem950 = new \metastore\FieldSchema();
-                            $xfer += $elem950->read($input);
-                            $this->cols []= $elem950;
+                        $_size959 = 0;
+                        $_etype962 = 0;
+                        $xfer += $input->readListBegin($_etype962, $_size959);
+                        for ($_i963 = 0; $_i963 < $_size959; ++$_i963) {
+                            $elem964 = null;
+                            $elem964 = new \metastore\FieldSchema();
+                            $xfer += $elem964->read($input);
+                            $this->cols []= $elem964;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -296,8 +296,8 @@ class SchemaVersion
             }
             $xfer += $output->writeFieldBegin('cols', TType::LST, 4);
             $output->writeListBegin(TType::STRUCT, count($this->cols));
-            foreach ($this->cols as $iter951) {
-                $xfer += $iter951->write($output);
+            foreach ($this->cols as $iter965) {
+                $xfer += $iter965->write($output);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

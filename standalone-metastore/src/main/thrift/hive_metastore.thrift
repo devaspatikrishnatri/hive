@@ -29,7 +29,7 @@ namespace php metastore
 namespace cpp Apache.Hadoop.Hive
 
 const string DDL_TIME = "transient_lastDdlTime"
-const string HMS_API = "1.2.17"
+const string HMS_API = "1.2.18"
 const byte ACCESSTYPE_NONE       = 1;
 const byte ACCESSTYPE_READONLY   = 2;
 const byte ACCESSTYPE_WRITEONLY  = 4;
@@ -1189,6 +1189,16 @@ struct ShowCompactResponseElement {
 
 struct ShowCompactResponse {
     1: required list<ShowCompactResponseElement> compacts,
+}
+
+struct GetLatestCommittedCompactionInfoRequest {
+    1: required string dbname,
+    2: required string tablename,
+    3: optional list<string> partitionnames,
+}
+
+struct GetLatestCommittedCompactionInfoResponse {
+    1: required list<CompactionInfoStruct> compactions,
 }
 
 struct FindNextCompactRequest {
@@ -2542,6 +2552,7 @@ service ThriftHiveMetastore extends fb303.FacebookService
   void mark_compacted(1: CompactionInfoStruct cr) throws(1:MetaException o1)
   void mark_failed(1: CompactionInfoStruct cr) throws(1:MetaException o1)
   void set_hadoop_jobid(1: string jobId, 2: i64 cq_id)
+  GetLatestCommittedCompactionInfoResponse get_latest_committed_compaction_info(1:GetLatestCommittedCompactionInfoRequest rqst)
 
   // Notification logging calls
   NotificationEventResponse get_next_notification(1:NotificationEventRequest rqst)
