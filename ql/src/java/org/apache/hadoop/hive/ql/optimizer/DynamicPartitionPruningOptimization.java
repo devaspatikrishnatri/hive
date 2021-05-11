@@ -160,6 +160,11 @@ public class DynamicPartitionPruningOptimization implements NodeProcessor {
     List<ExprNodeDesc> newBetweenNodes = new ArrayList<>();
     List<ExprNodeDesc> newBloomFilterNodes = new ArrayList<>();
     for (DynamicListContext ctx : removerContext) {
+      if (ctx.desc.getTypeInfo().getCategory()  != ObjectInspector.Category.PRIMITIVE) {
+        // DPP is not supported for complex types.
+        // https://issues.apache.org/jira/browse/HIVE-24988
+        continue;
+      }
       String column = ExprNodeDescUtils.extractColName(ctx.parent);
       boolean semiJoinAttempted = false;
 
