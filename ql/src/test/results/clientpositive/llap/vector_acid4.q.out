@@ -191,7 +191,7 @@ STAGE PLANS:
             Execution mode: vectorized, llap
             Reduce Operator Tree:
               Select Operator
-                expressions: KEY.reducesinkkey0 (type: struct<writeid:bigint,bucketid:int,rowid:bigint>), '206' (type: string), VALUE._col0 (type: string)
+                expressions: KEY.reducesinkkey0 (type: struct<writeid:bigint,bucketid:int,rowid:bigint>), '206' (type: string), VALUE._col1 (type: string)
                 outputColumnNames: _col0, _col1, _col2
                 Statistics: Num rows: 2 Data size: 506 Basic stats: COMPLETE Column stats: COMPLETE
                 File Output Operator
