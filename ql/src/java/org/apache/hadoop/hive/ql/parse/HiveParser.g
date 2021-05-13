@@ -281,6 +281,7 @@ TOK_VIEWCLUSTERCOLS;
 TOK_VIEWDISTRIBUTECOLS;
 TOK_VIEWSORTCOLS;
 TOK_EXPLAIN;
+TOK_DDL;
 TOK_EXPLAIN_SQ_REWRITE;
 TOK_TABLESERIALIZER;
 TOK_TABLEPROPERTIES;
@@ -598,6 +599,7 @@ import org.apache.hadoop.hive.conf.HiveConf;
     xlateMap.put("KW_FUNCTION", "FUNCTION");
     xlateMap.put("KW_FUNCTIONS", "FUNCTIONS");
     xlateMap.put("KW_EXPLAIN", "EXPLAIN");
+    xlateMap.put("KW_DDL", "DDL");
     xlateMap.put("KW_EXTENDED", "EXTENDED");
     xlateMap.put("KW_DEBUG", "DEBUG");
     xlateMap.put("KW_SERDE", "SERDE");
@@ -844,6 +846,7 @@ explainOption
     | KW_LOCKS
     | (KW_VECTORIZATION vectorizationOnly? vectorizatonDetail?)
     | KW_DEBUG
+    | KW_DDL
     ;
 
 vectorizationOnly
