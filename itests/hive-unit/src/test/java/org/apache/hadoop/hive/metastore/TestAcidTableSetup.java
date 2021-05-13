@@ -227,7 +227,7 @@ public class TestAcidTableSetup {
         client.dropTable(dbName, tableName);
       }
       client.dropDatabase(dbName);
-    } catch (NoSuchObjectException|InvalidOperationException|MetaException e) {
+    } catch (NoSuchObjectException|InvalidOperationException e) {
       // NOP
     }
   }
