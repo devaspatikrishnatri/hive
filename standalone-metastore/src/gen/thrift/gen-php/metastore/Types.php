@@ -29022,6 +29022,10 @@ class Materialization {
    * @var bool
    */
   public $sourceTablesUpdateDeleteModified = null;
+  /**
+   * @var bool
+   */
+  public $sourceTablesCompacted = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -29030,11 +29034,18 @@ class Materialization {
           'var' => 'sourceTablesUpdateDeleteModified',
           'type' => TType::BOOL,
           ),
+        2 => array(
+          'var' => 'sourceTablesCompacted',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['sourceTablesUpdateDeleteModified'])) {
         $this->sourceTablesUpdateDeleteModified = $vals['sourceTablesUpdateDeleteModified'];
+      }
+      if (isset($vals['sourceTablesCompacted'])) {
+        $this->sourceTablesCompacted = $vals['sourceTablesCompacted'];
       }
     }
   }
@@ -29065,6 +29076,13 @@ class Materialization {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->sourceTablesCompacted);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -29081,6 +29099,11 @@ class Materialization {
     if ($this->sourceTablesUpdateDeleteModified !== null) {
       $xfer += $output->writeFieldBegin('sourceTablesUpdateDeleteModified', TType::BOOL, 1);
       $xfer += $output->writeBool($this->sourceTablesUpdateDeleteModified);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sourceTablesCompacted !== null) {
+      $xfer += $output->writeFieldBegin('sourceTablesCompacted', TType::BOOL, 2);
+      $xfer += $output->writeBool($this->sourceTablesCompacted);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

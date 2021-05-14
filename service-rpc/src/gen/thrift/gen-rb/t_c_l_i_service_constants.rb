@@ -42,13 +42,6 @@ COLLECTION_TYPES = Set.new([
 ])
 
 TYPE_NAMES = {
-    0 => %q"BOOLEAN",
-    1 => %q"TINYINT",
-    2 => %q"SMALLINT",
-    3 => %q"INT",
-    4 => %q"BIGINT",
-    5 => %q"FLOAT",
-    6 => %q"DOUBLE",
     7 => %q"STRING",
     8 => %q"TIMESTAMP",
     9 => %q"BINARY",
@@ -62,6 +55,13 @@ TYPE_NAMES = {
     18 => %q"VARCHAR",
     19 => %q"CHAR",
     20 => %q"INTERVAL_YEAR_MONTH",
+    0 => %q"BOOLEAN",
+    1 => %q"TINYINT",
+    2 => %q"SMALLINT",
+    3 => %q"INT",
+    4 => %q"BIGINT",
+    5 => %q"FLOAT",
+    6 => %q"DOUBLE",
     21 => %q"INTERVAL_DAY_TIME",
     22 => %q"TIMESTAMP WITH LOCAL TIME ZONE",
 }
