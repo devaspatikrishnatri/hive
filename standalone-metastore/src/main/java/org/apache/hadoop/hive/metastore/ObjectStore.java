@@ -4746,6 +4746,7 @@ public class ObjectStore implements RawStore, Configurable {
       mcm.setTxnList(newMcm.getTxnList());
       // commit the changes
       success = commitTransaction();
+      cm.setMaterializationTime(newMcm.getMaterializationTime());
     } finally {
       if (!success) {
         rollbackTransaction();
