@@ -60,6 +60,7 @@ import org.apache.hadoop.hive.ql.plan.TezWork;
 import org.apache.hadoop.hive.ql.plan.UnionWork;
 import org.apache.hadoop.hive.ql.plan.api.StageType;
 import org.apache.hadoop.hive.ql.session.SessionState;
+import org.apache.hadoop.hive.ql.txn.compactor.metrics.DeltaFilesMetricReporter;
 import org.apache.hadoop.hive.ql.wm.WmContext;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -264,6 +265,10 @@ public class TezTask extends Task<TezWork> {
         try {
           Set<StatusGetOpts> statusGetOpts = EnumSet.of(StatusGetOpts.GET_COUNTERS);
           counters = dagClient.getDAGStatus(statusGetOpts).getDAGCounters();
+
+          if (HiveConf.getBoolVar(conf, HiveConf.ConfVars.HIVE_SERVER2_METRICS_ENABLED)) {
+            DeltaFilesMetricReporter.getInstance().submit(counters);
+          }
         } catch (Exception err) {
           // Don't fail execution due to counters - just don't print summary info
           LOG.warn("Failed to get counters. Ignoring, summary info will be incomplete. " + err, err);

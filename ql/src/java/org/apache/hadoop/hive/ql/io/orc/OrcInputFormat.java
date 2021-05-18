@@ -24,6 +24,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,8 @@ import org.apache.hadoop.hive.ql.io.sarg.SearchArgument.TruthValue;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.metadata.VirtualColumn;
 import org.apache.hadoop.hive.ql.plan.DynamicValue.NoDynamicValuesException;
+import org.apache.hadoop.hive.ql.txn.compactor.metrics.DeltaFilesMetricReporter;
+import org.apache.hadoop.hive.ql.txn.compactor.metrics.DeltaFilesMetricReporter.DeltaFilesMetricType;
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.hive.serde2.ColumnProjectionUtils;
 import org.apache.hadoop.hive.serde2.SerDeStats;
@@ -1738,6 +1741,12 @@ public class OrcInputFormat implements InputFormat<NullWritable, OrcStruct>,
         " reader schema " + (readerSchema == null ? "NULL" : readerSchema.toString()) +
         " ACID scan property " + isAcidTableScan);
     }
+    boolean metricsEnabled = HiveConf.getBoolVar(conf, HiveConf.ConfVars.HIVE_SERVER2_METRICS_ENABLED);
+    long checkThresholdInSec = HiveConf.getTimeVar(conf,
+        HiveConf.ConfVars.HIVE_TXN_ACID_METRICS_DELTA_CHECK_THRESHOLD, TimeUnit.SECONDS);
+    float deltaPctThreshold = HiveConf.getFloatVar(conf, HiveConf.ConfVars.HIVE_TXN_ACID_METRICS_DELTA_PCT_THRESHOLD);
+
+    EnumMap<DeltaFilesMetricType, Map<String, Integer>> deltaFilesStats = new EnumMap<>(DeltaFilesMetricType.class);
 
     // complete path futures and schedule split generation
     try {
@@ -1764,6 +1773,10 @@ public class OrcInputFormat implements InputFormat<NullWritable, OrcStruct>,
           continue;
         }
 
+        if (metricsEnabled && adi instanceof AcidDirectory) {
+          DeltaFilesMetricReporter.mergeDeltaFilesStats((AcidDirectory) adi, checkThresholdInSec,
+              deltaPctThreshold, deltaFilesStats);
+        }
         // We have received a new directory information, make split strategies.
         --resultsLeft;
         if(adi.getBaseAndDeltaFiles().isEmpty()) {
@@ -1795,6 +1808,7 @@ public class OrcInputFormat implements InputFormat<NullWritable, OrcStruct>,
           }
         }
       }
+      DeltaFilesMetricReporter.addAcidMetricsToConfObj(deltaFilesStats, conf);
 
       // Run the last combined strategy, if any.
       if (combinedCtx != null && combinedCtx.combined != null) {
@@ -1902,7 +1916,8 @@ public class OrcInputFormat implements InputFormat<NullWritable, OrcStruct>,
       conf = new HiveConf(conf, OrcInputFormat.class);
     }
     List<OrcSplit> result = generateSplitsInfo(conf,
-        new Context(conf, numSplits, createExternalCaches()));
+            new Context(conf, numSplits, createExternalCaches()));
+    DeltaFilesMetricReporter.backPropagateAcidMetrics(job, conf);
     long end = System.currentTimeMillis();
     LOG.info("getSplits finished (#splits: {}). duration: {} ms", result.size(), (end - start));
     return result.toArray(new InputSplit[result.size()]);
