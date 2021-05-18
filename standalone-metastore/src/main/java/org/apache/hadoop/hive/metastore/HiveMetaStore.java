@@ -5642,7 +5642,9 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       Partition oldPart = null;
       Exception ex = null;
       try {
-        firePreEvent(new PreAlterPartitionEvent(db_name, tbl_name, part_vals, new_part, this));
+        Table table = null;
+        table = getMS().getTable(catName, db_name, tbl_name, null);
+        firePreEvent(new PreAlterPartitionEvent(db_name, tbl_name, table, part_vals, new_part, this));
         if (part_vals != null && !part_vals.isEmpty()) {
           MetaStoreUtils.validatePartitionNameCharacters(new_part.getValues(),
               partitionValidationPattern);
@@ -5652,12 +5654,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
             part_vals, new_part, envContext, this, validWriteIds);
 
         // Only fetch the table if we actually have a listener
-        Table table = null;
         if (!listeners.isEmpty()) {
-          if (table == null) {
-            table = getMS().getTable(catName, db_name, tbl_name, null);
-          }
-
           MetaStoreListenerNotifier.notifyEvent(listeners,
                                                 EventType.ALTER_PARTITION,
                                                 new AlterPartitionEvent(oldPart, new_part, table, false,
@@ -5736,18 +5733,21 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       List<Partition> oldParts = null;
       Exception ex = null;
       try {
+
+        Table table = null;
+        table = getMS().getTable(catName, db_name, tbl_name,  null);
+
         for (Partition tmpPart : new_parts) {
           // Make sure the catalog name is set in the new partition
           if (!tmpPart.isSetCatName()) {
             tmpPart.setCatName(getDefaultCatalog(conf));
           }
-          firePreEvent(new PreAlterPartitionEvent(db_name, tbl_name, null, tmpPart, this));
+          firePreEvent(new PreAlterPartitionEvent(db_name, tbl_name, table, null, tmpPart, this));
         }
         oldParts = alterHandler.alterPartitions(getMS(), wh,
             catName, db_name, tbl_name, new_parts, environmentContext, writeIdList, writeId, this);
         Iterator<Partition> olditr = oldParts.iterator();
-        // Only fetch the table if we have a listener that needs it.
-        Table table = null;
+
         for (Partition tmpPart : new_parts) {
           Partition oldTmpPart;
           if (olditr.hasNext()) {
@@ -5755,10 +5755,6 @@ public class HiveMetaStore extends ThriftHiveMetastore {
           }
           else {
             throw new InvalidOperationException("failed to alterpartitions");
-          }
-
-          if (table == null) {
-            table = getMS().getTable(catName, db_name, tbl_name,  null);
           }
 
           if (!listeners.isEmpty()) {
