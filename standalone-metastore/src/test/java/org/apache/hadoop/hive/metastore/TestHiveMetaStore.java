@@ -2111,7 +2111,7 @@ public abstract class TestHiveMetaStore {
         client.dropTable(dbName, tableName);
       }
       client.dropDatabase(dbName);
-    } catch (NoSuchObjectException|InvalidOperationException e) {
+    } catch (NoSuchObjectException|InvalidOperationException|MetaException e) {
       // NOP
     }
   }

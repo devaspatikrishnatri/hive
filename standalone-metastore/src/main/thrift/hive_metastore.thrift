@@ -1426,7 +1426,8 @@ struct GetTablesRequest {
   4: optional string catName,
   5: optional list<string> processorCapabilities,
   6: optional string processorIdentifier,
-  7: optional GetProjectionsSpec projectionSpec
+  7: optional GetProjectionsSpec projectionSpec,
+  8: optional string tablesPattern
 }
 
 struct GetTablesResult {

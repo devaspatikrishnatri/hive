@@ -27800,6 +27800,11 @@ void GetTablesRequest::__set_projectionSpec(const GetProjectionsSpec& val) {
 __isset.projectionSpec = true;
 }
 
+void GetTablesRequest::__set_tablesPattern(const std::string& val) {
+  this->tablesPattern = val;
+__isset.tablesPattern = true;
+}
+
 uint32_t GetTablesRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -27902,6 +27907,14 @@ uint32_t GetTablesRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->tablesPattern);
+          this->__isset.tablesPattern = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -27971,6 +27984,11 @@ uint32_t GetTablesRequest::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += this->projectionSpec.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.tablesPattern) {
+    xfer += oprot->writeFieldBegin("tablesPattern", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeString(this->tablesPattern);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -27985,6 +28003,7 @@ void swap(GetTablesRequest &a, GetTablesRequest &b) {
   swap(a.processorCapabilities, b.processorCapabilities);
   swap(a.processorIdentifier, b.processorIdentifier);
   swap(a.projectionSpec, b.projectionSpec);
+  swap(a.tablesPattern, b.tablesPattern);
   swap(a.__isset, b.__isset);
 }
 
@@ -27996,6 +28015,7 @@ GetTablesRequest::GetTablesRequest(const GetTablesRequest& other1102) {
   processorCapabilities = other1102.processorCapabilities;
   processorIdentifier = other1102.processorIdentifier;
   projectionSpec = other1102.projectionSpec;
+  tablesPattern = other1102.tablesPattern;
   __isset = other1102.__isset;
 }
 GetTablesRequest& GetTablesRequest::operator=(const GetTablesRequest& other1103) {
@@ -28006,6 +28026,7 @@ GetTablesRequest& GetTablesRequest::operator=(const GetTablesRequest& other1103)
   processorCapabilities = other1103.processorCapabilities;
   processorIdentifier = other1103.processorIdentifier;
   projectionSpec = other1103.projectionSpec;
+  tablesPattern = other1103.tablesPattern;
   __isset = other1103.__isset;
   return *this;
 }
@@ -28019,6 +28040,7 @@ void GetTablesRequest::printTo(std::ostream& out) const {
   out << ", " << "processorCapabilities="; (__isset.processorCapabilities ? (out << to_string(processorCapabilities)) : (out << "<null>"));
   out << ", " << "processorIdentifier="; (__isset.processorIdentifier ? (out << to_string(processorIdentifier)) : (out << "<null>"));
   out << ", " << "projectionSpec="; (__isset.projectionSpec ? (out << to_string(projectionSpec)) : (out << "<null>"));
+  out << ", " << "tablesPattern="; (__isset.tablesPattern ? (out << to_string(tablesPattern)) : (out << "<null>"));
   out << ")";
 }
 
