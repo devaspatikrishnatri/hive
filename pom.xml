@@ -178,7 +178,7 @@
     <jline.version>2.12</jline.version>
     <jms.version>2.0.2</jms.version>
     <joda.version>2.9.9</joda.version>
-    <jodd.version>3.5.2</jodd.version>
+    <jodd.version>6.0.0</jodd.version>
     <json.version>1.8</json.version>
     <junit.version>4.11</junit.version>
     <kafka.version>2.4.1.7.1.5.0-257</kafka.version>
