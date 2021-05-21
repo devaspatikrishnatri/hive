@@ -26,7 +26,7 @@ public class HiveCustomStorageHandlerUtils {
         StringBuilder properties = new StringBuilder();
         for(Map.Entry<String,String> serdeMap : tableProperties.entrySet()){
             if(!serdeMap.getKey().equalsIgnoreCase(serdeConstants.SERIALIZATION_FORMAT)) {
-                properties.append(serdeMap.getValue());
+                properties.append(serdeMap.getValue().replaceAll("\\s",""));
                 properties.append("/");
             }
         }
