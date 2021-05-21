@@ -73,6 +73,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static org.apache.hadoop.hive.conf.Constants.COMPACTOR_INTIATOR_THREAD_NAME_FORMAT;
+import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.isNoAutoCompactSet;
 
 /**
  * A class to initiate compactions.  This will run in a separate thread.
@@ -450,18 +451,6 @@ public class Initiator extends MetaStoreCompactorThread {
     }
   }
 
-  // Because TABLE_NO_AUTO_COMPACT was originally assumed to be NO_AUTO_COMPACT and then was moved
-  // to no_auto_compact, we need to check it in both cases.
-  private boolean noAutoCompactSet(Table t) {
-    String noAutoCompact =
-        t.getParameters().get(hive_metastoreConstants.TABLE_NO_AUTO_COMPACT);
-    if (noAutoCompact == null) {
-      noAutoCompact =
-          t.getParameters().get(hive_metastoreConstants.TABLE_NO_AUTO_COMPACT.toUpperCase());
-    }
-    return noAutoCompact != null && noAutoCompact.equalsIgnoreCase("true");
-  }
-
   // Check to see if this is a table level request on a partitioned table.  If so,
   // then it's a dynamic partitioning case and we shouldn't check the table itself.
   private static boolean checkDynPartitioning(Table t, CompactionInfo ci){
@@ -500,7 +489,7 @@ public class Initiator extends MetaStoreCompactorThread {
         return false;
       }
 
-      if (noAutoCompactSet(t)) {
+      if (isNoAutoCompactSet(t.getParameters())) {
         LOG.info("Table " + tableName(t) + " marked " + hive_metastoreConstants.TABLE_NO_AUTO_COMPACT +
             "=true so we will not compact it.");
         return false;
