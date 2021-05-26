@@ -18,6 +18,9 @@
 
 package org.apache.hive.jdbc;
 
+import static org.apache.hadoop.hive.conf.Constants.MODE;
+import static org.apache.hive.service.cli.operation.hplsql.HplSqlQueryExecutor.HPLSQL;
+
 import org.apache.hadoop.hive.metastore.security.DelegationTokenIdentifier;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.security.Credentials;
@@ -179,7 +182,7 @@ public class HiveConnection implements java.sql.Connection {
     // if zk is disabled or if HA service discovery is enabled we return the already populated params.
     // in HA mode, params is already populated with Active server host info.
     if (params.getZooKeeperEnsemble() == null ||
-      ZooKeeperHiveClientHelper.isZkHADynamicDiscoveryMode(params.getSessionVars())) {
+        ZooKeeperHiveClientHelper.isZkHADynamicDiscoveryMode(params.getSessionVars())) {
       return Collections.singletonList(params);
     }
     return ZooKeeperHiveClientHelper.getDirectParamsList(params);
@@ -489,11 +492,11 @@ public class HiveConnection implements java.sql.Connection {
 
   private CloseableHttpClient getHttpClient(Boolean useSsl) throws SQLException {
     boolean isCookieEnabled = sessConfMap.get(JdbcConnectionParams.COOKIE_AUTH) == null ||
-      (!JdbcConnectionParams.COOKIE_AUTH_FALSE.equalsIgnoreCase(
-      sessConfMap.get(JdbcConnectionParams.COOKIE_AUTH)));
+        (!JdbcConnectionParams.COOKIE_AUTH_FALSE.equalsIgnoreCase(
+            sessConfMap.get(JdbcConnectionParams.COOKIE_AUTH)));
     String cookieName = sessConfMap.get(JdbcConnectionParams.COOKIE_NAME) == null ?
-      JdbcConnectionParams.DEFAULT_COOKIE_NAMES_HS2 :
-      sessConfMap.get(JdbcConnectionParams.COOKIE_NAME);
+        JdbcConnectionParams.DEFAULT_COOKIE_NAMES_HS2 :
+        sessConfMap.get(JdbcConnectionParams.COOKIE_NAME);
     CookieStore cookieStore = isCookieEnabled ? new BasicCookieStore() : null;
     HttpClientBuilder httpClientBuilder;
     // Request interceptor for any request pre-processing logic
@@ -506,11 +509,11 @@ public class HiveConnection implements java.sql.Connection {
       String key = entry.getKey();
       if (key.startsWith(JdbcConnectionParams.HTTP_HEADER_PREFIX)) {
         additionalHttpHeaders.put(key.substring(JdbcConnectionParams.HTTP_HEADER_PREFIX.length()),
-          entry.getValue());
+            entry.getValue());
       }
       if (key.startsWith(JdbcConnectionParams.HTTP_COOKIE_PREFIX)) {
         customCookies.put(key.substring(JdbcConnectionParams.HTTP_COOKIE_PREFIX.length()),
-          entry.getValue());
+            entry.getValue());
       }
     }
     // Configure http client for kerberos/password based authentication
@@ -540,10 +543,10 @@ public class HiveConnection implements java.sql.Connection {
         requestInterceptor = new HttpTokenAuthInterceptor(tokenStr, cookieStore, cookieName, useSsl,
             additionalHttpHeaders, customCookies);
       } else {
-      /**
-       * Add an interceptor to pass username/password in the header.
-       * In https mode, the entire information is encrypted
-       */
+        /**
+         * Add an interceptor to pass username/password in the header.
+         * In https mode, the entire information is encrypted
+         */
         requestInterceptor = new HttpBasicAuthInterceptor(getUserName(), getPassword(), cookieStore,
             cookieName, useSsl, additionalHttpHeaders, customCookies);
       }
@@ -593,16 +596,16 @@ public class HiveConnection implements java.sql.Connection {
       // This handler is mostly a copy of DefaultHttpRequestRetryHandler except it also retries some exceptions
       // which could be thrown in certain cases where idle timeout from intermediate proxy triggers a connection reset.
       private final List<Class<? extends IOException>> nonRetriableClasses = Arrays.asList(
-              InterruptedIOException.class,
-              UnknownHostException.class,
-              ConnectException.class,
-              SSLException.class);
+          InterruptedIOException.class,
+          UnknownHostException.class,
+          ConnectException.class,
+          SSLException.class);
       // socket exceptions could happen because of timeout, broken pipe or server not responding in which case it is
       // better to reopen the connection and retry if user specified maxRetries
       private final List<Class<? extends IOException>> retriableClasses = Arrays.asList(
-              SocketTimeoutException.class,
-              SocketException.class,
-              NoHttpResponseException.class
+          SocketTimeoutException.class,
+          SocketException.class,
+          NoHttpResponseException.class
       );
 
       @Override
@@ -681,9 +684,9 @@ public class HiveConnection implements java.sql.Connection {
 
     // set the specified timeout (socketTimeout jdbc param) for http connection as well
     RequestConfig config = RequestConfig.custom()
-            .setConnectTimeout(loginTimeout * 1000)
-            .setConnectionRequestTimeout(loginTimeout * 1000)
-            .setSocketTimeout(loginTimeout * 1000).build();
+        .setConnectTimeout(loginTimeout * 1000)
+        .setConnectionRequestTimeout(loginTimeout * 1000)
+        .setSocketTimeout(loginTimeout * 1000).build();
     httpClientBuilder.setDefaultRequestConfig(config);
 
     // Configure http client for SSL
@@ -691,7 +694,7 @@ public class HiveConnection implements java.sql.Connection {
       String useTwoWaySSL = sessConfMap.get(JdbcConnectionParams.USE_TWO_WAY_SSL);
       String sslTrustStorePath = sessConfMap.get(JdbcConnectionParams.SSL_TRUST_STORE);
       String sslTrustStorePassword = sessConfMap.get(
-        JdbcConnectionParams.SSL_TRUST_STORE_PASSWORD);
+          JdbcConnectionParams.SSL_TRUST_STORE_PASSWORD);
       KeyStore sslTrustStore;
       SSLConnectionSocketFactory socketFactory;
       SSLContext sslContext;
@@ -753,18 +756,18 @@ public class HiveConnection implements java.sql.Connection {
       // get SSL socket
       String sslTrustStore = sessConfMap.get(JdbcConnectionParams.SSL_TRUST_STORE);
       String sslTrustStorePassword = sessConfMap.get(
-        JdbcConnectionParams.SSL_TRUST_STORE_PASSWORD);
+          JdbcConnectionParams.SSL_TRUST_STORE_PASSWORD);
 
       if (sslTrustStore == null || sslTrustStore.isEmpty()) {
         transport = HiveAuthUtils.getSSLSocket(host, port, loginTimeout, maxMessageSize);
       } else {
         String trustStoreType =
-                sessConfMap.get(JdbcConnectionParams.SSL_TRUST_STORE_TYPE);
+            sessConfMap.get(JdbcConnectionParams.SSL_TRUST_STORE_TYPE);
         if (trustStoreType == null) {
           trustStoreType = "";
         }
         String trustStoreAlgorithm =
-                sessConfMap.get(JdbcConnectionParams.SSL_TRUST_MANAGER_FACTORY_ALGORITHM);
+            sessConfMap.get(JdbcConnectionParams.SSL_TRUST_MANAGER_FACTORY_ALGORITHM);
         if (trustStoreAlgorithm == null) {
           trustStoreAlgorithm = "";
         }
@@ -835,11 +838,11 @@ public class HiveConnection implements java.sql.Connection {
         }
         if (tokenStr != null) {
           transport = KerberosSaslHelper.getTokenTransport(tokenStr,
-                  host, socketTransport, saslProps);
+              host, socketTransport, saslProps);
         } else if(sessConfMap.containsKey(JdbcConnectionParams.AUTH_PRINCIPAL)){
           transport = KerberosSaslHelper.getKerberosTransport(
-                  sessConfMap.get(JdbcConnectionParams.AUTH_PRINCIPAL), host,
-                  socketTransport, saslProps, assumeSubject);
+              sessConfMap.get(JdbcConnectionParams.AUTH_PRINCIPAL), host,
+              socketTransport, saslProps, assumeSubject);
         } else {
           // we are using PLAIN Sasl connection with user/password
           String userName = getUserName();
@@ -863,15 +866,15 @@ public class HiveConnection implements java.sql.Connection {
 
     try {
       KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(
-        JdbcConnectionParams.SUNX509_ALGORITHM_STRING,
-        JdbcConnectionParams.SUNJSSE_ALGORITHM_STRING);
+          JdbcConnectionParams.SUNX509_ALGORITHM_STRING,
+          JdbcConnectionParams.SUNJSSE_ALGORITHM_STRING);
       String keyStorePath = sessConfMap.get(JdbcConnectionParams.SSL_KEY_STORE);
       String keyStorePassword = sessConfMap.get(JdbcConnectionParams.SSL_KEY_STORE_PASSWORD);
       KeyStore sslKeyStore = KeyStore.getInstance(JdbcConnectionParams.SSL_KEY_STORE_TYPE);
 
       if (keyStorePath == null || keyStorePath.isEmpty()) {
         throw new IllegalArgumentException(JdbcConnectionParams.SSL_KEY_STORE
-        + " Not configured for 2 way SSL connection, keyStorePath param is empty");
+            + " Not configured for 2 way SSL connection, keyStorePath param is empty");
       }
       try (FileInputStream fis = new FileInputStream(keyStorePath)) {
         sslKeyStore.load(fis, keyStorePassword.toCharArray());
@@ -879,10 +882,10 @@ public class HiveConnection implements java.sql.Connection {
       keyManagerFactory.init(sslKeyStore, keyStorePassword.toCharArray());
 
       TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
-        JdbcConnectionParams.SUNX509_ALGORITHM_STRING);
+          JdbcConnectionParams.SUNX509_ALGORITHM_STRING);
       String trustStorePath = sessConfMap.get(JdbcConnectionParams.SSL_TRUST_STORE);
       String trustStorePassword = sessConfMap.get(
-        JdbcConnectionParams.SSL_TRUST_STORE_PASSWORD);
+          JdbcConnectionParams.SSL_TRUST_STORE_PASSWORD);
       String trustStoreType = sessConfMap.get(JdbcConnectionParams.SSL_TRUST_STORE_TYPE);
       if (trustStoreType == null || trustStoreType.isEmpty()) {
         trustStoreType = KeyStore.getDefaultType();
@@ -891,7 +894,7 @@ public class HiveConnection implements java.sql.Connection {
 
       if (trustStorePath == null || trustStorePath.isEmpty()) {
         throw new IllegalArgumentException(JdbcConnectionParams.SSL_TRUST_STORE
-        + " Not configured for 2 way SSL connection");
+            + " Not configured for 2 way SSL connection");
       }
       try (FileInputStream fis = new FileInputStream(trustStorePath)) {
         sslTrustStore.load(fis, trustStorePassword.toCharArray());
@@ -899,7 +902,7 @@ public class HiveConnection implements java.sql.Connection {
       trustManagerFactory.init(sslTrustStore);
       SSLContext context = SSLContext.getInstance("TLS");
       context.init(keyManagerFactory.getKeyManagers(),
-        trustManagerFactory.getTrustManagers(), new SecureRandom());
+          trustManagerFactory.getTrustManagers(), new SecureRandom());
       socketFactory = new SSLConnectionSocketFactory(context);
     } catch (Exception e) {
       throw new SQLException("Error while initializing 2 way ssl socket factory ", e);
@@ -918,7 +921,7 @@ public class HiveConnection implements java.sql.Connection {
       tokenStr = fetcher.getTokenStringFromFile();
     } catch (IOException e) {
       LOG.warn("Cannot get token from environment variable $HADOOP_TOKEN_FILE_LOCATION=" +
-              System.getenv(UserGroupInformation.HADOOP_TOKEN_FILE_LOCATION));
+          System.getenv(UserGroupInformation.HADOOP_TOKEN_FILE_LOCATION));
     }
     if (tokenStr == null) {
       try {
@@ -937,7 +940,7 @@ public class HiveConnection implements java.sql.Connection {
       }
       Credentials cred = new Credentials();
       try (DataInputStream dis = new DataInputStream(new FileInputStream(System.getenv(UserGroupInformation
-              .HADOOP_TOKEN_FILE_LOCATION)))) {
+          .HADOOP_TOKEN_FILE_LOCATION)))) {
         cred.readTokenStorageStream(dis);
       }
       return getTokenFromCredential(cred, "hive");
@@ -974,7 +977,7 @@ public class HiveConnection implements java.sql.Connection {
     openConf.put("use:database", connParams.getDbName());
     // set the fetchSize
     openConf.put("set:hiveconf:hive.server2.thrift.resultset.default.fetch.size",
-      Integer.toString(fetchSize));
+        Integer.toString(fetchSize));
     if (wmPool != null) {
       openConf.put("set:hivevar:wmpool", wmPool);
     }
@@ -992,6 +995,10 @@ public class HiveConnection implements java.sql.Connection {
     if (sessConfMap.containsKey(JdbcConnectionParams.CREATE_TABLE_AS_EXTERNAL)) {
       openConf.put("set:hiveconf:hive.create.as.external.legacy",
           sessConfMap.get(JdbcConnectionParams.CREATE_TABLE_AS_EXTERNAL).toLowerCase());
+    }
+
+    if (isHplSqlMode()) {
+      openConf.put("set:hivevar:mode", HPLSQL);
     }
 
     openReq.setConfiguration(openConf);
@@ -1015,7 +1022,7 @@ public class HiveConnection implements java.sql.Connection {
 
       // Update fetchSize if modified by server
       String serverFetchSize =
-        openResp.getConfiguration().get("hive.server2.thrift.resultset.default.fetch.size");
+          openResp.getConfiguration().get("hive.server2.thrift.resultset.default.fetch.size");
       if (serverFetchSize != null) {
         fetchSize = Integer.parseInt(serverFetchSize);
       }
@@ -1025,6 +1032,10 @@ public class HiveConnection implements java.sql.Connection {
           + jdbcUriString + ": " + e.getMessage(), " 08S01", e);
     }
     isClosed = false;
+  }
+
+  public boolean isHplSqlMode() {
+    return HPLSQL.equalsIgnoreCase(sessConfMap.getOrDefault(MODE, ""));
   }
 
   /**
@@ -1470,7 +1481,7 @@ public class HiveConnection implements java.sql.Connection {
     boolean rc = false;
     try {
       String productName = new HiveDatabaseMetaData(this, client, sessHandle)
-              .getDatabaseProductName();
+          .getDatabaseProductName();
       rc = true;
     } catch (SQLException e) {
       // IGNORE
@@ -1852,8 +1863,8 @@ public class HiveConnection implements java.sql.Connection {
       TCLIService.Iface client) {
     return (TCLIService.Iface) Proxy.newProxyInstance(
         HiveConnection.class.getClassLoader(),
-      new Class [] { TCLIService.Iface.class },
-      new SynchronizedHandler(client));
+        new Class [] { TCLIService.Iface.class },
+        new SynchronizedHandler(client));
   }
 
   private static class SynchronizedHandler implements InvocationHandler {

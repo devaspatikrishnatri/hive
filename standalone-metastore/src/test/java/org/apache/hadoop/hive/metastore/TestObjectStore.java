@@ -32,18 +32,24 @@ import org.apache.hadoop.hive.metastore.api.ColumnStatisticsObj;
 import org.apache.hadoop.hive.metastore.api.CreationMetadata;
 import org.apache.hadoop.hive.metastore.api.CurrentNotificationEventId;
 import org.apache.hadoop.hive.metastore.api.Database;
+import org.apache.hadoop.hive.metastore.api.AddPackageRequest;
+import org.apache.hadoop.hive.metastore.api.DropPackageRequest;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Function;
+import org.apache.hadoop.hive.metastore.api.GetPackageRequest;
 import org.apache.hadoop.hive.metastore.api.HiveObjectPrivilege;
 import org.apache.hadoop.hive.metastore.api.HiveObjectRef;
 import org.apache.hadoop.hive.metastore.api.InvalidInputException;
 import org.apache.hadoop.hive.metastore.api.InvalidObjectException;
+import org.apache.hadoop.hive.metastore.api.ListPackageRequest;
+import org.apache.hadoop.hive.metastore.api.ListStoredProcedureRequest;
 import org.apache.hadoop.hive.metastore.api.LongColumnStatsData;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.NotificationEvent;
 import org.apache.hadoop.hive.metastore.api.NotificationEventRequest;
 import org.apache.hadoop.hive.metastore.api.NotificationEventResponse;
+import org.apache.hadoop.hive.metastore.api.Package;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.PrincipalType;
 import org.apache.hadoop.hive.metastore.api.PrivilegeBag;
@@ -53,6 +59,7 @@ import org.apache.hadoop.hive.metastore.api.SQLForeignKey;
 import org.apache.hadoop.hive.metastore.api.SQLPrimaryKey;
 import org.apache.hadoop.hive.metastore.api.SerDeInfo;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
+import org.apache.hadoop.hive.metastore.api.StoredProcedure;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.client.builder.CatalogBuilder;
 import org.apache.hadoop.hive.metastore.client.builder.DatabaseBuilder;
@@ -377,7 +384,7 @@ public class TestObjectStore {
     List<Partition> partitions;
 
     try (AutoCloseable c = deadline()) {
-       partitions = objectStore.getPartitions(DEFAULT_CATALOG_NAME, DB1, TABLE1, 10);
+      partitions = objectStore.getPartitions(DEFAULT_CATALOG_NAME, DB1, TABLE1, 10);
     }
     Assert.assertEquals(2, partitions.size());
     Assert.assertEquals(111, partitions.get(0).getCreateTime());
@@ -432,10 +439,10 @@ public class TestObjectStore {
   @Test
   public void testConcurrentDropPartitions() throws MetaException, InvalidObjectException {
     Database db1 = new DatabaseBuilder()
-      .setName(DB1)
-      .setDescription("description")
-      .setLocation("locationurl")
-      .build(conf);
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf);
     objectStore.createDatabase(db1);
     StorageDescriptor sd = createFakeSd("location");
     HashMap<String, String> tableParams = new HashMap<>();
@@ -443,8 +450,8 @@ public class TestObjectStore {
     FieldSchema partitionKey1 = new FieldSchema("Country", ColumnType.STRING_TYPE_NAME, "");
     FieldSchema partitionKey2 = new FieldSchema("State", ColumnType.STRING_TYPE_NAME, "");
     Table tbl1 =
-      new Table(TABLE1, DB1, "owner", 1, 2, 3, sd, Arrays.asList(partitionKey1, partitionKey2),
-        tableParams, null, null, "MANAGED_TABLE");
+        new Table(TABLE1, DB1, "owner", 1, 2, 3, sd, Arrays.asList(partitionKey1, partitionKey2),
+            tableParams, null, null, "MANAGED_TABLE");
     objectStore.createTable(tbl1);
     HashMap<String, String> partitionParams = new HashMap<>();
     partitionParams.put("PARTITION_LEVEL_PRIVILEGE", "true");
@@ -465,18 +472,18 @@ public class TestObjectStore {
     ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
     for (int i = 0; i < numThreads; i++) {
       executorService.execute(
-        () -> {
-          ObjectStore threadObjectStore = new ObjectStore();
-          threadObjectStore.setConf(conf);
-          for (List<String> p : partNames) {
-            try {
-              threadObjectStore.dropPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, p);
-              System.out.println("Dropping partition: " + p.get(0));
-            } catch (Exception e) {
-              throw new RuntimeException(e);
-             }
+          () -> {
+            ObjectStore threadObjectStore = new ObjectStore();
+            threadObjectStore.setConf(conf);
+            for (List<String> p : partNames) {
+              try {
+                threadObjectStore.dropPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, p);
+                System.out.println("Dropping partition: " + p.get(0));
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            }
           }
-        }
       );
     }
 
@@ -609,8 +616,8 @@ public class TestObjectStore {
     List<List<ColumnStatistics>> stat;
     try (AutoCloseable c = deadline()) {
       stat = objectStore.getPartitionColumnStatistics(DEFAULT_CATALOG_NAME, DB1, TABLE1,
-              Arrays.asList("test_part_col=a0", "test_part_col=a1", "test_part_col=a2"),
-              Arrays.asList("test_part_col"));
+          Arrays.asList("test_part_col=a0", "test_part_col=a1", "test_part_col=a2"),
+          Arrays.asList("test_part_col"));
     }
 
     Assert.assertEquals(1, stat.size());
@@ -634,10 +641,10 @@ public class TestObjectStore {
   private void createPartitionedTable(boolean withPrivileges, boolean withStatistics)
       throws MetaException, InvalidObjectException, NoSuchObjectException, InvalidInputException {
     Database db1 = new DatabaseBuilder()
-                       .setName(DB1)
-                       .setDescription("description")
-                       .setLocation("locationurl")
-                       .build(conf);
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf);
     objectStore.createDatabase(db1);
     Table tbl1 =
         new TableBuilder()
@@ -656,14 +663,14 @@ public class TestObjectStore {
     // Create partitions for the partitioned table
     for(int i=0; i < 3; i++) {
       Partition part = new PartitionBuilder()
-                           .inTable(tbl1)
-                           .addValue("a" + i)
-                           .addSerdeParam("serdeParam", "serdeParamValue")
-                           .addStorageDescriptorParam("sdParam", "sdParamValue")
-                           .addBucketCol("test_bucket_col")
-                           .addSkewedColName("test_skewed_col")
-                           .addSortCol("test_sort_col", 1)
-                           .build(conf);
+          .inTable(tbl1)
+          .addValue("a" + i)
+          .addSerdeParam("serdeParam", "serdeParamValue")
+          .addStorageDescriptorParam("sdParam", "sdParamValue")
+          .addBucketCol("test_bucket_col")
+          .addSkewedColName("test_skewed_col")
+          .addSortCol("test_sort_col", 1)
+          .build(conf);
       objectStore.addPartition(part);
 
       if (withPrivileges) {
@@ -674,18 +681,18 @@ public class TestObjectStore {
             .setPrivilege("a")
             .build();
         HiveObjectPrivilege partitionPriv = new HiveObjectPrivilegeBuilder()
-                                                .setHiveObjectRef(partitionReference)
-                                                .setPrincipleName("a")
-                                                .setPrincipalType(PrincipalType.USER)
-                                                .setGrantInfo(privilegeGrantInfo)
-                                                .build();
+            .setHiveObjectRef(partitionReference)
+            .setPrincipleName("a")
+            .setPrincipalType(PrincipalType.USER)
+            .setGrantInfo(privilegeGrantInfo)
+            .build();
         privilegeBag.addToPrivileges(partitionPriv);
         HiveObjectPrivilege partitionColPriv = new HiveObjectPrivilegeBuilder()
-                                                   .setHiveObjectRef(partitionColumnReference)
-                                                   .setPrincipleName("a")
-                                                   .setPrincipalType(PrincipalType.USER)
-                                                   .setGrantInfo(privilegeGrantInfo)
-                                                   .build();
+            .setHiveObjectRef(partitionColumnReference)
+            .setPrincipleName("a")
+            .setPrincipalType(PrincipalType.USER)
+            .setGrantInfo(privilegeGrantInfo)
+            .build();
         privilegeBag.addToPrivileges(partitionColPriv);
       }
 
@@ -841,6 +848,12 @@ public class TestObjectStore {
       for (String catName : store.getCatalogs()) {
         List<String> dbs = store.getAllDatabases(catName);
         for (String db : dbs) {
+          for (String each : store.getAllStoredProcedures(new ListStoredProcedureRequest(catName))) {
+            store.dropStoredProcedure(catName, db, each);
+          }
+          for (String each : store.listPackages(new ListPackageRequest(catName))) {
+            store.dropPackage(new DropPackageRequest(catName, db, each));
+          }
           List<String> tbls = store.getAllTables(DEFAULT_CATALOG_NAME, db);
           for (String tbl : tbls) {
             Deadline.startTimer("getPartition");
@@ -1001,11 +1014,11 @@ public class TestObjectStore {
        Below are the properties that need to be set based on what database this test is going to be run
      */
 
-//    conf.setVar(HiveConf.ConfVars.METASTORE_CONNECTION_DRIVER, "com.mysql.jdbc.Driver");
-//    conf.setVar(HiveConf.ConfVars.METASTORECONNECTURLKEY,
-//        "jdbc:mysql://localhost:3306/metastore_db");
-//    conf.setVar(HiveConf.ConfVars.METASTORE_CONNECTION_USER_NAME, "");
-//    conf.setVar(HiveConf.ConfVars.METASTOREPWD, "");
+    //    conf.setVar(HiveConf.ConfVars.METASTORE_CONNECTION_DRIVER, "com.mysql.jdbc.Driver");
+    //    conf.setVar(HiveConf.ConfVars.METASTORECONNECTURLKEY,
+    //        "jdbc:mysql://localhost:3306/metastore_db");
+    //    conf.setVar(HiveConf.ConfVars.METASTORE_CONNECTION_USER_NAME, "");
+    //    conf.setVar(HiveConf.ConfVars.METASTOREPWD, "");
 
     /*
      we have to  add this one manually as for tests the db is initialized via the metastoreDiretSQL
@@ -1185,7 +1198,168 @@ public class TestObjectStore {
       future.get(120, TimeUnit.SECONDS);
     }
     Assert.assertEquals("Unexpected number of setConf calls", numIteration * numThreads,
-            counter.get());
+        counter.get());
+  }
+
+  @Test
+  public void testUpdateStoredProc() throws Exception {
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+
+    StoredProcedure input = new StoredProcedure();
+    input.setCatName("hive");
+    input.setSource("print 'Hello world'");
+    input.setOwnerName("user1");
+    input.setName("toBeUpdated");
+    input.setDbName(DB1);
+    objectStore.createOrUpdateStoredProcedure(input);
+    input.setSource("print 'Hello world2'");
+    objectStore.createOrUpdateStoredProcedure(input);
+
+    StoredProcedure retrieved = objectStore.getStoredProcedure("hive", DB1, "toBeUpdated");
+    Assert.assertEquals(input, retrieved);
+  }
+
+  @Test
+  public void testStoredProcSaveAndRetrieve() throws Exception {
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+
+    StoredProcedure input = new StoredProcedure();
+    input.setSource("print 'Hello world'");
+    input.setCatName("hive");
+    input.setOwnerName("user1");
+    input.setName("greetings");
+    input.setDbName(DB1);
+
+    objectStore.createOrUpdateStoredProcedure(input);
+    StoredProcedure retrieved = objectStore.getStoredProcedure("hive", DB1, "greetings");
+
+    Assert.assertEquals(input, retrieved);
+  }
+
+  @Test
+  public void testDropStoredProc() throws Exception {
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+
+    StoredProcedure toBeDeleted = new StoredProcedure();
+    toBeDeleted.setSource("print 'Hello world'");
+    toBeDeleted.setCatName("hive");
+    toBeDeleted.setOwnerName("user1");
+    toBeDeleted.setName("greetings");
+    toBeDeleted.setDbName(DB1);
+    objectStore.createOrUpdateStoredProcedure(toBeDeleted);
+    Assert.assertNotNull(objectStore.getStoredProcedure("hive", DB1, "greetings"));
+    objectStore.dropStoredProcedure("hive", DB1, "greetings");
+    Assert.assertNull(objectStore.getStoredProcedure("hive", DB1, "greetings"));
+  }
+
+  @Test
+  public void testListStoredProc() throws Exception {
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB2)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+
+    StoredProcedure proc1 = new StoredProcedure();
+    proc1.setSource("print 'Hello world'");
+    proc1.setCatName("hive");
+    proc1.setOwnerName("user1");
+    proc1.setName("proc1");
+    proc1.setDbName(DB1);
+    objectStore.createOrUpdateStoredProcedure(proc1);
+
+    StoredProcedure proc2 = new StoredProcedure();
+    proc2.setSource("print 'Hello world'");
+    proc2.setCatName("hive");
+    proc2.setOwnerName("user2");
+    proc2.setName("proc2");
+    proc2.setDbName(DB2);
+    objectStore.createOrUpdateStoredProcedure(proc2);
+
+    List<String> result = objectStore.getAllStoredProcedures(new ListStoredProcedureRequest("hive"));
+    Assert.assertEquals(2, result.size());
+    assertThat(result, hasItems("proc1", "proc2"));
+
+    ListStoredProcedureRequest req = new ListStoredProcedureRequest("hive");
+    req.setDbName(DB1);
+    result = objectStore.getAllStoredProcedures(req);
+    Assert.assertEquals(1, result.size());
+    assertThat(result, hasItems("proc1"));
+  }
+
+  @Test
+  public void testCreateAndFindPackage() throws Exception {
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+    AddPackageRequest pkg = new AddPackageRequest("hive", DB1, "pkg1", "user1", "src", "src");
+    objectStore.addPackage(pkg);
+    Package found = objectStore.findPackage(new GetPackageRequest("hive", DB1, "pkg1"));
+    Assert.assertEquals(pkg.getBody(), found.getBody());
+    Assert.assertEquals(pkg.getHeader(), found.getHeader());
+    Assert.assertEquals(pkg.getCatName(), found.getCatName());
+    Assert.assertEquals(pkg.getDbName(), found.getDbName());
+    Assert.assertEquals(pkg.getOwnerName(), found.getOwnerName());
+    Assert.assertEquals(pkg.getPackageName(), found.getPackageName());
+  }
+
+  @Test
+  public void testDropPackage() throws Exception {
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+    AddPackageRequest pkg = new AddPackageRequest("hive", DB1, "pkg1", "user1", "header", "body");
+    objectStore.addPackage(pkg);
+    Assert.assertNotNull(objectStore.findPackage(new GetPackageRequest("hive", DB1, "pkg1")));
+    objectStore.dropPackage(new DropPackageRequest("hive", DB1, "pkg1"));
+    Assert.assertNull(objectStore.findPackage(new GetPackageRequest("hive", DB1, "pkg1")));
+  }
+
+  @Test
+  public void testListPackage() throws Exception {
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+    objectStore.createDatabase(new DatabaseBuilder()
+        .setName(DB2)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf));
+    AddPackageRequest pkg1 = new AddPackageRequest("hive", DB1, "pkg1", "user1", "header1", "body1");
+    AddPackageRequest pkg2 = new AddPackageRequest("hive", DB2, "pkg2", "user1", "header2", "body2");
+    objectStore.addPackage(pkg1);
+    objectStore.addPackage(pkg2);
+    List<String> result = objectStore.listPackages(new ListPackageRequest("hive"));
+    assertThat(result, hasItems("pkg1", "pkg2"));
+    Assert.assertEquals(2, result.size());
+    ListPackageRequest req = new ListPackageRequest("hive");
+    req.setDbName(DB1);
+    result = objectStore.listPackages(req);
+    assertThat(result, hasItems("pkg1"));
+    Assert.assertEquals(1, result.size());
   }
 
   private void createTestCatalog(String catName) throws MetaException {
@@ -1199,16 +1373,16 @@ public class TestObjectStore {
   @Test
   public void testUpdateCreationMetadataSetsMaterializationTime() throws Exception {
     Database db1 = new DatabaseBuilder()
-            .setName(DB1)
-            .setDescription("description")
-            .setLocation("locationurl")
-            .build(conf);
+        .setName(DB1)
+        .setDescription("description")
+        .setLocation("locationurl")
+        .build(conf);
     objectStore.createDatabase(db1);
 
     StorageDescriptor sd1 =
-            new StorageDescriptor(ImmutableList.of(new FieldSchema("pk_col", "double", null)),
-                    "location", null, null, false, 0, new SerDeInfo("SerDeName", "serializationLib", null),
-                    null, null, null);
+        new StorageDescriptor(ImmutableList.of(new FieldSchema("pk_col", "double", null)),
+            "location", null, null, false, 0, new SerDeInfo("SerDeName", "serializationLib", null),
+            null, null, null);
     HashMap<String, String> params = new HashMap<>();
     params.put("EXTERNAL", "false");
     Table tbl1 = new Table(TABLE1, DB1, "owner", 1, 2, 3, sd1, null, params, null, null, "MANAGED_TABLE");
@@ -1227,7 +1401,7 @@ public class TestObjectStore {
     objectStore.createTable(matView1);
 
     CreationMetadata newCreationMetadata = new CreationMetadata(matView1.getCatName(), matView1.getDbName(),
-            matView1.getTableName(), ImmutableSet.copyOf(creationMetadata.getTablesUsed()));
+        matView1.getTableName(), ImmutableSet.copyOf(creationMetadata.getTablesUsed()));
     objectStore.updateCreationMetadata(matView1.getCatName(), matView1.getDbName(), matView1.getTableName(), newCreationMetadata);
 
     assertThat(creationMetadata.getMaterializationTime(), is(not(0)));

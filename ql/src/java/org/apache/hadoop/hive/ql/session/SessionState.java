@@ -269,6 +269,8 @@ public class SessionState {
 
   private final String userName;
 
+  private final Map<Class, Object> dynamicVars = new HashMap<>();
+
   /**
    *  scratch path to use for all non-local (ie. hdfs) file system tmp folders
    *  @return Path for Scratch path for the current session
@@ -1859,6 +1861,12 @@ public class SessionState {
       }
     }
     progressMonitor = null;
+    for (Object each : dynamicVars.values()) {
+      if (each instanceof Closeable) {
+        ((Closeable)each).close();
+      }
+    }
+    dynamicVars.clear();
   }
 
   private void unCacheDataNucleusClassLoaders() {
@@ -2004,6 +2012,15 @@ public class SessionState {
 
   public void setSparkSession(SparkSession sparkSession) {
     this.sparkSession = sparkSession;
+  }
+
+  public void addDynamicVar(Object object) {
+    dynamicVars.put(object.getClass(), object);
+  }
+
+  public <T> T getDynamicVar(Class<T> clazz) {
+    Object value = dynamicVars.get(clazz);
+    return value == null ? null : clazz.cast(value);
   }
 
   /**

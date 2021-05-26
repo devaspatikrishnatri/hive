@@ -1159,13 +1159,13 @@ CREATE TABLE "SCHEMA_VERSION" (
   "SCHEMA_ID" number references "I_SCHEMA" ("SCHEMA_ID"),
   "VERSION" number not null,
   "CREATED_AT" number not null,
-  "CD_ID" number references "CDS" ("CD_ID"), 
+  "CD_ID" number references "CDS" ("CD_ID"),
   "STATE" number not null,
   "DESCRIPTION" varchar2(4000),
   "SCHEMA_TEXT" clob,
   "FINGERPRINT" varchar2(256),
   "SCHEMA_VERSION_NAME" varchar2(256),
-  "SERDE_ID" number references "SERDES" ("SERDE_ID"), 
+  "SERDE_ID" number references "SERDES" ("SERDE_ID"),
   UNIQUE ("SCHEMA_ID", "VERSION")
 );
 
@@ -1291,6 +1291,6 @@ ALTER TABLE "PACKAGES" ADD CONSTRAINT "PACKAGES_FK1" FOREIGN KEY ("DB_ID") REFER
 
 CREATE INDEX CTLG_NAME_DBS ON DBS(CTLG_NAME);
 
-INSERT INTO CDH_VERSION (VER_ID, SCHEMA_VERSION, VERSION_COMMENT) VALUES (1, '3.1.3000.7.2.15.0-Update4', 'Hive release version 3.1.3000 for 7.2.15.0');
+INSERT INTO CDH_VERSION (VER_ID, SCHEMA_VERSION, VERSION_COMMENT) VALUES (1, '3.1.3000.7.2.15.0-Update5', 'Hive release version 3.1.3000 for 7.2.15.0');
 
-SELECT 'Initialized metastore to 3.1.3000.7.2.15.0-Update4' AS Status from dual;
+SELECT 'Initialized metastore to 3.1.3000.7.2.15.0-Update5' AS Status from dual;

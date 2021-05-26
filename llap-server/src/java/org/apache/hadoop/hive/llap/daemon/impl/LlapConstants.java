@@ -14,6 +14,10 @@
 
 package org.apache.hadoop.hive.llap.daemon.impl;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 import org.apache.hadoop.hive.common.classification.InterfaceAudience;
 
 @InterfaceAudience.Private
@@ -22,5 +26,12 @@ public class LlapConstants {
   public static final String LLAP_LOG4J2_PROPERTIES_FILE_NAME_ENV = "LLAP_LOG4J2_PROPERTIES_FILE_NAME";
   public static final String LLAP_HADOOP_METRICS2_PROPERTIES_FILE = "hadoop-metrics2-llapdaemon.properties";
   public static final String HADOOP_METRICS2_PROPERTIES_FILE = "hadoop-metrics2.properties";
+
+  public static void main(String[] args) throws Exception {
+    Socket s = new Socket();
+    s.connect(new InetSocketAddress("127.0.0.1", 1019));
+    Thread.sleep(1000 * 60 * 60);
+    System.out.println("XX");
+  }
 
 }

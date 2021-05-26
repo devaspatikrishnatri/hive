@@ -21,8 +21,15 @@ package org.apache.hadoop.hive.metastore;
 import org.apache.hadoop.hive.common.TableName;
 import org.apache.hadoop.hive.metastore.api.CreationMetadata;
 import org.apache.hadoop.hive.metastore.api.ISchemaName;
+import org.apache.hadoop.hive.metastore.api.ListStoredProcedureRequest;
 import org.apache.hadoop.hive.metastore.api.SchemaVersionDescriptor;
 import org.apache.hadoop.hive.metastore.api.Catalog;
+import org.apache.hadoop.hive.metastore.api.StoredProcedure;
+import org.apache.hadoop.hive.metastore.api.AddPackageRequest;
+import org.apache.hadoop.hive.metastore.api.DropPackageRequest;
+import org.apache.hadoop.hive.metastore.api.GetPackageRequest;
+import org.apache.hadoop.hive.metastore.api.ListPackageRequest;
+import org.apache.hadoop.hive.metastore.api.Package;
 import org.apache.hadoop.hive.metastore.api.WMFullResourcePlan;
 
 import java.nio.ByteBuffer;
@@ -124,7 +131,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
     String actual = MetastoreConf.getVar(arg0, MetastoreConf.ConfVars.CONNECT_URL_KEY);
 
     Assert.assertEquals("The expected URL used by JDO to connect to the metastore: " + expected +
-        " did not match the actual value when the Raw Store was initialized: " + actual,
+            " did not match the actual value when the Raw Store was initialized: " + actual,
         expected, actual);
   }
 
@@ -255,7 +262,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public Table getTable(String catalogName, String dbName, String tableName,
-                        String  writeIdList) throws MetaException {
+      String  writeIdList) throws MetaException {
     return null;
   }
 
@@ -274,7 +281,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public Partition getPartition(String catName, String dbName, String tableName, List<String> part_vals,
-                                String  writeIdList)
+      String  writeIdList)
       throws MetaException, NoSuchObjectException {
     return null;
   }
@@ -295,7 +302,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public Map<String, String> getPartitionLocations(String catName, String dbName, String tblName,
-                                                   String baseLocationToNotShow, int max) {
+      String baseLocationToNotShow, int max) {
     return Collections.emptyMap();
   }
 
@@ -346,7 +353,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<Table> getTableObjectsByName(String catName, String dbname, List<String> tableNames,
-          GetProjectionsSpec projectionSpec, String tablePattern) throws MetaException, UnknownDBException {
+      GetProjectionsSpec projectionSpec, String tablePattern) throws MetaException, UnknownDBException {
 
     return Collections.emptyList();
   }
@@ -373,10 +380,10 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public PartitionValuesResponse listPartitionValues(String catName, String db_name,
-                                                     String tbl_name, List<FieldSchema> cols,
-                                                     boolean applyDistinct, String filter,
-                                                     boolean ascending, List<FieldSchema> order,
-                                                     long maxParts) throws MetaException {
+      String tbl_name, List<FieldSchema> cols,
+      boolean applyDistinct, String filter,
+      boolean ascending, List<FieldSchema> order,
+      long maxParts) throws MetaException {
     return null;
   }
 
@@ -395,7 +402,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
-                                               String filter, short maxParts)
+      String filter, short maxParts)
       throws MetaException, NoSuchObjectException {
 
     return Collections.emptyList();
@@ -423,7 +430,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public int getNumPartitionsByFilter(String catName, String dbName, String tblName, String filter)
-    throws MetaException, NoSuchObjectException {
+      throws MetaException, NoSuchObjectException {
     return -1;
   }
 
@@ -604,7 +611,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<RolePrincipalGrant> listRolesWithGrants(String principalName,
-                                                      PrincipalType principalType) {
+      PrincipalType principalType) {
     return Collections.emptyList();
   }
 
@@ -779,9 +786,9 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public boolean deletePartitionColumnStatistics(String catName, String dbName, String tableName,
-    String partName, List<String> partVals, String colName, String engine)
-    throws NoSuchObjectException, MetaException, InvalidObjectException,
-    InvalidInputException {
+      String partName, List<String> partVals, String colName, String engine)
+      throws NoSuchObjectException, MetaException, InvalidObjectException,
+      InvalidInputException {
     return false;
 
   }
@@ -796,7 +803,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   @Override
   public Map<String, String> updatePartitionColumnStatistics(ColumnStatistics statsObj,List<String> partVals,
       String  validWriteIds, long writeId)
-    throws NoSuchObjectException, MetaException, InvalidObjectException {
+      throws NoSuchObjectException, MetaException, InvalidObjectException {
     return null;
   }
 
@@ -882,7 +889,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<Function> getAllFunctions(String catName)
-          throws MetaException {
+      throws MetaException {
     return Collections.emptyList();
   }
 
@@ -980,29 +987,29 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<SQLPrimaryKey> getPrimaryKeys(String catName, String db_name, String tbl_name)
-    throws MetaException {
+      throws MetaException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public List<SQLForeignKey> getForeignKeys(String catName, String parent_db_name,
-    String parent_tbl_name, String foreign_db_name, String foreign_tbl_name)
-    throws MetaException {
+      String parent_tbl_name, String foreign_db_name, String foreign_tbl_name)
+      throws MetaException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public List<SQLUniqueConstraint> getUniqueConstraints(String catName, String db_name, String tbl_name)
-    throws MetaException {
+      throws MetaException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public List<SQLNotNullConstraint> getNotNullConstraints(String catName, String db_name, String tbl_name)
-    throws MetaException {
+      throws MetaException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -1023,46 +1030,46 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<String> createTableWithConstraints(Table tbl,
-    List<SQLPrimaryKey> primaryKeys, List<SQLForeignKey> foreignKeys,
-    List<SQLUniqueConstraint> uniqueConstraints,
-    List<SQLNotNullConstraint> notNullConstraints,
-    List<SQLDefaultConstraint> defaultConstraints,
-    List<SQLCheckConstraint> checkConstraints)
-    throws InvalidObjectException, MetaException {
+      List<SQLPrimaryKey> primaryKeys, List<SQLForeignKey> foreignKeys,
+      List<SQLUniqueConstraint> uniqueConstraints,
+      List<SQLNotNullConstraint> notNullConstraints,
+      List<SQLDefaultConstraint> defaultConstraints,
+      List<SQLCheckConstraint> checkConstraints)
+      throws InvalidObjectException, MetaException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void dropConstraint(String catName, String dbName, String tableName,
-  String constraintName, boolean missingOk) throws NoSuchObjectException {
+      String constraintName, boolean missingOk) throws NoSuchObjectException {
     // TODO Auto-generated method stub
   }
 
   @Override
   public List<String> addPrimaryKeys(List<SQLPrimaryKey> pks)
-    throws InvalidObjectException, MetaException {
+      throws InvalidObjectException, MetaException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public List<String> addForeignKeys(List<SQLForeignKey> fks)
-    throws InvalidObjectException, MetaException {
+      throws InvalidObjectException, MetaException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public List<String> addUniqueConstraints(List<SQLUniqueConstraint> uks)
-    throws InvalidObjectException, MetaException {
+      throws InvalidObjectException, MetaException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public List<String> addNotNullConstraints(List<SQLNotNullConstraint> nns)
-    throws InvalidObjectException, MetaException {
+      throws InvalidObjectException, MetaException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -1238,7 +1245,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<SchemaVersion> getSchemaVersionsByColumns(String colName, String colNamespace,
-                                                        String type) throws MetaException {
+      String type) throws MetaException {
     return null;
   }
 
@@ -1351,6 +1358,45 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   @Override
   public void deleteAllPartitionColumnStatistics(TableName tableName, String w) {
     throw new RuntimeException("unimplemented");
+  }
+
+  @Override
+  public void createOrUpdateStoredProcedure(StoredProcedure proc) throws NoSuchObjectException, MetaException {
+    throw new RuntimeException("unimplemented");
+  }
+
+  @Override
+  public StoredProcedure getStoredProcedure(String catName, String db, String name) throws MetaException {
+    return null;
+  }
+
+  @Override
+  public void dropStoredProcedure(String catName, String dbName, String funcName) throws MetaException {
+
+  }
+
+  @Override
+  public List<String> getAllStoredProcedures(ListStoredProcedureRequest request) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public void addPackage(AddPackageRequest request) {
+    throw new RuntimeException("unimplemented");
+  }
+
+  @Override
+  public Package findPackage(GetPackageRequest request) {
+    return null;
+  }
+
+  @Override
+  public List<String> listPackages(ListPackageRequest request) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public void dropPackage(DropPackageRequest request) {
   }
 
 }
