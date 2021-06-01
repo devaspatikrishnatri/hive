@@ -47,7 +47,7 @@ public class TestSparkSessionManagerImpl {
   private SparkSessionManagerImpl sessionManagerHS2 = null;
   private boolean anyFailedSessionThread; // updated only when a thread has failed.
 
-
+  @Ignore ("CDPD-26637")
   /** Tests CLI scenario where we get a single session and use it multiple times. */
   @Test
   public void testSingleSessionMultipleUse() throws Exception {
@@ -67,6 +67,7 @@ public class TestSparkSessionManagerImpl {
     sessionManager.closeSession(sparkSession1);
   }
 
+  @Ignore ("CDPD-26637")
   /**
    * Tests multi-user scenario (like HiveServer2) where each user gets a session
    * and uses it multiple times.
@@ -107,6 +108,7 @@ public class TestSparkSessionManagerImpl {
     sessionManagerHS2.shutdown();
   }
 
+  @Ignore ("CDPD-26637")
   /**
    *  Test HIVE-16395 - by default we force cloning of Configurations for Spark jobs
    */
@@ -133,6 +135,7 @@ public class TestSparkSessionManagerImpl {
     checkSparkConf(conf, sparkCloneConfiguration, "true");
   }
 
+  @Ignore ("CDPD-26637")
   @Test
   public void testGetHiveException() throws Exception {
     HiveConf conf = new HiveConf();
