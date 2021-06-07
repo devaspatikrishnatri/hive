@@ -251,7 +251,9 @@ public class HiveStatement implements java.sql.Statement {
     closeClientOperation();
     client = null;
     if (resultSet != null) {
-      resultSet.close();
+      if (!resultSet.isClosed()){
+        resultSet.close();
+      }
       resultSet = null;
     }
     isClosed = true;
@@ -753,6 +755,11 @@ public class HiveStatement implements java.sql.Statement {
   }
 
   // JDK 1.7
+  public boolean isQueryClosed() throws SQLException {
+    return isQueryClosed;
+  }
+
+  @Override
   public boolean isCloseOnCompletion() throws SQLException {
     return closeOnResultSetCompletion;
   }
