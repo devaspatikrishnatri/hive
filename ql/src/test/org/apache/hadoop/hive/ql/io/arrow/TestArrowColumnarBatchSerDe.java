@@ -57,7 +57,6 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -323,7 +322,6 @@ public class TestArrowColumnarBatchSerDe {
     }
   }
 
-  @Ignore ("CDPD-26638")
   @Test
   public void testComprehensive() throws SerDeException {
     String[][] schema = {
