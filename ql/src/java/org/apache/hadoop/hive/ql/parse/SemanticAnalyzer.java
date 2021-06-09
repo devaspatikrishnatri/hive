@@ -152,6 +152,7 @@ import org.apache.hadoop.hive.ql.exec.SelectOperator;
 import org.apache.hadoop.hive.ql.exec.TableScanOperator;
 import org.apache.hadoop.hive.ql.exec.Task;
 import org.apache.hadoop.hive.ql.exec.TaskFactory;
+import org.apache.hadoop.hive.ql.exec.UDFArgumentException;
 import org.apache.hadoop.hive.ql.exec.UnionOperator;
 import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.exec.Utilities.ReduceField;
@@ -7157,7 +7158,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     }
   }
 
-  private ExprNodeDesc getCheckConstraintExpr(Table tbl, Operator input, RowResolver inputRR, String dest)
+  private ExprNodeDesc getCheckConstraintExpr(
+      Table tbl, RowResolver inputRR, boolean isUpdateStatement)
       throws SemanticException{
 
     CheckConstraint cc = null;
@@ -7175,9 +7177,9 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     // this will be used to replace column references in CHECK expression AST with corresponding column name
     // in input
     Map<String, String> col2Cols = new HashMap<>();
-    List<ColumnInfo> colInfos =  input.getSchema().getSignature();
+    List<ColumnInfo> colInfos =  inputRR.getColumnInfos();
     int colIdx = 0;
-    if(updating(dest)) {
+    if(isUpdateStatement) {
       // if this is an update we need to skip the first col since it is row id
       colIdx = 1;
     }
@@ -7269,28 +7271,41 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     }
 
     // if this is an insert into statement we might need to add constraint check
-    Table targetTable = null;
+    Table targetTable = getTargetTable(qb, dest);
+    RowResolver inputRR = opParseCtx.get(input).getRowResolver();
+    ExprNodeDesc enforceConstraintPredicate = genConstraintPredicate(targetTable, inputRR, updating(dest));
+    if (enforceConstraintPredicate != null) {
+      assert (input.getParentOperators().size() == 1);
+      Operator newConstraintFilter = putOpInsertMap(OperatorFactory.getAndMakeChild(
+          new FilterDesc(enforceConstraintPredicate, false), new RowSchema(
+              inputRR.getColumnInfos()), input), inputRR);
+
+      return newConstraintFilter;
+    }
+    return input;
+  }
+
+  protected Table getTargetTable(QB qb, String dest) throws SemanticException {
     Integer dest_type = qb.getMetaData().getDestTypeForAlias(dest);
-    if(dest_type == QBMetaData.DEST_TABLE) {
-      targetTable= qb.getMetaData().getDestTableForAlias(dest);
+    if (dest_type == QBMetaData.DEST_TABLE) {
+      return qb.getMetaData().getDestTableForAlias(dest);
 
-    }
-    else if(dest_type == QBMetaData.DEST_PARTITION){
+    } else if (dest_type == QBMetaData.DEST_PARTITION) {
       Partition dest_part = qb.getMetaData().getDestPartitionForAlias(dest);
-      targetTable = dest_part.getTable();
+      return dest_part.getTable();
 
-    }
-    else {
+    } else {
       throw new SemanticException("Generating constraint check plan: Invalid target type: " + dest);
     }
+  }
 
-    RowResolver inputRR = opParseCtx.get(input).getRowResolver();
-    ExprNodeDesc nullConstraintExpr = getNotNullConstraintExpr(targetTable, input, dest);
-    ExprNodeDesc checkConstraintExpr = getCheckConstraintExpr(targetTable, input, inputRR, dest);
+  protected ExprNodeDesc genConstraintPredicate(Table targetTable, RowResolver inputRR, boolean updateStatement)
+      throws SemanticException {
+    ExprNodeDesc nullConstraintExpr = getNotNullConstraintExpr(targetTable, inputRR, updateStatement);
+    ExprNodeDesc checkConstraintExpr = getCheckConstraintExpr(targetTable, inputRR, updateStatement);
 
     ExprNodeDesc combinedConstraintExpr = null;
     if(nullConstraintExpr != null && checkConstraintExpr != null) {
-      assert (input.getParentOperators().size() == 1);
       combinedConstraintExpr = TypeCheckProcFactory.DefaultExprProcessor.
           getFuncExprNodeDesc("and", nullConstraintExpr, checkConstraintExpr);
 
@@ -7303,18 +7318,14 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     }
 
     if (combinedConstraintExpr != null) {
-      ExprNodeDesc constraintUDF = TypeCheckProcFactory.DefaultExprProcessor.
+      return TypeCheckProcFactory.DefaultExprProcessor.
           getFuncExprNodeDesc("enforce_constraint", combinedConstraintExpr);
-      Operator newConstraintFilter = putOpInsertMap(OperatorFactory.getAndMakeChild(
-          new FilterDesc(constraintUDF, false), new RowSchema(
-              inputRR.getColumnInfos()), input), inputRR);
-
-      return newConstraintFilter;
     }
-    return input;
+    return null;
   }
 
-  private ExprNodeDesc getNotNullConstraintExpr(Table targetTable, Operator input, String dest) throws SemanticException {
+  private ExprNodeDesc getNotNullConstraintExpr(Table targetTable, RowResolver inputRR, boolean isUpdateStatement)
+      throws SemanticException {
     boolean forceNotNullConstraint = conf.getBoolVar(ConfVars.HIVE_ENFORCE_NOT_NULL_CONSTRAINT);
     if(!forceNotNullConstraint) {
       return null;
@@ -7334,13 +7345,13 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     if(nullConstraintBitSet ==  null) {
       return null;
     }
-    List<ColumnInfo> colInfos = input.getSchema().getSignature();
+    List<ColumnInfo> colInfos = inputRR.getColumnInfos();
 
     ExprNodeDesc currUDF = null;
     // Add NOT NULL constraints
     int constraintIdx = 0;
     for(int colExprIdx=0; colExprIdx < colInfos.size(); colExprIdx++) {
-      if(updating(dest) && colExprIdx == 0) {
+      if(isUpdateStatement && colExprIdx == 0) {
         // for updates first column is _rowid
         continue;
       }
@@ -15409,7 +15420,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     }
   }
 
-  private boolean updating(String destination) {
+  protected boolean updating(String destination) {
     return destination.startsWith(Context.DestClausePrefix.UPDATE.toString());
   }
 
