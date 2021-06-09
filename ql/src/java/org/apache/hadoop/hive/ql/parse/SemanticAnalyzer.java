@@ -7265,6 +7265,11 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       return input;
     }
 
+    if (updating(dest) && isCBOExecuted()) {
+      // for UPDATE statements CBO already added and pushed down the constraints
+      return input;
+    }
+
     //MERGE statements could have inserted a cardinality violation branch, we need to avoid that
     if(mergeCardinalityViolationBranch(input)){
       return input;
