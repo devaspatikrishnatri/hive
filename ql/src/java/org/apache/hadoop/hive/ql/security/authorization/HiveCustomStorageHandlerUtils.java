@@ -19,14 +19,16 @@ package org.apache.hadoop.hive.ql.security.authorization;
 
 import java.util.Map;
 import org.apache.hadoop.hive.serde.serdeConstants;
+import org.apache.hadoop.hive.common.StatsSetupConst;
 
 public class HiveCustomStorageHandlerUtils {
 
     public static String getTablePropsForCustomStorageHandler(Map<String, String> tableProperties){
         StringBuilder properties = new StringBuilder();
         for(Map.Entry<String,String> serdeMap : tableProperties.entrySet()){
-            if(!serdeMap.getKey().equalsIgnoreCase(serdeConstants.SERIALIZATION_FORMAT)) {
-                properties.append(serdeMap.getValue().replaceAll("\\s",""));
+            if(!serdeMap.getKey().equalsIgnoreCase(serdeConstants.SERIALIZATION_FORMAT) &&
+                    !serdeMap.getKey().equalsIgnoreCase(StatsSetupConst.COLUMN_STATS_ACCURATE)) {
+                properties.append(serdeMap.getValue().replaceAll("\\s","").replaceAll("\"",""));
                 properties.append("/");
             }
         }
