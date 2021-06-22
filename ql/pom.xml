@@ -30,6 +30,7 @@
     <reflections.version>0.9.10</reflections.version>
     <atlas.version>2.1.0.7.1.8.3-SNAPSHOT</atlas.version>
     <commons-configuration.version>1.10</commons-configuration.version>
+    <jetbrains-annotation.version>16.0.2</jetbrains-annotation.version>
   </properties>
 
   <dependencies>
@@ -769,6 +770,13 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>${jetbrains-annotation.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
