@@ -334,11 +334,16 @@ public class SessionState {
 
   private volatile long waitingTezSession;
 
+  private Hive hiveDb;
+
   public HiveConf getConf() {
     return sessionConf;
   }
 
   public void setConf(HiveConf conf) {
+    if (hiveDb != null) {
+      hiveDb.setConf(conf);
+    }
     this.sessionConf = conf;
   }
 
@@ -1848,7 +1853,10 @@ public class SessionState {
       unCacheDataNucleusClassLoaders();
     } finally {
       // removes the threadlocal variables, closes underlying HMS connection
-      Hive.closeCurrent();
+      if (hiveDb != null) {
+        hiveDb.close(true);
+        hiveDb = null;
+      }
     }
     progressMonitor = null;
   }
@@ -2129,6 +2137,18 @@ public class SessionState {
   public long getWaitingTezSession() {
     return this.waitingTezSession;
   }
+
+  public Hive getHiveDb() throws HiveException {
+    if (hiveDb == null) {
+      hiveDb = Hive.createHiveForSession(sessionConf);
+      // Need to setAllowClose to false. For legacy reasons, the Hive object is stored
+      // in thread local storage. If allowClose is true, the session can get closed when
+      // the thread goes away which is not desirable when the Hive object is used across
+      // different queries in the session.
+      hiveDb.setAllowClose(false);
+    }
+    return hiveDb;
+  }
 }
 
 class ResourceMaps {
@@ -2191,5 +2211,4 @@ class ResourceMaps {
     }
     return result;
   }
-
 }
