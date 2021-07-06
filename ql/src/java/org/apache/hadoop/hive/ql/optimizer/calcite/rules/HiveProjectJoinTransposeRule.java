@@ -29,6 +29,7 @@ import org.apache.calcite.rel.rules.ProjectJoinTransposeRule;
 import org.apache.calcite.rel.rules.PushProjector;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.hadoop.hive.ql.optimizer.calcite.HiveRelFactories;
 
@@ -56,7 +57,7 @@ public class HiveProjectJoinTransposeRule extends RelOptRule {
                 operand(RelNode.class, any()),
                 operand(RelNode.class, any()))),
         relBuilderFactory, "HiveProjectJoinTransposeRule");
-    this.preserveExprCondition = PushProjector.ExprCondition.TRUE;
+    this.preserveExprCondition = expr -> !(expr instanceof RexOver);
   }
 
   @Override
