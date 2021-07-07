@@ -96,9 +96,8 @@ public class TimestampParser {
    * Parse the input string and return a timestamp value
    * @param strValue
    * @return
-   * @throws IllegalArgumentException if input string cannot be parsed into timestamp
    */
-  public Timestamp parseTimestamp(String strValue) throws IllegalArgumentException {
+  public Timestamp parseTimestamp(String strValue) {
     if (fmt != null) {
       Optional<Timestamp> parsed = tryParseWithFormat(strValue);
       if (parsed.isPresent()) {
@@ -106,8 +105,11 @@ public class TimestampParser {
       }
     }
 
-    // Otherwise try default timestamp parsing
-    return TimestampUtils.stringToTimestamp(strValue);
+    try {
+      return TimestampUtils.stringToTimestamp(strValue);
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
   }
 
   private Optional<Timestamp> tryParseWithFormat(String strValue) {

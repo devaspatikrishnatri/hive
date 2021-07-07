@@ -19,6 +19,7 @@
 package org.apache.hive.common.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.apache.hadoop.hive.common.type.Timestamp;
@@ -44,12 +45,7 @@ public class TestTimestampParser {
 
   static void testInvalidCases(TimestampParser tp, String[] invalidCases) {
     for (String invalidString : invalidCases) {
-      try {
-        Timestamp ts = tp.parseTimestamp(invalidString);
-        fail("Expected exception parsing " + invalidString + ", but parsed value to " + ts);
-      } catch (IllegalArgumentException err) {
-        // Exception expected
-      }
+        assertNull(tp.parseTimestamp(invalidString));
     }
   }
 
@@ -83,6 +79,11 @@ public class TestTimestampParser {
 
     String[] invalidCases = {
         "12345",
+        "1945-12-45 23:59:59",
+        "1945-15-20 23:59:59",
+        "0000-00-00 00:00:00",
+        "",
+        "null",
     };
 
     testValidCases(tp, validCases);
