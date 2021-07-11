@@ -238,6 +238,8 @@ public class MetaStoreUtils {
       '!', '~', '#', '@', '`'
   };
 
+  public static final String NO_VAL = " --- ";
+
   /**
    * Catches exceptions that can't be handled and bundles them to MetaException
    *
@@ -2430,5 +2432,20 @@ public class MetaStoreUtils {
 
   public static TableName getTableNameFor(Table table) {
     return TableName.fromString(table.getTableName().toLowerCase(), table.getCatName().toLowerCase(), table.getDbName().toLowerCase());
+  }
+
+  public static String getHostFromId(String id) {
+    if (id == null) {
+      return NO_VAL;
+    }
+    int lastDash = id.lastIndexOf('-');
+    return id.substring(0, lastDash > -1 ? lastDash : id.length());
+  }
+
+  public static String getThreadIdFromId(String id) {
+    if (id == null) {
+      return NO_VAL;
+    }
+    return id.substring(id.lastIndexOf('-') + 1);
   }
 }
