@@ -133,6 +133,7 @@ public abstract class BaseSemanticAnalyzer {
   protected Context ctx;
   protected Map<String, String> idToTableNameMap;
   protected QueryProperties queryProperties;
+  ParseContext pCtx = null;
 
   /**
    * A set of FileSinkOperators being written to in an ACID compliant way.  We need to remember
@@ -1821,6 +1822,10 @@ public abstract class BaseSemanticAnalyzer {
   protected void executeUnparseTranlations() {
     UnparseTranslator unparseTranslator = new UnparseTranslator(conf);
     unparseTranslator.applyTranslations(ctx.getTokenRewriteStream());
+  }
+
+  public ParseContext getParseContext() {
+    return pCtx;
   }
 
 }
