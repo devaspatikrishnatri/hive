@@ -30,7 +30,6 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.Warehouse;
 import org.apache.hadoop.hive.metastore.api.hive_metastoreConstants;
 import org.apache.hadoop.hive.metastore.api.MetaException;
-import org.apache.hadoop.hive.metastore.TableType;
 import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.ErrorMsg;
 import org.apache.hadoop.hive.ql.QueryState;
@@ -69,7 +68,6 @@ import org.apache.hadoop.hive.ql.plan.FileSinkDesc;
 import org.apache.hadoop.hive.ql.plan.LoadFileDesc;
 import org.apache.hadoop.hive.ql.plan.LoadTableDesc;
 import org.apache.hadoop.hive.ql.plan.MoveWork;
-import org.apache.hadoop.hive.ql.plan.OperatorDesc;
 import org.apache.hadoop.hive.ql.plan.PlanUtils;
 import org.apache.hadoop.hive.ql.plan.StatsWork;
 import org.apache.hadoop.hive.ql.plan.TableDesc;
@@ -227,7 +225,7 @@ public abstract class TaskCompiler {
       // The idea here is to keep an object reference both in FileSink and in FetchTask for list of files
       // to be fetched. During Job close file sink will populate the list and fetch task later will use it
       // to fetch the results.
-      Collection<Operator<? extends OperatorDesc>> tableScanOps =
+      Collection<Operator<?>> tableScanOps =
           Lists.<Operator<?>>newArrayList(pCtx.getTopOps().values());
       Set<FileSinkOperator> fsOps = OperatorUtils.findOperators(tableScanOps, FileSinkOperator.class);
       if(fsOps != null && fsOps.size() == 1) {
