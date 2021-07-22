@@ -21,6 +21,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.FileUtils;
 import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hadoop.hive.metastore.HMSMetricsListener;
 import org.apache.hadoop.hive.metastore.api.GetOpenTxnsResponse;
 import org.apache.hadoop.hive.metastore.api.ShowCompactRequest;
 import org.apache.hadoop.hive.metastore.api.ShowCompactResponse;
@@ -599,5 +600,16 @@ public class TestTxnCommands3 extends TxnCommandsBaseForTests {
   private void assertTableIsEmpty(String table) throws Exception {
     Assert.assertEquals(TxnDbUtil.queryToString(hiveConf, "select * from " + table), 0,
         TxnDbUtil.countQueryAgent(hiveConf, "select count(*) from " + table));
+  }
+
+  @Test
+  public void testWritesToDisabledCompactionTableCtas() throws Exception {
+    MetastoreConf.setBoolVar(hiveConf, MetastoreConf.ConfVars.METRICS_ENABLED, true);
+    MetastoreConf.setVar(hiveConf, MetastoreConf.ConfVars.TRANSACTIONAL_EVENT_LISTENERS,
+        HMSMetricsListener.class.getName());
+
+    runStatementOnDriver("insert into " + Table.ACIDTBL + " values(1,1)");
+    runStatementOnDriver("create table mytable stored as orc tblproperties ('transactional'='true')"
+        + "as select * from " + Table.ACIDTBL);
   }
 }
