@@ -26,6 +26,7 @@ import org.apache.hadoop.hive.metastore.api.CommitTxnRequest;
 import org.apache.hadoop.hive.metastore.api.CompactionRequest;
 import org.apache.hadoop.hive.metastore.api.CompactionType;
 import org.apache.hadoop.hive.metastore.api.DataOperationType;
+import org.apache.hadoop.hive.metastore.api.FindNextCompactRequest;
 import org.apache.hadoop.hive.metastore.api.GetOpenTxnsResponse;
 import org.apache.hadoop.hive.metastore.api.LockComponent;
 import org.apache.hadoop.hive.metastore.api.LockLevel;
@@ -88,14 +89,14 @@ public class TestCompactionTxnHandler {
     rqst.setPartitionname("ds=today");
     txnHandler.compact(rqst);
     long now = System.currentTimeMillis();
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
     assertEquals("foo", ci.dbname);
     assertEquals("bar", ci.tableName);
     assertEquals("ds=today", ci.partName);
     assertEquals(CompactionType.MINOR, ci.type);
     assertNull(ci.runAs);
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
     ci.runAs = "bob";
     txnHandler.updateCompactorState(ci, openTxn());
 
@@ -125,7 +126,7 @@ public class TestCompactionTxnHandler {
 
     long now = System.currentTimeMillis();
     boolean expectToday = false;
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
     assertEquals("foo", ci.dbname);
     assertEquals("bar", ci.tableName);
@@ -134,7 +135,7 @@ public class TestCompactionTxnHandler {
     else fail("partition name should have been today or yesterday but was " + ci.partName);
     assertEquals(CompactionType.MINOR, ci.type);
 
-    ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
     assertEquals("foo", ci.dbname);
     assertEquals("bar", ci.tableName);
@@ -142,7 +143,7 @@ public class TestCompactionTxnHandler {
     else assertEquals("ds=yesterday", ci.partName);
     assertEquals(CompactionType.MINOR, ci.type);
 
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
 
     ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
     List<ShowCompactResponseElement> compacts = rsp.getCompacts();
@@ -156,7 +157,7 @@ public class TestCompactionTxnHandler {
 
   @Test
   public void testFindNextToCompactNothingToCompact() throws Exception {
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
   }
 
   @Test
@@ -164,11 +165,11 @@ public class TestCompactionTxnHandler {
     CompactionRequest rqst = new CompactionRequest("foo", "bar", CompactionType.MINOR);
     rqst.setPartitionname("ds=today");
     txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
 
     txnHandler.markCompacted(ci);
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
 
 
 
@@ -190,17 +191,17 @@ public class TestCompactionTxnHandler {
     rqst.setPartitionname("ds=today");
     txnHandler.compact(rqst);
     assertEquals(0, txnHandler.findReadyToClean().size());
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
 
     ci.highestWriteId = 41;
     txnHandler.updateCompactorState(ci, openTxn());
     txnHandler.markCompacted(ci);
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
 
     List<CompactionInfo> toClean = txnHandler.findReadyToClean();
     assertEquals(1, toClean.size());
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
 
     ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
     List<ShowCompactResponseElement> compacts = rsp.getCompacts();
@@ -220,19 +221,19 @@ public class TestCompactionTxnHandler {
     rqst.setPartitionname("ds=today");
     txnHandler.compact(rqst);
     assertEquals(0, txnHandler.findReadyToClean().size());
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
 
     ci.highestWriteId = 41;
     txnHandler.updateCompactorState(ci, openTxn());
     txnHandler.markCompacted(ci);
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
 
     List<CompactionInfo> toClean = txnHandler.findReadyToClean();
     assertEquals(1, toClean.size());
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
     txnHandler.markCleaned(ci);
-    assertNull(txnHandler.findNextToCompact("fred", WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION)));
     assertEquals(0, txnHandler.findReadyToClean().size());
 
     ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
@@ -271,13 +272,13 @@ public class TestCompactionTxnHandler {
     rqst.setPartitionname(partitionName);
     txnHandler.compact(rqst);
     assertEquals(0, txnHandler.findReadyToClean().size());
-    CompactionInfo ci = txnHandler.findNextToCompact(workerId, WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest(workerId, WORKER_VERSION));
     assertNotNull(ci);
 
     assertEquals(0, txnHandler.findReadyToClean().size());
     ci.errorMessage = errorMessage;
     txnHandler.markFailed(ci);
-    assertNull(txnHandler.findNextToCompact(workerId, WORKER_VERSION));
+    assertNull(txnHandler.findNextToCompact(new FindNextCompactRequest(workerId, WORKER_VERSION)));
     boolean failedCheck = txnHandler.checkFailedCompactions(ci);
     assertFalse(failedCheck);
     try {
@@ -337,7 +338,7 @@ public class TestCompactionTxnHandler {
     rqst = new CompactionRequest(dbName, tableName, type);
     rqst.setPartitionname(partitionName);
     txnHandler.compact(rqst);
-    ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
     ci.errorMessage = errorMessage;
     txnHandler.markFailed(ci);
@@ -351,7 +352,7 @@ public class TestCompactionTxnHandler {
       rqst.setPartitionname(partitionName);
     }
     txnHandler.compact(rqst);
-    ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
     txnHandler.markCleaned(ci);
   }
@@ -476,9 +477,9 @@ public class TestCompactionTxnHandler {
     txnHandler.compact(rqst);
     rqst = new CompactionRequest("foo", "bazzoo", CompactionType.MINOR);
     txnHandler.compact(rqst);
-    assertNotNull(txnHandler.findNextToCompact("fred-193892", WORKER_VERSION));
-    assertNotNull(txnHandler.findNextToCompact("bob-193892", WORKER_VERSION));
-    assertNotNull(txnHandler.findNextToCompact("fred-193893", WORKER_VERSION));
+    assertNotNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred-193892", WORKER_VERSION)));
+    assertNotNull(txnHandler.findNextToCompact(new FindNextCompactRequest("bob-193892", WORKER_VERSION)));
+    assertNotNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred-193893", WORKER_VERSION)));
     txnHandler.revokeFromLocalWorkers("fred");
 
     ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
@@ -507,9 +508,9 @@ public class TestCompactionTxnHandler {
     rqst = new CompactionRequest("foo", "baz", CompactionType.MINOR);
     txnHandler.compact(rqst);
 
-    assertNotNull(txnHandler.findNextToCompact("fred-193892", WORKER_VERSION));
+    assertNotNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred-193892", WORKER_VERSION)));
     Thread.sleep(200);
-    assertNotNull(txnHandler.findNextToCompact("fred-193892", WORKER_VERSION));
+    assertNotNull(txnHandler.findNextToCompact(new FindNextCompactRequest("fred-193892", WORKER_VERSION)));
     txnHandler.revokeTimedoutWorkers(100);
 
     ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
@@ -572,7 +573,7 @@ public class TestCompactionTxnHandler {
     //simulate prev failed compaction
     CompactionRequest rqst = new CompactionRequest("mydb", "mytable", CompactionType.MINOR);
     txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     txnHandler.markFailed(ci);
 
     potentials = txnHandler.findPotentialCompactions(100, -1, 1);
@@ -641,7 +642,7 @@ public class TestCompactionTxnHandler {
     CompactionRequest rqst = new CompactionRequest("mydb", "mytable", CompactionType.MAJOR);
     txnHandler.compact(rqst);
     assertEquals(0, txnHandler.findReadyToClean().size());
-    ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
 
     ci.highestWriteId = mytableWriteId;
@@ -663,7 +664,7 @@ public class TestCompactionTxnHandler {
     rqst.setPartitionname("bar");
     txnHandler.compact(rqst);
     assertEquals(0, txnHandler.findReadyToClean().size());
-    ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     assertNotNull(ci);
 
     ci.highestWriteId = fooWriteId;
@@ -744,7 +745,7 @@ public class TestCompactionTxnHandler {
     assertTrue(enqueueTime <= after);
     assertTrue(enqueueTime >= before);
 
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     txnHandler.markFailed(ci);
 
     checkEnqueueTime(enqueueTime);
@@ -767,7 +768,7 @@ public class TestCompactionTxnHandler {
     assertTrue(enqueueTime <= after);
     assertTrue(enqueueTime >= before);
 
-    CompactionInfo ci = txnHandler.findNextToCompact("fred", WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", WORKER_VERSION));
     ci.runAs = "bob";
     txnHandler.updateCompactorState(ci, openTxn());
     checkEnqueueTime(enqueueTime);
