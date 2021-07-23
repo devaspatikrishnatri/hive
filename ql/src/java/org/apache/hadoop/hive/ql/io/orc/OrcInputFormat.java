@@ -1777,7 +1777,7 @@ public class OrcInputFormat implements InputFormat<NullWritable, OrcStruct>,
 
         if (metricsEnabled && adi instanceof AcidDirectory) {
           DeltaFilesMetricReporter.mergeDeltaFilesStats((AcidDirectory) adi, checkThresholdInSec,
-              deltaPctThreshold, deltaFilesStats);
+              deltaPctThreshold, deltaFilesStats, conf);
         }
         // We have received a new directory information, make split strategies.
         --resultsLeft;
