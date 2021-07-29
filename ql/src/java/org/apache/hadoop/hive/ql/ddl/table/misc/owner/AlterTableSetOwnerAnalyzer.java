@@ -27,6 +27,8 @@ import org.apache.hadoop.hive.ql.ddl.DDLSemanticAnalyzerFactory.DDLType;
 import org.apache.hadoop.hive.ql.ddl.privilege.PrincipalDesc;
 import org.apache.hadoop.hive.ql.ddl.table.AbstractAlterTableAnalyzer;
 import org.apache.hadoop.hive.ql.exec.TaskFactory;
+import org.apache.hadoop.hive.ql.io.AcidUtils;
+import org.apache.hadoop.hive.ql.metadata.Table;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.HiveParser;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
@@ -55,6 +57,12 @@ public class AlterTableSetOwnerAnalyzer extends AbstractAlterTableAnalyzer {
     }
 
     AlterTableSetOwnerDesc desc  = new AlterTableSetOwnerDesc(tableName, ownerPrincipal);
+    Table table = getTable(tableName, true);
+    if (AcidUtils.isTransactionalTable(table)) {
+      setAcidDdlDesc(desc);
+    }
+
+    addInputsOutputsAlterTable(tableName, null, desc, desc.getType(), false);
     rootTasks.add(TaskFactory.get(new DDLWork(getInputs(), getOutputs(), desc), conf));
   }
 }
