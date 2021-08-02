@@ -21,6 +21,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.FileUtils;
 import org.apache.hadoop.hive.common.ValidTxnList;
 import org.apache.hadoop.hive.metastore.ReplChangeManager;
+import org.apache.hadoop.hive.metastore.api.NoSuchTxnException;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
 import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsRequest;
 import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsResponse;
@@ -180,21 +181,8 @@ public class Cleaner extends MetaStoreCompactorThread {
        * as well up to that point which may be higher than CQ_HIGHEST_WRITE_ID.  This could be
        * useful if there is all of a sudden a flood of aborted txns.  (For another day).
        */
-      List<String> tblNames = Collections.singletonList(
-          TxnUtils.getFullTableName(t.getDbName(), t.getTableName()));
-      GetValidWriteIdsRequest rqst = new GetValidWriteIdsRequest(tblNames);
-      rqst.setValidTxnList(validTxnList.writeToString());
-      GetValidWriteIdsResponse rsp = txnHandler.getValidWriteIds(rqst);
-      //we could have no write IDs for a table if it was never written to but
-      // since we are in the Cleaner phase of compactions, there must have
-      // been some delta/base dirs
-      assert rsp != null && rsp.getTblValidWriteIdsSize() == 1;
-      //Creating 'reader' list since we are interested in the set of 'obsolete' files
-      ValidReaderWriteIdList validWriteIdList =
-          TxnUtils.createValidReaderWriteIdList(rsp.getTblValidWriteIds().get(0));
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Cleaning based on writeIdList: " + validWriteIdList);
-      }
+      // Creating 'reader' list since we are interested in the set of 'obsolete' files
+      final ValidReaderWriteIdList validWriteIdList = getValidCleanerWriteIdList(ci, t, validTxnList);
 
       Ref<Boolean> removedFiles = Ref.from(false);
       if (runJobAsSelf(ci.runAs)) {
@@ -229,6 +217,31 @@ public class Cleaner extends MetaStoreCompactorThread {
       txnHandler.markFailed(ci);
     }
   }
+
+  private ValidReaderWriteIdList getValidCleanerWriteIdList(CompactionInfo ci, Table t, ValidTxnList validTxnList)
+      throws NoSuchTxnException, MetaException {
+    List<String> tblNames = Collections.singletonList(
+        TxnUtils.getFullTableName(t.getDbName(), t.getTableName()));
+    GetValidWriteIdsRequest request = new GetValidWriteIdsRequest(tblNames);
+    request.setValidTxnList(validTxnList.writeToString());
+    GetValidWriteIdsResponse rsp = txnHandler.getValidWriteIds(request);
+    // we could have no write IDs for a table if it was never written to but
+    // since we are in the Cleaner phase of compactions, there must have
+    // been some delta/base dirs
+    assert rsp != null && rsp.getTblValidWriteIdsSize() == 1;
+    ValidReaderWriteIdList validWriteIdList =
+        TxnUtils.createValidReaderWriteIdList(rsp.getTblValidWriteIds().get(0));
+    /*
+     * We need to filter the obsoletes dir list, to only remove directories that were made obsolete by this compaction
+     * If we have a higher retentionTime it is possible for a second compaction to run on the same partition. Cleaning up the first compaction
+     * should not touch the newer obsolete directories to not to violate the retentionTime for those.
+     */
+    if (ci.highestWriteId < validWriteIdList.getHighWatermark()) {
+      validWriteIdList = validWriteIdList.updateHighWatermark(ci.highestWriteId);
+    }
+    return validWriteIdList;
+  }
+
   private static String idWatermark(CompactionInfo ci) {
     return " id=" + ci.id;
   }

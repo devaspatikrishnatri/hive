@@ -19,13 +19,13 @@ package org.apache.hadoop.hive.ql.txn.compactor;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hadoop.hive.metastore.api.CommitTxnRequest;
 import org.apache.hadoop.hive.metastore.api.CompactionRequest;
 import org.apache.hadoop.hive.metastore.api.CompactionType;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.ShowCompactRequest;
 import org.apache.hadoop.hive.metastore.api.ShowCompactResponse;
 import org.apache.hadoop.hive.metastore.api.Table;
-import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
 import org.junit.After;
 import org.junit.Assert;
@@ -59,11 +59,7 @@ public class TestCleaner extends CompactorTest {
     burnThroughTransactions("default", "camtc", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "camtc", CompactionType.MAJOR);
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
-    txnHandler.markCompacted(ci);
+    compactInTxn(rqst);
 
     startCleaner();
 
@@ -92,11 +88,7 @@ public class TestCleaner extends CompactorTest {
 
     CompactionRequest rqst = new CompactionRequest("default", "campc", CompactionType.MAJOR);
     rqst.setPartitionname("ds=today");
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
-    txnHandler.markCompacted(ci);
+    compactInTxn(rqst);
 
     startCleaner();
 
@@ -123,11 +115,7 @@ public class TestCleaner extends CompactorTest {
     burnThroughTransactions("default", "camitc", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "camitc", CompactionType.MINOR);
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
-    txnHandler.markCompacted(ci);
+    compactInTxn(rqst);
 
     startCleaner();
 
@@ -163,11 +151,7 @@ public class TestCleaner extends CompactorTest {
 
     CompactionRequest rqst = new CompactionRequest("default", "camipc", CompactionType.MINOR);
     rqst.setPartitionname("ds=today");
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
-    txnHandler.markCompacted(ci);
+    compactInTxn(rqst);
 
     startCleaner();
 
@@ -202,11 +186,7 @@ public class TestCleaner extends CompactorTest {
 
     CompactionRequest rqst = new CompactionRequest("default", "campcnb", CompactionType.MAJOR);
     rqst.setPartitionname("ds=today");
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
-    txnHandler.markCompacted(ci);
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
+    compactInTxn(rqst);
 
     startCleaner();
 
@@ -232,11 +212,7 @@ public class TestCleaner extends CompactorTest {
     burnThroughTransactions("default", "dt", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "dt", CompactionType.MINOR);
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
-    txnHandler.markCompacted(ci);
+    compactInTxn(rqst);
 
     // Drop table will clean the table entry from the compaction queue and hence cleaner have no effect
     ms.dropTable("default", "dt");
@@ -261,11 +237,7 @@ public class TestCleaner extends CompactorTest {
 
     CompactionRequest rqst = new CompactionRequest("default", "dp", CompactionType.MAJOR);
     rqst.setPartitionname("ds=today");
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact("fred");
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
-    txnHandler.markCompacted(ci);
+    compactInTxn(rqst);
 
     // Drop partition will clean the partition entry from the compaction queue and hence cleaner have no effect
     ms.dropPartition("default", "dp", Collections.singletonList("today"), true);
@@ -282,7 +254,7 @@ public class TestCleaner extends CompactorTest {
     Table t = newTable("default", "camipc", true);
     List<Partition> partitions = new ArrayList<>();
     Partition p = null;
-    for(int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
       p = newPartition(t, "today" + i);
 
       addBaseFile(t, p, 20L, 20);
@@ -293,14 +265,10 @@ public class TestCleaner extends CompactorTest {
     }
 
     burnThroughTransactions("default", "camipc", 25);
-    for(int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
       CompactionRequest rqst = new CompactionRequest("default", "camipc", CompactionType.MINOR);
-      rqst.setPartitionname("ds=today"+i);
-      txnHandler.compact(rqst);
-      CompactionInfo ci = txnHandler.findNextToCompact("fred");
-      ci.runAs = System.getProperty("user.name");
-      txnHandler.updateCompactorState(ci, openTxn());
-      txnHandler.markCompacted(ci);
+      rqst.setPartitionname("ds=today" + i);
+      compactInTxn(rqst);
     }
 
     conf.setIntVar(HiveConf.ConfVars.HIVE_COMPACTOR_CLEANER_THREADS_NUM, 3);
@@ -328,6 +296,69 @@ public class TestCleaner extends CompactorTest {
       Assert.assertTrue(sawBase);
       Assert.assertTrue(sawDelta);
     }
+  }
+
+  @Test
+  public void testReadyForCleaningPileup() throws Exception {
+    String dbName = "default";
+    String tblName = "trfcp";
+    String partName = "ds=today";
+    Table t = newTable(dbName, tblName, true);
+    Partition p = newPartition(t, "today");
+
+    // block cleaner with an open txn
+    long blockingTxn = openTxn();
+
+    // minor compaction
+    addBaseFile(t, p, 20L, 20);
+    addDeltaFile(t, p, 21L, 21L, 1);
+    addDeltaFile(t, p, 22L, 22L, 1);
+    burnThroughTransactions(dbName, tblName, 22);
+    CompactionRequest rqst = new CompactionRequest(dbName, tblName, CompactionType.MINOR);
+    rqst.setPartitionname(partName);
+    compactInTxn(rqst);
+    addDeltaFile(t, p, 21, 22, 2);
+    startCleaner();
+
+    // make sure cleaner didn't remove anything, and cleaning is still queued
+    List<Path> paths = getDirectories(conf, t, p);
+    Assert.assertEquals("Expected 4 files after minor compaction, instead these files were present " + paths,
+        4, paths.size());
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals("Expected 1 compaction in queue, got: " + rsp.getCompacts(), 1, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.CLEANING_RESPONSE, rsp.getCompacts().get(0).getState());
+    Assert.assertEquals(CompactionType.MINOR, rsp.getCompacts().get(0).getType());
+
+    // major compaction
+    addDeltaFile(t, p, 23L, 23L, 1);
+    addDeltaFile(t, p, 24L, 24L, 1);
+    burnThroughTransactions(dbName, tblName, 2);
+    rqst = new CompactionRequest(dbName, tblName, CompactionType.MAJOR);
+    rqst.setPartitionname(partName);
+    compactInTxn(rqst);
+    addBaseFile(t, p, 24, 24);
+    startCleaner();
+
+    // make sure cleaner didn't remove anything, and 2 cleaning are still queued
+    paths = getDirectories(conf, t, p);
+    Assert.assertEquals("Expected 7 files after minor compaction, instead these files were present " + paths,
+        7, paths.size());
+    rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals("Expected 2 compactions in queue, got: " + rsp.getCompacts(), 2, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.CLEANING_RESPONSE, rsp.getCompacts().get(0).getState());
+    Assert.assertEquals(TxnStore.CLEANING_RESPONSE, rsp.getCompacts().get(1).getState());
+
+    // unblock the cleaner and run again
+    txnHandler.commitTxn(new CommitTxnRequest(blockingTxn));
+    startCleaner();
+
+    // make sure cleaner removed everything below base_24, and both compactions are successful
+    paths = getDirectories(conf, t, p);
+    Assert.assertEquals(1, paths.size());
+    rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals("Expected 2 compactions in queue, got: " + rsp.getCompacts(), 2, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(1).getState());
   }
 
   @Override

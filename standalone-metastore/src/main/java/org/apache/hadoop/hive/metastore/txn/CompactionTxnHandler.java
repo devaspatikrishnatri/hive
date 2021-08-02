@@ -287,7 +287,8 @@ class CompactionTxnHandler extends TxnHandler {
         stmt = dbConn.createStatement();
         String s = "SELECT \"CQ_ID\", \"CQ_DATABASE\", \"CQ_TABLE\", \"CQ_PARTITION\", "
                 + "\"CQ_TYPE\", \"CQ_RUN_AS\", \"CQ_HIGHEST_WRITE_ID\" FROM \"COMPACTION_QUEUE\" WHERE \"CQ_STATE\" = '"
-                + READY_FOR_CLEANING + "'";
+                + READY_FOR_CLEANING + "'"
+                + " ORDER BY \"CQ_HIGHEST_WRITE_ID\", \"CQ_ID\"";
         LOG.debug("Going to execute query <" + s + ">");
         rs = stmt.executeQuery(s);
         while (rs.next()) {
