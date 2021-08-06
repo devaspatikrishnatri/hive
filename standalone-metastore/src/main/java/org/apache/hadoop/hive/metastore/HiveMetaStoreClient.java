@@ -4111,6 +4111,12 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     return client.get_replication_metrics(replicationMetricsRequest);
   }
 
+  @Override
+  public List<WriteEventInfo> getAllWriteEventInfo(GetAllWriteEventInfoRequest request)
+      throws TException {
+    return client.get_all_write_event_info(request);
+  }
+
   /**
    * Builder for the GetProjectionsSpec. This is a projection specification for partitions returned from the HMS.
    */

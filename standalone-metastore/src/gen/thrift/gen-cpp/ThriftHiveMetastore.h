@@ -259,6 +259,7 @@ class ThriftHiveMetastoreIf : virtual public  ::facebook::fb303::FacebookService
   virtual void add_replication_metrics(const ReplicationMetricList& replicationMetricList) = 0;
   virtual void get_replication_metrics(ReplicationMetricList& _return, const GetReplicationMetricsRequest& rqst) = 0;
   virtual void get_open_txns_req(GetOpenTxnsResponse& _return, const GetOpenTxnsRequest& getOpenTxnsRequest) = 0;
+  virtual void get_all_write_event_info(std::vector<WriteEventInfo> & _return, const GetAllWriteEventInfoRequest& request) = 0;
 };
 
 class ThriftHiveMetastoreIfFactory : virtual public  ::facebook::fb303::FacebookServiceIfFactory {
@@ -1025,6 +1026,9 @@ class ThriftHiveMetastoreNull : virtual public ThriftHiveMetastoreIf , virtual p
     return;
   }
   void get_open_txns_req(GetOpenTxnsResponse& /* _return */, const GetOpenTxnsRequest& /* getOpenTxnsRequest */) {
+    return;
+  }
+  void get_all_write_event_info(std::vector<WriteEventInfo> & /* _return */, const GetAllWriteEventInfoRequest& /* request */) {
     return;
   }
 };
@@ -29740,6 +29744,118 @@ class ThriftHiveMetastore_get_open_txns_req_presult {
 
 };
 
+typedef struct _ThriftHiveMetastore_get_all_write_event_info_args__isset {
+  _ThriftHiveMetastore_get_all_write_event_info_args__isset() : request(false) {}
+  bool request :1;
+} _ThriftHiveMetastore_get_all_write_event_info_args__isset;
+
+class ThriftHiveMetastore_get_all_write_event_info_args {
+ public:
+
+  ThriftHiveMetastore_get_all_write_event_info_args(const ThriftHiveMetastore_get_all_write_event_info_args&);
+  ThriftHiveMetastore_get_all_write_event_info_args& operator=(const ThriftHiveMetastore_get_all_write_event_info_args&);
+  ThriftHiveMetastore_get_all_write_event_info_args() {
+  }
+
+  virtual ~ThriftHiveMetastore_get_all_write_event_info_args() throw();
+  GetAllWriteEventInfoRequest request;
+
+  _ThriftHiveMetastore_get_all_write_event_info_args__isset __isset;
+
+  void __set_request(const GetAllWriteEventInfoRequest& val);
+
+  bool operator == (const ThriftHiveMetastore_get_all_write_event_info_args & rhs) const
+  {
+    if (!(request == rhs.request))
+      return false;
+    return true;
+  }
+  bool operator != (const ThriftHiveMetastore_get_all_write_event_info_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ThriftHiveMetastore_get_all_write_event_info_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ThriftHiveMetastore_get_all_write_event_info_pargs {
+ public:
+
+
+  virtual ~ThriftHiveMetastore_get_all_write_event_info_pargs() throw();
+  const GetAllWriteEventInfoRequest* request;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ThriftHiveMetastore_get_all_write_event_info_result__isset {
+  _ThriftHiveMetastore_get_all_write_event_info_result__isset() : success(false), o1(false) {}
+  bool success :1;
+  bool o1 :1;
+} _ThriftHiveMetastore_get_all_write_event_info_result__isset;
+
+class ThriftHiveMetastore_get_all_write_event_info_result {
+ public:
+
+  ThriftHiveMetastore_get_all_write_event_info_result(const ThriftHiveMetastore_get_all_write_event_info_result&);
+  ThriftHiveMetastore_get_all_write_event_info_result& operator=(const ThriftHiveMetastore_get_all_write_event_info_result&);
+  ThriftHiveMetastore_get_all_write_event_info_result() {
+  }
+
+  virtual ~ThriftHiveMetastore_get_all_write_event_info_result() throw();
+  std::vector<WriteEventInfo>  success;
+  MetaException o1;
+
+  _ThriftHiveMetastore_get_all_write_event_info_result__isset __isset;
+
+  void __set_success(const std::vector<WriteEventInfo> & val);
+
+  void __set_o1(const MetaException& val);
+
+  bool operator == (const ThriftHiveMetastore_get_all_write_event_info_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(o1 == rhs.o1))
+      return false;
+    return true;
+  }
+  bool operator != (const ThriftHiveMetastore_get_all_write_event_info_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ThriftHiveMetastore_get_all_write_event_info_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ThriftHiveMetastore_get_all_write_event_info_presult__isset {
+  _ThriftHiveMetastore_get_all_write_event_info_presult__isset() : success(false), o1(false) {}
+  bool success :1;
+  bool o1 :1;
+} _ThriftHiveMetastore_get_all_write_event_info_presult__isset;
+
+class ThriftHiveMetastore_get_all_write_event_info_presult {
+ public:
+
+
+  virtual ~ThriftHiveMetastore_get_all_write_event_info_presult() throw();
+  std::vector<WriteEventInfo> * success;
+  MetaException o1;
+
+  _ThriftHiveMetastore_get_all_write_event_info_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class ThriftHiveMetastoreClient : virtual public ThriftHiveMetastoreIf, public  ::facebook::fb303::FacebookServiceClient {
  public:
   ThriftHiveMetastoreClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -30462,6 +30578,9 @@ class ThriftHiveMetastoreClient : virtual public ThriftHiveMetastoreIf, public  
   void get_open_txns_req(GetOpenTxnsResponse& _return, const GetOpenTxnsRequest& getOpenTxnsRequest);
   void send_get_open_txns_req(const GetOpenTxnsRequest& getOpenTxnsRequest);
   void recv_get_open_txns_req(GetOpenTxnsResponse& _return);
+  void get_all_write_event_info(std::vector<WriteEventInfo> & _return, const GetAllWriteEventInfoRequest& request);
+  void send_get_all_write_event_info(const GetAllWriteEventInfoRequest& request);
+  void recv_get_all_write_event_info(std::vector<WriteEventInfo> & _return);
 };
 
 class ThriftHiveMetastoreProcessor : public  ::facebook::fb303::FacebookServiceProcessor {
@@ -30709,6 +30828,7 @@ class ThriftHiveMetastoreProcessor : public  ::facebook::fb303::FacebookServiceP
   void process_add_replication_metrics(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_replication_metrics(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_open_txns_req(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_all_write_event_info(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   ThriftHiveMetastoreProcessor(boost::shared_ptr<ThriftHiveMetastoreIf> iface) :
      ::facebook::fb303::FacebookServiceProcessor(iface),
@@ -30950,6 +31070,7 @@ class ThriftHiveMetastoreProcessor : public  ::facebook::fb303::FacebookServiceP
     processMap_["add_replication_metrics"] = &ThriftHiveMetastoreProcessor::process_add_replication_metrics;
     processMap_["get_replication_metrics"] = &ThriftHiveMetastoreProcessor::process_get_replication_metrics;
     processMap_["get_open_txns_req"] = &ThriftHiveMetastoreProcessor::process_get_open_txns_req;
+    processMap_["get_all_write_event_info"] = &ThriftHiveMetastoreProcessor::process_get_all_write_event_info;
   }
 
   virtual ~ThriftHiveMetastoreProcessor() {}
@@ -33263,6 +33384,16 @@ class ThriftHiveMetastoreMultiface : virtual public ThriftHiveMetastoreIf, publi
     return;
   }
 
+  void get_all_write_event_info(std::vector<WriteEventInfo> & _return, const GetAllWriteEventInfoRequest& request) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_all_write_event_info(_return, request);
+    }
+    ifaces_[i]->get_all_write_event_info(_return, request);
+    return;
+  }
+
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -33990,6 +34121,9 @@ class ThriftHiveMetastoreConcurrentClient : virtual public ThriftHiveMetastoreIf
   void get_open_txns_req(GetOpenTxnsResponse& _return, const GetOpenTxnsRequest& getOpenTxnsRequest);
   int32_t send_get_open_txns_req(const GetOpenTxnsRequest& getOpenTxnsRequest);
   void recv_get_open_txns_req(GetOpenTxnsResponse& _return, const int32_t seqid);
+  void get_all_write_event_info(std::vector<WriteEventInfo> & _return, const GetAllWriteEventInfoRequest& request);
+  int32_t send_get_all_write_event_info(const GetAllWriteEventInfoRequest& request);
+  void recv_get_all_write_event_info(std::vector<WriteEventInfo> & _return, const int32_t seqid);
 };
 
 #ifdef _WIN32

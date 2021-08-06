@@ -261,6 +261,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  void add_replication_metrics(ReplicationMetricList replicationMetricList)')
   print('  ReplicationMetricList get_replication_metrics(GetReplicationMetricsRequest rqst)')
   print('  GetOpenTxnsResponse get_open_txns_req(GetOpenTxnsRequest getOpenTxnsRequest)')
+  print('   get_all_write_event_info(GetAllWriteEventInfoRequest request)')
   print('  string getName()')
   print('  string getVersion()')
   print('  fb_status getStatus()')
@@ -1751,6 +1752,12 @@ elif cmd == 'get_open_txns_req':
     print('get_open_txns_req requires 1 args')
     sys.exit(1)
   pp.pprint(client.get_open_txns_req(eval(args[0]),))
+
+elif cmd == 'get_all_write_event_info':
+  if len(args) != 1:
+    print('get_all_write_event_info requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.get_all_write_event_info(eval(args[0]),))
 
 elif cmd == 'getName':
   if len(args) != 0:

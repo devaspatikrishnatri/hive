@@ -3977,7 +3977,7 @@ public interface IMetaStoreClient {
    * @throws TException
    */
   void setHadoopJobid(String jobId, long cqId) throws MetaException, TException;
- 
+
   /**
    * Gets the version string of the metastore server which this client is connected to
    *
@@ -4035,6 +4035,12 @@ public interface IMetaStoreClient {
    * Partitions can be filtered by names, by values or by partition expressions.
    */
   GetPartitionsResponse getPartitionsWithSpecs(GetPartitionsRequest request) throws TException;
+
+  /**
+   * Get acid write events of a specific transaction.
+   * @throws TException
+   */
+  List<WriteEventInfo> getAllWriteEventInfo(GetAllWriteEventInfoRequest request) throws TException;
 
   /**
    * Returns the thrift client to the remote HMS server.

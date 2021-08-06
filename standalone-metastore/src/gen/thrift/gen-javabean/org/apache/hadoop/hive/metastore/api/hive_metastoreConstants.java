@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
   public static final String DDL_TIME = "transient_lastDdlTime";
 
-  public static final String HMS_API = "1.2.12";
+  public static final String HMS_API = "1.2.14";
 
   public static final byte ACCESSTYPE_NONE = (byte)1;
 
@@ -104,6 +104,6 @@ import org.slf4j.LoggerFactory;
 
   public static final String CTAS_LEGACY_CONFIG = "create_table_as_external";
 
-  public static final java.lang.String DEFAULT_TABLE_TYPE = "defaultTableType";
+  public static final String DEFAULT_TABLE_TYPE = "defaultTableType";
 
 }
