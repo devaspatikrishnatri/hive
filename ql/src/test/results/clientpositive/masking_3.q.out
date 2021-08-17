@@ -127,10 +127,10 @@ STAGE PLANS:
       Map Operator Tree:
           TableScan
             alias: masking_test_subq_n3
-            filterExpr: (key is not null and UDFToDouble(key) is not null) (type: boolean)
+            filterExpr: key is not null (type: boolean)
             Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
             Filter Operator
-              predicate: (key is not null and UDFToDouble(key) is not null) (type: boolean)
+              predicate: key is not null (type: boolean)
               Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
               Select Operator
                 expressions: key (type: int), value (type: string)
@@ -800,10 +800,10 @@ STAGE PLANS:
       Map Operator Tree:
           TableScan
             alias: masking_test_subq_n3
-            filterExpr: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+            filterExpr: (key > 0) (type: boolean)
             Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
             Filter Operator
-              predicate: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+              predicate: (key > 0) (type: boolean)
               Statistics: Num rows: 166 Data size: 1763 Basic stats: COMPLETE Column stats: NONE
               Select Operator
                 expressions: key (type: int), value (type: string)
@@ -1470,10 +1470,10 @@ STAGE PLANS:
       Map Operator Tree:
           TableScan
             alias: masking_test_subq_n3
-            filterExpr: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+            filterExpr: (key > 0) (type: boolean)
             Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
             Filter Operator
-              predicate: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+              predicate: (key > 0) (type: boolean)
               Statistics: Num rows: 166 Data size: 1763 Basic stats: COMPLETE Column stats: NONE
               Select Operator
                 expressions: key (type: int)
@@ -2139,10 +2139,10 @@ STAGE PLANS:
       Map Operator Tree:
           TableScan
             alias: masking_test_subq_n3
-            filterExpr: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+            filterExpr: (key > 0) (type: boolean)
             Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
             Filter Operator
-              predicate: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+              predicate: (key > 0) (type: boolean)
               Statistics: Num rows: 166 Data size: 1763 Basic stats: COMPLETE Column stats: NONE
               Select Operator
                 expressions: key (type: int), value (type: string)
@@ -7172,10 +7172,10 @@ STAGE PLANS:
       Map Operator Tree:
           TableScan
             alias: masking_test_subq_n3
-            filterExpr: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+            filterExpr: (key > 0) (type: boolean)
             Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
             Filter Operator
-              predicate: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+              predicate: (key > 0) (type: boolean)
               Statistics: Num rows: 166 Data size: 1763 Basic stats: COMPLETE Column stats: NONE
               Select Operator
                 expressions: key (type: int), value (type: string)
@@ -7842,10 +7842,10 @@ STAGE PLANS:
       Map Operator Tree:
           TableScan
             alias: masking_test_subq_n3
-            filterExpr: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+            filterExpr: (key > 0) (type: boolean)
             Statistics: Num rows: 500 Data size: 5312 Basic stats: COMPLETE Column stats: NONE
             Filter Operator
-              predicate: ((key > 0) and UDFToDouble(key) is not null) (type: boolean)
+              predicate: (key > 0) (type: boolean)
               Statistics: Num rows: 166 Data size: 1763 Basic stats: COMPLETE Column stats: NONE
               Select Operator
                 expressions: key (type: int), value (type: string)
