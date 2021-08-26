@@ -320,16 +320,18 @@ int _kQueryStateValues[] = {
   QueryState::EXECUTING,
   QueryState::FAILED,
   QueryState::FINISHED,
-  QueryState::TIMED_OUT
+  QueryState::TIMED_OUT,
+  QueryState::AUTO_DISABLED
 };
 const char* _kQueryStateNames[] = {
   "INITED",
   "EXECUTING",
   "FAILED",
   "FINISHED",
-  "TIMED_OUT"
+  "TIMED_OUT",
+  "AUTO_DISABLED"
 };
-const std::map<int, const char*> _QueryState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kQueryStateValues, _kQueryStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _QueryState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kQueryStateValues, _kQueryStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kPartitionFilterModeValues[] = {
   PartitionFilterMode::BY_NAMES,
