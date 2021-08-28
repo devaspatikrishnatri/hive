@@ -18084,6 +18084,10 @@ class AbortTxnRequest {
    * @var string
    */
   public $replPolicy = null;
+  /**
+   * @var int
+   */
+  public $txn_type = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -18096,6 +18100,10 @@ class AbortTxnRequest {
           'var' => 'replPolicy',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'txn_type',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -18104,6 +18112,9 @@ class AbortTxnRequest {
       }
       if (isset($vals['replPolicy'])) {
         $this->replPolicy = $vals['replPolicy'];
+      }
+      if (isset($vals['txn_type'])) {
+        $this->txn_type = $vals['txn_type'];
       }
     }
   }
@@ -18141,6 +18152,13 @@ class AbortTxnRequest {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->txn_type);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -18162,6 +18180,11 @@ class AbortTxnRequest {
     if ($this->replPolicy !== null) {
       $xfer += $output->writeFieldBegin('replPolicy', TType::STRING, 2);
       $xfer += $output->writeString($this->replPolicy);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->txn_type !== null) {
+      $xfer += $output->writeFieldBegin('txn_type', TType::I32, 3);
+      $xfer += $output->writeI32($this->txn_type);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -18826,6 +18849,10 @@ class CommitTxnRequest {
    * @var bool
    */
   public $exclWriteEnabled = true;
+  /**
+   * @var int
+   */
+  public $txn_type = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -18861,6 +18888,10 @@ class CommitTxnRequest {
           'var' => 'exclWriteEnabled',
           'type' => TType::BOOL,
           ),
+        7 => array(
+          'var' => 'txn_type',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -18881,6 +18912,9 @@ class CommitTxnRequest {
       }
       if (isset($vals['exclWriteEnabled'])) {
         $this->exclWriteEnabled = $vals['exclWriteEnabled'];
+      }
+      if (isset($vals['txn_type'])) {
+        $this->txn_type = $vals['txn_type'];
       }
     }
   }
@@ -18959,6 +18993,13 @@ class CommitTxnRequest {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 7:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->txn_type);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -19018,6 +19059,11 @@ class CommitTxnRequest {
     if ($this->exclWriteEnabled !== null) {
       $xfer += $output->writeFieldBegin('exclWriteEnabled', TType::BOOL, 6);
       $xfer += $output->writeBool($this->exclWriteEnabled);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->txn_type !== null) {
+      $xfer += $output->writeFieldBegin('txn_type', TType::I32, 7);
+      $xfer += $output->writeI32($this->txn_type);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -38876,7 +38922,7 @@ final class Constant extends \Thrift\Type\TConstant {
   }
 
   static protected function init_HMS_API() {
-    return "1.2.4";
+    return "1.2.8";
   }
 
   static protected function init_ACCESSTYPE_NONE() {

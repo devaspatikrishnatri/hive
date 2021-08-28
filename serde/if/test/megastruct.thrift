@@ -29,7 +29,7 @@ enum MyEnum {
   ALPACA = 2
 }
 
-struct MiniStruct {ReplicationSemanticAnalyzer
+struct MiniStruct {
   1: optional string my_string,
   2: optional MyEnum my_enum
 }

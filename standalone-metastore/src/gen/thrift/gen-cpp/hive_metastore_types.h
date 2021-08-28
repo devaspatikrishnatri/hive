@@ -7635,8 +7635,9 @@ inline std::ostream& operator<<(std::ostream& out, const OpenTxnsResponse& obj)
 }
 
 typedef struct _AbortTxnRequest__isset {
-  _AbortTxnRequest__isset() : replPolicy(false) {}
+  _AbortTxnRequest__isset() : replPolicy(false), txn_type(false) {}
   bool replPolicy :1;
+  bool txn_type :1;
 } _AbortTxnRequest__isset;
 
 class AbortTxnRequest {
@@ -7644,18 +7645,21 @@ class AbortTxnRequest {
 
   AbortTxnRequest(const AbortTxnRequest&);
   AbortTxnRequest& operator=(const AbortTxnRequest&);
-  AbortTxnRequest() : txnid(0), replPolicy() {
+  AbortTxnRequest() : txnid(0), replPolicy(), txn_type((TxnType::type)0) {
   }
 
   virtual ~AbortTxnRequest() throw();
   int64_t txnid;
   std::string replPolicy;
+  TxnType::type txn_type;
 
   _AbortTxnRequest__isset __isset;
 
   void __set_txnid(const int64_t val);
 
   void __set_replPolicy(const std::string& val);
+
+  void __set_txn_type(const TxnType::type val);
 
   bool operator == (const AbortTxnRequest & rhs) const
   {
@@ -7664,6 +7668,10 @@ class AbortTxnRequest {
     if (__isset.replPolicy != rhs.__isset.replPolicy)
       return false;
     else if (__isset.replPolicy && !(replPolicy == rhs.replPolicy))
+      return false;
+    if (__isset.txn_type != rhs.__isset.txn_type)
+      return false;
+    else if (__isset.txn_type && !(txn_type == rhs.txn_type))
       return false;
     return true;
   }
@@ -7936,12 +7944,13 @@ inline std::ostream& operator<<(std::ostream& out, const CommitTxnKeyValue& obj)
 }
 
 typedef struct _CommitTxnRequest__isset {
-  _CommitTxnRequest__isset() : replPolicy(false), writeEventInfos(false), replLastIdInfo(false), keyValue(false), exclWriteEnabled(true) {}
+  _CommitTxnRequest__isset() : replPolicy(false), writeEventInfos(false), replLastIdInfo(false), keyValue(false), exclWriteEnabled(true), txn_type(false) {}
   bool replPolicy :1;
   bool writeEventInfos :1;
   bool replLastIdInfo :1;
   bool keyValue :1;
   bool exclWriteEnabled :1;
+  bool txn_type :1;
 } _CommitTxnRequest__isset;
 
 class CommitTxnRequest {
@@ -7949,7 +7958,7 @@ class CommitTxnRequest {
 
   CommitTxnRequest(const CommitTxnRequest&);
   CommitTxnRequest& operator=(const CommitTxnRequest&);
-  CommitTxnRequest() : txnid(0), replPolicy(), exclWriteEnabled(true) {
+  CommitTxnRequest() : txnid(0), replPolicy(), exclWriteEnabled(true), txn_type((TxnType::type)0) {
   }
 
   virtual ~CommitTxnRequest() throw();
@@ -7959,6 +7968,7 @@ class CommitTxnRequest {
   ReplLastIdInfo replLastIdInfo;
   CommitTxnKeyValue keyValue;
   bool exclWriteEnabled;
+  TxnType::type txn_type;
 
   _CommitTxnRequest__isset __isset;
 
@@ -7973,6 +7983,8 @@ class CommitTxnRequest {
   void __set_keyValue(const CommitTxnKeyValue& val);
 
   void __set_exclWriteEnabled(const bool val);
+
+  void __set_txn_type(const TxnType::type val);
 
   bool operator == (const CommitTxnRequest & rhs) const
   {
@@ -7997,6 +8009,10 @@ class CommitTxnRequest {
     if (__isset.exclWriteEnabled != rhs.__isset.exclWriteEnabled)
       return false;
     else if (__isset.exclWriteEnabled && !(exclWriteEnabled == rhs.exclWriteEnabled))
+      return false;
+    if (__isset.txn_type != rhs.__isset.txn_type)
+      return false;
+    else if (__isset.txn_type && !(txn_type == rhs.txn_type))
       return false;
     return true;
   }

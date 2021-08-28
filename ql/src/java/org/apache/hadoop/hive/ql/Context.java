@@ -120,6 +120,8 @@ public class Context {
   // up when we are done.
   private final Set<Context> subContexts;
 
+  private String replPolicy;
+
   // List of Locks for this query
   protected List<HiveLock> hiveLocks;
 
@@ -313,6 +315,14 @@ public class Context {
 
   public Context(Configuration conf) throws IOException {
     this(conf, generateExecutionId());
+  }
+
+  public void setReplPolicy(String replPolicy) {
+    this.replPolicy = replPolicy;
+  }
+
+  public String getReplPolicy() {
+    return this.replPolicy;
   }
 
   /**
