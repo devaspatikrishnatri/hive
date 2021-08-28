@@ -23,7 +23,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.hive.cli.CliSessionState;
+import org.apache.hadoop.hive.common.repl.ReplConst;
 import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hadoop.hive.metastore.api.AbortTxnRequest;
 import org.apache.hadoop.hive.metastore.api.AbortTxnsRequest;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.messaging.json.gzip.GzipJSONMessageEncoder;
@@ -32,12 +34,15 @@ import org.apache.hadoop.hive.metastore.txn.TxnUtils;
 import org.apache.hadoop.hive.metastore.InjectableBehaviourObjectStore;
 import org.apache.hadoop.hive.metastore.InjectableBehaviourObjectStore.CallerArguments;
 import org.apache.hadoop.hive.metastore.InjectableBehaviourObjectStore.BehaviourInjection;
+import org.apache.hadoop.hive.metastore.utils.MetaStoreUtils;
 import org.apache.hadoop.hive.ql.DriverFactory;
 import org.apache.hadoop.hive.ql.ErrorMsg;
 import org.apache.hadoop.hive.ql.IDriver;
 import org.apache.hadoop.hive.ql.exec.repl.ReplAck;
 import org.apache.hadoop.hive.ql.exec.repl.ReplDumpWork;
 import org.apache.hadoop.hive.ql.exec.repl.util.ReplUtils;
+import org.apache.hadoop.hive.ql.metadata.HiveException;
+import org.apache.hadoop.hive.ql.metadata.HiveUtils;
 import org.apache.hadoop.hive.ql.processors.CommandProcessorException;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.shims.Utils;
@@ -137,6 +142,97 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     replica.run("drop database if exists " + replicatedDbName + " cascade");
     replicaNonAcid.run("drop database if exists " + replicatedDbName + " cascade");
     primary.run("drop database if exists " + primaryDbName + "_extra cascade");
+  }
+
+  @Test
+  public void testTargetDbReplIncompatibleWithNoPropSet() throws Throwable {
+    testTargetDbReplIncompatible(false);
+  }
+
+  @Test
+  public void testTargetDbReplIncompatibleWithPropSet() throws Throwable {
+    testTargetDbReplIncompatible(true);
+  }
+
+  private void testTargetDbReplIncompatible(boolean setReplIncompProp) throws Throwable {
+    HiveConf primaryConf = primary.getConf();
+    TxnStore txnHandler = TxnUtils.getTxnStore(primary.getConf());
+
+    primary.run("use " + primaryDbName)
+            .run("CREATE TABLE t1(a string) STORED AS TEXTFILE")
+            .dump(primaryDbName);
+    replica.load(replicatedDbName, primaryDbName);
+
+    if (setReplIncompProp) {
+      replica.run("ALTER DATABASE " + replicatedDbName +
+              " SET DBPROPERTIES('" + ReplConst.REPL_INCOMPATIBLE + "'='false')");
+      assert "false".equals(replica.getDatabase(replicatedDbName).getParameters().get(ReplConst.REPL_INCOMPATIBLE));
+    }
+
+    assertFalse(MetaStoreUtils.isDbReplIncompatible(replica.getDatabase(replicatedDbName)));
+
+    Long sourceTxnId = openTxns(1, txnHandler, primaryConf).get(0);
+    txnHandler.abortTxn(new AbortTxnRequest(sourceTxnId));
+
+    try {
+      sourceTxnId = openTxns(1, txnHandler, primaryConf).get(0);
+
+      primary.dump(primaryDbName);
+      replica.load(replicatedDbName, primaryDbName);
+      assertFalse(MetaStoreUtils.isDbReplIncompatible(replica.getDatabase(replicatedDbName)));
+
+      Long targetTxnId = txnHandler.getTargetTxnId(HiveUtils.getReplPolicy(replicatedDbName), sourceTxnId);
+      txnHandler.abortTxn(new AbortTxnRequest(targetTxnId));
+      assertTrue(MetaStoreUtils.isDbReplIncompatible(replica.getDatabase(replicatedDbName)));
+
+      WarehouseInstance.Tuple dumpData = primary.dump(primaryDbName);
+
+      assertFalse(ReplUtils.failedWithNonRecoverableError(new Path(dumpData.dumpLocation), conf));
+      replica.loadFailure(replicatedDbName, primaryDbName, null, ErrorMsg.REPL_INCOMPATIBLE_EXCEPTION.getErrorCode());
+      assertTrue(ReplUtils.failedWithNonRecoverableError(new Path(dumpData.dumpLocation), conf));
+
+      primary.dumpFailure(primaryDbName);
+      assertTrue(ReplUtils.failedWithNonRecoverableError(new Path(dumpData.dumpLocation), conf));
+    } finally {
+      txnHandler.abortTxn(new AbortTxnRequest(sourceTxnId));
+    }
+  }
+
+  @Test
+  public void testReplOperationsNotCapturedInNotificationLog() throws Throwable {
+    //Perform empty bootstrap dump and load
+    primary.dump(primaryDbName);
+    replica.run("REPL LOAD " + primaryDbName + " INTO " + replicatedDbName);
+    //Perform empty incremental dump and load so that all db level properties are altered.
+    primary.dump(primaryDbName);
+    replica.run("REPL LOAD " + primaryDbName + " INTO " + replicatedDbName);
+
+    long lastEventId = primary.getCurrentNotificationEventId().getEventId();
+    WarehouseInstance.Tuple incDump = primary.dump(primaryDbName);
+    assert primary.getNoOfEventsDumped(incDump.dumpLocation, conf) == 0;
+    long currentEventId = primary.getCurrentNotificationEventId().getEventId();
+    assert lastEventId == currentEventId;
+    lastEventId = replica.getCurrentNotificationEventId().getEventId();
+    replica.run("REPL LOAD " + primaryDbName + " INTO " + replicatedDbName);
+    currentEventId = replica.getCurrentNotificationEventId().getEventId();
+    //This iteration of repl load will have only one event i.e ALTER_DATABASE to update repl.last.id for the target db.
+    assert currentEventId == lastEventId + 1;
+
+    primary.run("ALTER DATABASE " + primaryDbName +
+            " SET DBPROPERTIES('" + ReplConst.TARGET_OF_REPLICATION + "'='true')");
+    lastEventId = primary.getCurrentNotificationEventId().getEventId();
+    primary.dumpFailure(primaryDbName);
+    currentEventId = primary.getCurrentNotificationEventId().getEventId();
+    assert lastEventId == currentEventId;
+
+    primary.run("ALTER DATABASE " + primaryDbName +
+            " SET DBPROPERTIES('" + ReplConst.TARGET_OF_REPLICATION + "'='')");
+    primary.dump(primaryDbName);
+    replica.run("DROP DATABASE " + replicatedDbName);
+    lastEventId = replica.getCurrentNotificationEventId().getEventId();
+    replica.loadFailure(replicatedDbName, primaryDbName);
+    currentEventId = replica.getCurrentNotificationEventId().getEventId();
+    assert lastEventId == currentEventId;
   }
 
   @Test
@@ -1094,8 +1190,9 @@ public class TestReplicationScenariosAcidTables extends BaseReplicationScenarios
     //End of additional steps
     try {
       replica.loadWithoutExplain("", "`*`");
-    } catch (SemanticException e) {
-      assertEquals("REPL LOAD * is not supported", e.getMessage());
+      fail();
+    } catch (HiveException e) {
+      assertEquals("MetaException(message:Database name cannot be null.)", e.getMessage());
     }
   }
 
