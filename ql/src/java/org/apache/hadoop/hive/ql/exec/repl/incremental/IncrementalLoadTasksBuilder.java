@@ -45,6 +45,7 @@ import org.apache.hadoop.hive.ql.parse.SemanticException;
 import org.apache.hadoop.hive.ql.parse.repl.DumpType;
 import org.apache.hadoop.hive.ql.parse.repl.ReplLogger;
 import org.apache.hadoop.hive.ql.parse.repl.load.DumpMetaData;
+import org.apache.hadoop.hive.ql.parse.repl.load.FailoverMetaData;
 import org.apache.hadoop.hive.ql.parse.repl.load.UpdatedMetaDataTracker;
 import org.apache.hadoop.hive.ql.parse.repl.load.log.IncrementalLoadLogger;
 import org.apache.hadoop.hive.ql.parse.repl.load.message.MessageHandler;
@@ -80,10 +81,11 @@ public class IncrementalLoadTasksBuilder {
   private final Long eventTo;
   private String dumpDirectory;
   private final ReplicationMetricCollector metricCollector;
+  private boolean shouldFailover;
 
   public IncrementalLoadTasksBuilder(String dbName, String loadPath, IncrementalLoadEventsIterator iterator,
-      HiveConf conf, Long eventTo, ReplicationMetricCollector metricCollector, ReplStatsTracker replStatsTracker)
-      throws SemanticException {
+      HiveConf conf, Long eventTo, ReplicationMetricCollector metricCollector, ReplStatsTracker replStatsTracker,
+                                     boolean shouldFailover) throws SemanticException {
     this.dbName = dbName;
     dumpDirectory = (new Path(loadPath).getParent()).toString();
     this.iterator = iterator;
@@ -98,7 +100,13 @@ public class IncrementalLoadTasksBuilder {
     this.metricCollector = metricCollector;
     Map<String, Long> metricMap = new HashMap<>();
     metricMap.put(ReplUtils.MetricName.EVENTS.name(), (long) iterator.getNumEvents());
-    this.metricCollector.reportStageStart("REPL_LOAD", metricMap);
+    this.shouldFailover = shouldFailover;
+    if (shouldFailover) {
+      this.metricCollector.reportFailoverStart("REPL_LOAD", metricMap,
+              new FailoverMetaData(new Path(dumpDirectory), conf));
+    } else {
+      this.metricCollector.reportStageStart("REPL_LOAD", metricMap);
+    }
   }
 
   public Task<?> build(Context context, Hive hive, Logger log,
@@ -172,7 +180,8 @@ public class IncrementalLoadTasksBuilder {
 
       Map<String, String> dbProps = new HashMap<>();
       dbProps.put(ReplicationSpec.KEY.CURR_STATE_ID.toString(), String.valueOf(lastReplayedEvent));
-      ReplStateLogWork replStateLogWork = new ReplStateLogWork(replLogger, dbProps, dumpDirectory, metricCollector);
+      ReplStateLogWork replStateLogWork = new ReplStateLogWork(replLogger, dbProps, dumpDirectory,
+              metricCollector, shouldFailover);
       Task<? extends Serializable> barrierTask = TaskFactory.get(replStateLogWork, conf);
       taskChainTail.addDependentTask(barrierTask);
       this.log.debug("Added {}:{} as a precursor of barrier task {}:{}",
