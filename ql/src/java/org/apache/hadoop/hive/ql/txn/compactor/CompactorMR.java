@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.BlockLocation;
 import org.apache.hadoop.fs.FileStatus;
@@ -119,7 +120,8 @@ public class CompactorMR {
   public CompactorMR() {
   }
 
-  private JobConf createBaseJobConf(HiveConf conf, String jobName, Table t, StorageDescriptor sd,
+  @VisibleForTesting
+  public JobConf createBaseJobConf(HiveConf conf, String jobName, Table t, StorageDescriptor sd,
                                     ValidWriteIdList writeIds, CompactionInfo ci) {
     JobConf job = new JobConf(conf);
     job.setJobName(jobName);
