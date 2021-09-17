@@ -211,7 +211,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
   private int deadlockCnt;
   private long deadlockRetryInterval;
   protected Configuration conf;
-  private static DatabaseProduct dbProduct;
+  protected static DatabaseProduct dbProduct;
   private static SQLGenerator sqlGenerator;
 
   // (End user) Transaction timeout, in milliseconds.
