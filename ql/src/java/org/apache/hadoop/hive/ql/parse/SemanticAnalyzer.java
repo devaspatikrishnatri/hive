@@ -8291,7 +8291,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     if (ltd != null) {
       queryState.getLineageState()
           .mapDirToOp(ltd.getSourcePath(), output);
-    } else if ( queryState.getCommandType().equals(HiveOperation.CREATETABLE_AS_SELECT.getOperationName())) {
+    }
+    if (queryState.getCommandType().equals(HiveOperation.CREATETABLE_AS_SELECT.getOperationName())) {
 
       Path tlocation = null;
       String tName = Utilities.getDbTableName(tableDesc.getDbTableName())[1];
@@ -15734,5 +15735,5 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
   protected void executeUnparseTranlations() {
     unparseTranslator.applyTranslations(ctx.getTokenRewriteStream());
   }
-  
+
 }
