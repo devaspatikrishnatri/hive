@@ -2,6 +2,6 @@
 host=gerrit.sjc.cloudera.com
 port=29418
 project=cdh/hive.git
-defaultbranch=CDH-7.1-maint
+defaultbranch=CDH-7.1.8.x
 defaultremote=cdh
 
