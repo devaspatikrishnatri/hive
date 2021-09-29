@@ -4530,9 +4530,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: explain
 from src
 insert overwrite table src_multi1_n4 select * where key < 10
@@ -4540,9 +4540,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 STAGE DEPENDENCIES:
   Stage-4 is a root stage
   Stage-6 depends on stages: Stage-4, Stage-9, Stage-10
@@ -4797,18 +4797,18 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: from src
 insert overwrite table src_multi1_n4 select * where key < 10
 insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: Lineage: src_multi1_n4.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi1_n4.value SIMPLE [(src)src.FieldSchema(name:value, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi2_n5.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
@@ -4857,9 +4857,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: explain
 from src
 insert overwrite table src_multi1_n4 select * where key < 10
@@ -4867,9 +4867,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 STAGE DEPENDENCIES:
   Stage-4 is a root stage
   Stage-6 depends on stages: Stage-4, Stage-9, Stage-8, Stage-11, Stage-14, Stage-15
@@ -5168,18 +5168,18 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: from src
 insert overwrite table src_multi1_n4 select * where key < 10
 insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: Lineage: src_multi1_n4.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi1_n4.value SIMPLE [(src)src.FieldSchema(name:value, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi2_n5.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
@@ -5228,9 +5228,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: explain
 from src
 insert overwrite table src_multi1_n4 select * where key < 10
@@ -5238,9 +5238,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 STAGE DEPENDENCIES:
   Stage-4 is a root stage
   Stage-11 depends on stages: Stage-4 , consists of Stage-8, Stage-7, Stage-9
@@ -5539,18 +5539,18 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: from src
 insert overwrite table src_multi1_n4 select * where key < 10
 insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: Lineage: src_multi1_n4.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi1_n4.value SIMPLE [(src)src.FieldSchema(name:value, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi2_n5.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
@@ -5599,9 +5599,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: explain
 from src
 insert overwrite table src_multi1_n4 select * where key < 10
@@ -5609,9 +5609,9 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 STAGE DEPENDENCIES:
   Stage-4 is a root stage
   Stage-11 depends on stages: Stage-4 , consists of Stage-8, Stage-7, Stage-9
@@ -5954,18 +5954,18 @@ insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src
-#### A masked pattern was here ####
 PREHOOK: Output: default@src_multi1_n4
 PREHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: query: from src
 insert overwrite table src_multi1_n4 select * where key < 10
 insert overwrite table src_multi2_n5 select * where key > 10 and key < 20
 #### A masked pattern was here ####
 POSTHOOK: type: QUERY
 POSTHOOK: Input: default@src
-#### A masked pattern was here ####
 POSTHOOK: Output: default@src_multi1_n4
 POSTHOOK: Output: default@src_multi2_n5
+#### A masked pattern was here ####
 POSTHOOK: Lineage: src_multi1_n4.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi1_n4.value SIMPLE [(src)src.FieldSchema(name:value, type:string, comment:default), ]
 POSTHOOK: Lineage: src_multi2_n5.key SIMPLE [(src)src.FieldSchema(name:key, type:string, comment:default), ]
