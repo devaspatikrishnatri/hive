@@ -35,6 +35,8 @@ import org.apache.hadoop.hive.ql.ddl.table.AbstractAlterTableAnalyzer;
 import org.apache.hadoop.hive.ql.ddl.table.constraint.Constraints;
 import org.apache.hadoop.hive.ql.ddl.table.constraint.ConstraintsUtils;
 import org.apache.hadoop.hive.ql.exec.TaskFactory;
+import org.apache.hadoop.hive.ql.io.AcidUtils;
+import org.apache.hadoop.hive.ql.metadata.Table;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.HiveParser;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
@@ -80,6 +82,12 @@ public class AlterTableAddConstraintAnalyzer extends AbstractAlterTableAnalyzer 
     Constraints constraints = new Constraints(primaryKeys, foreignKeys, null, uniqueConstraints, null,
         checkConstraints);
     AlterTableAddConstraintDesc desc = new AlterTableAddConstraintDesc(tableName, null, constraints);
+
+    Table tbl = getTable(tableName);
+    if(AcidUtils.isTransactionalTable(tbl)) {
+      setAcidDdlDesc(desc);
+    }
+    addInputsOutputsAlterTable(tableName, partitionSpec, desc, desc.getType(), false);
     rootTasks.add(TaskFactory.get(new DDLWork(getInputs(), getOutputs(), desc)));
   }
 }
