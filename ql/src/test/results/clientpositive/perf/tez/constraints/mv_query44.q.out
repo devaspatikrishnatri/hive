@@ -20,6 +20,18 @@ POSTHOOK: Input: default@store_sales
 POSTHOOK: Output: database:default
 POSTHOOK: Output: default@mv_store_sales_item_customer
 POSTHOOK: Output: default@mv_store_sales_item_customer
+POSTHOOK: Lineage: mv_store_sales_item_customer.amt EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_coupon_amt, type:decimal(7,2), comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.cnt EXPRESSION [(store_sales)store_sales.null, ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_customer_sk SIMPLE [(store_sales)store_sales.FieldSchema(name:ss_customer_sk, type:int, comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_ext_sales_price EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_ext_sales_price, type:decimal(7,2), comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_ext_wholesale_cost EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_ext_wholesale_cost, type:decimal(7,2), comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_item_sk SIMPLE [(store_sales)store_sales.FieldSchema(name:ss_item_sk, type:int, comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_net_paid EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_net_paid, type:decimal(7,2), comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_net_profit EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_net_profit, type:decimal(7,2), comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_quantity EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_quantity, type:int, comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_sales_price EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_sales_price, type:decimal(7,2), comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ss_store_sk SIMPLE [(store_sales)store_sales.FieldSchema(name:ss_store_sk, type:int, comment:null), ]
+POSTHOOK: Lineage: mv_store_sales_item_customer.ssales EXPRESSION [(store_sales)store_sales.FieldSchema(name:ss_quantity, type:int, comment:null), (store_sales)store_sales.FieldSchema(name:ss_sales_price, type:decimal(7,2), comment:null), ]
 Warning: Shuffle Join MERGEJOIN[156][tables = [$hdt$_2, $hdt$_3]] in Stage 'Reducer 4' is a cross product
 Warning: Shuffle Join MERGEJOIN[157][tables = [$hdt$_2, $hdt$_3, $hdt$_1]] in Stage 'Reducer 5' is a cross product
 PREHOOK: query: explain
