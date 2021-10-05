@@ -216,7 +216,7 @@ Stage-0
                                                       Filter Operator [FIL_355] (rows=73049 width=8)
                                                         predicate:d_month_seq is not null
                                                         TableScan [TS_77] (rows=73049 width=8)
-                                                          default@date_dim,date_dim,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_month_seq"]
+                                                          default@date_dim,date_dim, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_month_seq"]
                                                 <-Reducer 14 [CUSTOM_SIMPLE_EDGE] vectorized
                                                   PARTITION_ONLY_SHUFFLE [RS_354]
                                                     Group By Operator [GBY_353] (rows=25 width=4)
@@ -231,7 +231,7 @@ Stage-0
                                                             Filter Operator [FIL_302] (rows=50 width=12)
                                                               predicate:((d_year = 1999) and (d_moy = 3) and d_month_seq is not null)
                                                               TableScan [TS_3] (rows=73049 width=12)
-                                                                default@date_dim,date_dim,Tbl:COMPLETE,Col:COMPLETE,Output:["d_month_seq","d_year","d_moy"]
+                                                                default@date_dim,date_dim, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["d_month_seq","d_year","d_moy"]
                                           <-Reducer 17 [CUSTOM_SIMPLE_EDGE] vectorized
                                             PARTITION_ONLY_SHUFFLE [RS_359]
                                               Group By Operator [GBY_358] (rows=25 width=4)
@@ -269,7 +269,7 @@ Stage-0
                                                     Filter Operator [FIL_332] (rows=40000000 width=188)
                                                       predicate:(ca_county is not null and ca_state is not null)
                                                       TableScan [TS_33] (rows=40000000 width=188)
-                                                        default@customer_address,customer_address,Tbl:COMPLETE,Col:COMPLETE,Output:["ca_address_sk","ca_county","ca_state"]
+                                                        default@customer_address,customer_address, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ca_address_sk","ca_county","ca_state"]
                                               <-Map 21 [SIMPLE_EDGE] vectorized
                                                 SHUFFLE [RS_337]
                                                   PartitionCols:_col0, _col1
@@ -278,7 +278,7 @@ Stage-0
                                                     Filter Operator [FIL_335] (rows=1704 width=184)
                                                       predicate:(s_county is not null and s_state is not null)
                                                       TableScan [TS_36] (rows=1704 width=184)
-                                                        default@store,store,Tbl:COMPLETE,Col:COMPLETE,Output:["s_county","s_state"]
+                                                        default@store,store, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["s_county","s_state"]
                                           <-Reducer 27 [SIMPLE_EDGE] vectorized
                                             SHUFFLE [RS_352]
                                               PartitionCols:_col1
@@ -301,7 +301,7 @@ Stage-0
                                                             Filter Operator [FIL_347] (rows=80000000 width=8)
                                                               predicate:c_current_addr_sk is not null
                                                               TableScan [TS_53] (rows=80000000 width=8)
-                                                                default@customer,customer,Tbl:COMPLETE,Col:COMPLETE,Output:["c_customer_sk","c_current_addr_sk"]
+                                                                default@customer,customer, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["c_customer_sk","c_current_addr_sk"]
                                                       <-Reducer 25 [SIMPLE_EDGE]
                                                         SHUFFLE [RS_62]
                                                           PartitionCols:_col1
@@ -315,7 +315,7 @@ Stage-0
                                                                 Filter Operator [FIL_344] (rows=453 width=186)
                                                                   predicate:((i_class = 'consignment') and (i_category = 'Jewelry'))
                                                                   TableScan [TS_50] (rows=462000 width=186)
-                                                                    default@item,item,Tbl:COMPLETE,Col:COMPLETE,Output:["i_item_sk","i_class","i_category"]
+                                                                    default@item,item, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["i_item_sk","i_class","i_category"]
                                                           <-Reducer 24 [SIMPLE_EDGE]
                                                             SHUFFLE [RS_59]
                                                               PartitionCols:_col2
@@ -329,7 +329,7 @@ Stage-0
                                                                     Filter Operator [FIL_338] (rows=50 width=12)
                                                                       predicate:((d_year = 1999) and (d_moy = 3))
                                                                       TableScan [TS_47] (rows=73049 width=12)
-                                                                        default@date_dim,date_dim,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_year","d_moy"]
+                                                                        default@date_dim,date_dim, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_year","d_moy"]
                                                               <-Union 23 [SIMPLE_EDGE]
                                                                 <-Map 22 [CONTAINS] vectorized
                                                                   Reduce Output Operator [RS_377]
@@ -403,7 +403,7 @@ Stage-0
                                                     Filter Operator [FIL_298] (rows=525327388 width=114)
                                                       predicate:(ss_sold_date_sk is not null and ss_customer_sk is not null)
                                                       TableScan [TS_0] (rows=575995635 width=114)
-                                                        default@store_sales,store_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_customer_sk","ss_ext_sales_price"]
+                                                        default@store_sales,store_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_customer_sk","ss_ext_sales_price"]
                                               <-Reducer 11 [CUSTOM_SIMPLE_EDGE] vectorized
                                                 PARTITION_ONLY_SHUFFLE [RS_323]
                                                   Select Operator [SEL_322] (rows=1 width=8)

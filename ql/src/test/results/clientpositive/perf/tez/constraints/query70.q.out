@@ -144,7 +144,7 @@ Stage-0
                                             Filter Operator [FIL_139] (rows=317 width=8)
                                               predicate:d_month_seq BETWEEN 1212 AND 1223
                                               TableScan [TS_3] (rows=73049 width=8)
-                                                default@date_dim,d1,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_month_seq"]
+                                                default@date_dim,d1, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_month_seq"]
                                       <-Map 1 [SIMPLE_EDGE] vectorized
                                         SHUFFLE [RS_149]
                                           PartitionCols:_col0
@@ -153,7 +153,7 @@ Stage-0
                                             Filter Operator [FIL_147] (rows=525329897 width=114)
                                               predicate:(ss_sold_date_sk is not null and ss_store_sk is not null and ss_sold_date_sk BETWEEN DynamicValue(RS_42_d1_d_date_sk_min) AND DynamicValue(RS_42_d1_d_date_sk_max) and in_bloom_filter(ss_sold_date_sk, DynamicValue(RS_42_d1_d_date_sk_bloom_filter)))
                                               TableScan [TS_0] (rows=575995635 width=114)
-                                                default@store_sales,store_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_store_sk","ss_net_profit"]
+                                                default@store_sales,store_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_store_sk","ss_net_profit"]
                                               <-Reducer 12 [BROADCAST_EDGE] vectorized
                                                 BROADCAST [RS_146]
                                                   Group By Operator [GBY_145] (rows=1 width=12)
@@ -178,7 +178,7 @@ Stage-0
                                             Filter Operator [FIL_161] (rows=1704 width=188)
                                               predicate:s_state is not null
                                               TableScan [TS_6] (rows=1704 width=188)
-                                                default@store,store,Tbl:COMPLETE,Col:COMPLETE,Output:["s_store_sk","s_county","s_state"]
+                                                default@store,store, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["s_store_sk","s_county","s_state"]
                                       <-Reducer 9 [SIMPLE_EDGE] vectorized
                                         SHUFFLE [RS_160]
                                           PartitionCols:_col0
@@ -216,5 +216,5 @@ Stage-0
                                                                   Filter Operator [FIL_150] (rows=1704 width=90)
                                                                     predicate:s_state is not null
                                                                     TableScan [TS_15] (rows=1704 width=90)
-                                                                      default@store,store,Tbl:COMPLETE,Col:COMPLETE,Output:["s_store_sk","s_state"]
+                                                                      default@store,store, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["s_store_sk","s_state"]
 

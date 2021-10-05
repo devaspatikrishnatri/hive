@@ -211,7 +211,7 @@ Stage-0
                                                 Filter Operator [FIL_635] (rows=462000 width=188)
                                                   predicate:i_item_sk is not null
                                                   TableScan [TS_12] (rows=462000 width=188)
-                                                    default@item,item,Tbl:COMPLETE,Col:COMPLETE,Output:["i_item_sk","i_item_desc"]
+                                                    default@item,item, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["i_item_sk","i_item_desc"]
                                           <-Reducer 16 [SIMPLE_EDGE]
                                             SHUFFLE [RS_18]
                                               PartitionCols:_col1
@@ -225,7 +225,7 @@ Stage-0
                                                     Filter Operator [FIL_624] (rows=2609 width=102)
                                                       predicate:((d_year) IN (1999, 2000, 2001, 2002) and d_date_sk is not null)
                                                       TableScan [TS_9] (rows=73049 width=102)
-                                                        default@date_dim,date_dim,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_date","d_year"]
+                                                        default@date_dim,date_dim, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_date","d_year"]
                                               <-Map 15 [SIMPLE_EDGE] vectorized
                                                 SHUFFLE [RS_634]
                                                   PartitionCols:_col0
@@ -234,7 +234,7 @@ Stage-0
                                                     Filter Operator [FIL_632] (rows=550076554 width=7)
                                                       predicate:(ss_sold_date_sk is not null and ss_item_sk is not null and ss_sold_date_sk BETWEEN DynamicValue(RS_16_date_dim_d_date_sk_min) AND DynamicValue(RS_16_date_dim_d_date_sk_max) and in_bloom_filter(ss_sold_date_sk, DynamicValue(RS_16_date_dim_d_date_sk_bloom_filter)))
                                                       TableScan [TS_6] (rows=575995635 width=7)
-                                                        default@store_sales,store_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_item_sk"]
+                                                        default@store_sales,store_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_item_sk"]
                                                       <-Reducer 20 [BROADCAST_EDGE] vectorized
                                                         BROADCAST [RS_631]
                                                           Group By Operator [GBY_630] (rows=1 width=12)
@@ -259,7 +259,7 @@ Stage-0
                                   Filter Operator [FIL_609] (rows=50 width=12)
                                     predicate:((d_year = 1999) and (d_moy = 1) and d_date_sk is not null)
                                     TableScan [TS_3] (rows=73049 width=12)
-                                      default@date_dim,date_dim,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_year","d_moy"]
+                                      default@date_dim,date_dim, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_year","d_moy"]
                             <-Map 42 [SIMPLE_EDGE] vectorized
                               SHUFFLE [RS_699]
                                 PartitionCols:_col0
@@ -268,7 +268,7 @@ Stage-0
                                   Filter Operator [FIL_697] (rows=143930993 width=127)
                                     predicate:(ws_bill_customer_sk is not null and ws_sold_date_sk is not null and ws_item_sk is not null and ws_sold_date_sk BETWEEN DynamicValue(RS_243_date_dim_d_date_sk_min) AND DynamicValue(RS_243_date_dim_d_date_sk_max) and in_bloom_filter(ws_sold_date_sk, DynamicValue(RS_243_date_dim_d_date_sk_bloom_filter)))
                                     TableScan [TS_127] (rows=144002668 width=127)
-                                      default@web_sales,web_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["ws_sold_date_sk","ws_item_sk","ws_bill_customer_sk","ws_quantity","ws_list_price"]
+                                      default@web_sales,web_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ws_sold_date_sk","ws_item_sk","ws_bill_customer_sk","ws_quantity","ws_list_price"]
                                     <-Reducer 14 [BROADCAST_EDGE] vectorized
                                       BROADCAST [RS_696]
                                         Group By Operator [GBY_695] (rows=1 width=12)
@@ -328,7 +328,7 @@ Stage-0
                                                                   Filter Operator [FIL_656] (rows=80000000 width=4)
                                                                     predicate:c_customer_sk is not null
                                                                     TableScan [TS_38] (rows=80000000 width=4)
-                                                                      default@customer,customer,Tbl:COMPLETE,Col:COMPLETE,Output:["c_customer_sk"]
+                                                                      default@customer,customer, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["c_customer_sk"]
                                                             <-Reducer 23 [SIMPLE_EDGE]
                                                               SHUFFLE [RS_44]
                                                                 PartitionCols:_col1
@@ -342,7 +342,7 @@ Stage-0
                                                                       Filter Operator [FIL_645] (rows=2609 width=8)
                                                                         predicate:((d_year) IN (1999, 2000, 2001, 2002) and d_date_sk is not null)
                                                                         TableScan [TS_35] (rows=73049 width=8)
-                                                                          default@date_dim,date_dim,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_year"]
+                                                                          default@date_dim,date_dim, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["d_date_sk","d_year"]
                                                                 <-Map 22 [SIMPLE_EDGE] vectorized
                                                                   SHUFFLE [RS_655]
                                                                     PartitionCols:_col0
@@ -351,7 +351,7 @@ Stage-0
                                                                       Filter Operator [FIL_653] (rows=525327388 width=118)
                                                                         predicate:(ss_sold_date_sk is not null and ss_customer_sk is not null and ss_sold_date_sk BETWEEN DynamicValue(RS_42_date_dim_d_date_sk_min) AND DynamicValue(RS_42_date_dim_d_date_sk_max) and in_bloom_filter(ss_sold_date_sk, DynamicValue(RS_42_date_dim_d_date_sk_bloom_filter)))
                                                                         TableScan [TS_32] (rows=575995635 width=118)
-                                                                          default@store_sales,store_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_customer_sk","ss_quantity","ss_sales_price"]
+                                                                          default@store_sales,store_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_sold_date_sk","ss_customer_sk","ss_quantity","ss_sales_price"]
                                                                         <-Reducer 35 [BROADCAST_EDGE] vectorized
                                                                           BROADCAST [RS_652]
                                                                             Group By Operator [GBY_651] (rows=1 width=12)
@@ -403,7 +403,7 @@ Stage-0
                                                 Filter Operator [FIL_712] (rows=550080312 width=114)
                                                   predicate:(ss_customer_sk is not null and ss_customer_sk BETWEEN DynamicValue(RS_250_web_sales_ws_bill_customer_sk_min) AND DynamicValue(RS_250_web_sales_ws_bill_customer_sk_max) and in_bloom_filter(ss_customer_sk, DynamicValue(RS_250_web_sales_ws_bill_customer_sk_bloom_filter)))
                                                   TableScan [TS_219] (rows=575995635 width=114)
-                                                    default@store_sales,store_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_customer_sk","ss_quantity","ss_sales_price"]
+                                                    default@store_sales,store_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_customer_sk","ss_quantity","ss_sales_price"]
                                                   <-Reducer 13 [BROADCAST_EDGE] vectorized
                                                     BROADCAST [RS_711]
                                                       Group By Operator [GBY_710] (rows=1 width=12)
@@ -449,7 +449,7 @@ Stage-0
                                   Filter Operator [FIL_621] (rows=285117831 width=127)
                                     predicate:(cs_sold_date_sk is not null and cs_bill_customer_sk is not null and cs_item_sk is not null and cs_sold_date_sk BETWEEN DynamicValue(RS_116_date_dim_d_date_sk_min) AND DynamicValue(RS_116_date_dim_d_date_sk_max) and in_bloom_filter(cs_sold_date_sk, DynamicValue(RS_116_date_dim_d_date_sk_bloom_filter)))
                                     TableScan [TS_0] (rows=287989836 width=127)
-                                      default@catalog_sales,catalog_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["cs_sold_date_sk","cs_bill_customer_sk","cs_item_sk","cs_quantity","cs_list_price"]
+                                      default@catalog_sales,catalog_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["cs_sold_date_sk","cs_bill_customer_sk","cs_item_sk","cs_quantity","cs_list_price"]
                                     <-Reducer 9 [BROADCAST_EDGE] vectorized
                                       BROADCAST [RS_620]
                                         Group By Operator [GBY_619] (rows=1 width=12)
@@ -533,7 +533,7 @@ Stage-0
                                                 Filter Operator [FIL_686] (rows=550080312 width=114)
                                                   predicate:(ss_customer_sk is not null and ss_customer_sk BETWEEN DynamicValue(RS_123_catalog_sales_cs_bill_customer_sk_min) AND DynamicValue(RS_123_catalog_sales_cs_bill_customer_sk_max) and in_bloom_filter(ss_customer_sk, DynamicValue(RS_123_catalog_sales_cs_bill_customer_sk_bloom_filter)))
                                                   TableScan [TS_92] (rows=575995635 width=114)
-                                                    default@store_sales,store_sales,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_customer_sk","ss_quantity","ss_sales_price"]
+                                                    default@store_sales,store_sales, ACID table,Tbl:COMPLETE,Col:COMPLETE,Output:["ss_customer_sk","ss_quantity","ss_sales_price"]
                                                   <-Reducer 7 [BROADCAST_EDGE] vectorized
                                                     BROADCAST [RS_685]
                                                       Group By Operator [GBY_684] (rows=1 width=12)
