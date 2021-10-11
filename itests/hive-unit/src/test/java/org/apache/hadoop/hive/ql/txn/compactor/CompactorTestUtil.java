@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -116,11 +117,12 @@ class CompactorTestUtil {
    * @param tblName table name
    * @param compactionType major/minor
    * @param isQueryBased true, if query based compaction should be run
+   * @param properties compaction request properties
    * @param partNames partition names
    * @throws Exception compaction cannot be started.
    */
   static void runCompaction(HiveConf conf, String dbName, String tblName, CompactionType compactionType,
-      boolean isQueryBased, String... partNames) throws Exception {
+                            boolean isQueryBased, Map<String, String> properties, String... partNames) throws  Exception {
     HiveConf hiveConf = new HiveConf(conf);
     hiveConf.setBoolVar(HiveConf.ConfVars.COMPACTOR_CRUD_QUERY_BASED, isQueryBased);
     TxnStore txnHandler = TxnUtils.getTxnStore(hiveConf);
@@ -128,17 +130,35 @@ class CompactorTestUtil {
     t.setThreadId((int) t.getId());
     t.setConf(hiveConf);
     t.init(new AtomicBoolean(true));
+    CompactionRequest cr = new CompactionRequest(dbName, tblName, compactionType);
+    if (properties != null) {
+      cr.setProperties(properties);
+    }
     if (partNames.length == 0) {
-      txnHandler.compact(new CompactionRequest(dbName, tblName, compactionType));
+      txnHandler.compact(cr);
       t.run();
     } else {
       for (String partName : partNames) {
-        CompactionRequest cr = new CompactionRequest(dbName, tblName, compactionType);
         cr.setPartitionname(partName);
         txnHandler.compact(cr);
         t.run();
       }
     }
+  }
+
+  /**
+   * Trigger a compaction run.
+   * @param conf hive configuration
+   * @param dbName database name
+   * @param tblName table name
+   * @param compactionType major/minor
+   * @param isQueryBased true, if query based compaction should be run
+   * @param partNames partition names
+   * @throws Exception compaction cannot be started.
+   */
+  static void runCompaction(HiveConf conf, String dbName, String tblName, CompactionType compactionType,
+      boolean isQueryBased, String... partNames) throws Exception {
+    runCompaction(conf, dbName, tblName, compactionType, isQueryBased, null, partNames);
   }
 
   /**

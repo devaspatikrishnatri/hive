@@ -46,7 +46,6 @@ import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
 import org.apache.hadoop.hive.metastore.IMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.CompactionType;
 import org.apache.hadoop.hive.metastore.api.Partition;
-import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.ShowCompactRequest;
 import org.apache.hadoop.hive.metastore.api.ShowCompactResponseElement;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
@@ -1761,21 +1760,6 @@ public class TestCrudCompactorOnTez extends CompactorOnTezTest {
   @Test public void testVectorizationOff() throws Exception {
     conf.setBoolVar(HiveConf.ConfVars.HIVE_VECTORIZATION_ENABLED, false);
     testMinorCompactionAfterMajor();
-  }
-
-  /**
-   * Verify that the expected number of transactions have run, and their state is "succeeded".
-   *
-   * @param expectedSuccessfulCompactions number of compactions already run
-   * @throws MetaException
-   */
-  private void verifySuccessfulCompaction(int expectedSuccessfulCompactions) throws MetaException {
-    List<ShowCompactResponseElement> compacts =
-        TxnUtils.getTxnStore(conf).showCompact(new ShowCompactRequest()).getCompacts();
-    Assert.assertEquals("Completed compaction queue must contain " + expectedSuccessfulCompactions + " element(s)",
-        expectedSuccessfulCompactions, compacts.size());
-    compacts.forEach(
-        c -> Assert.assertEquals("Compaction state is not succeeded", "succeeded", c.getState()));
   }
 
   /**
