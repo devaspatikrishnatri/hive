@@ -755,7 +755,7 @@ public class Driver implements IDriver {
       //if needRequireLock is false, the release here will do nothing because there is no lock
       try {
         //since set autocommit starts an implicit txn, close it
-        if (driverContext.getTxnManager().isImplicitTransactionOpen() ||
+        if (driverContext.getTxnManager().isImplicitTransactionOpen(context) ||
             driverContext.getPlan().getOperation() == HiveOperation.COMMIT) {
           releaseLocksAndCommitOrRollback(true);
         }
@@ -840,6 +840,10 @@ public class Driver implements IDriver {
     }
     // Lock operations themselves don't require the lock.
     if (isExplicitLockOperation()) {
+      return false;
+    }
+    // no execution is going to be attempted, skip acquiring locks
+    if (context.isExplainSkipExecution()) {
       return false;
     }
     if (!HiveConf.getBoolVar(driverContext.getConf(), ConfVars.HIVE_LOCK_MAPRED_ONLY)) {
