@@ -5122,7 +5122,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       Table tbl = null;
       List<Partition> parts = null;
       boolean mustPurge = false;
-      List<Map<String, String>> transactionalListenerResponses = Lists.newArrayList();
+      Map<String, String> transactionalListenerResponses = null;
       boolean needsCm = ReplChangeManager.shouldEnableCm(ms.getDatabase(catName, dbName),
               ms.getTable(catName, dbName, tblName));
 
@@ -5130,7 +5130,6 @@ public class HiveMetaStore extends ThriftHiveMetastore {
         // We need Partition-s for firing events and for result; DN needs MPartition-s to drop.
         // Great... Maybe we could bypass fetching MPartitions by issuing direct SQL deletes.
         tbl = get_table_core(catName, dbName, tblName);
-        isExternal(tbl);
         mustPurge = isMustPurge(envContext, tbl);
         int minCount = 0;
         RequestPartsSpec spec = request.getParts();
@@ -5206,12 +5205,10 @@ public class HiveMetaStore extends ThriftHiveMetastore {
 
         ms.dropPartitions(catName, dbName, tblName, partNames);
         if (parts != null && !transactionalListeners.isEmpty()) {
-          for (Partition part : parts) {
-            transactionalListenerResponses.add(
-                MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
-                                                      EventType.DROP_PARTITION,
-                                                      new DropPartitionEvent(tbl, part, true, deleteData, this),
-                                                      envContext));
+          if (parts != null && !parts.isEmpty() && !transactionalListeners.isEmpty()) {
+            transactionalListenerResponses = MetaStoreListenerNotifier
+                .notifyEvent(transactionalListeners, EventType.DROP_PARTITION,
+                    new DropPartitionEvent(tbl, parts, true, deleteData, this), envContext);
           }
         }
 
@@ -5245,20 +5242,11 @@ public class HiveMetaStore extends ThriftHiveMetastore {
           }
         }
         if (parts != null) {
-          int i = 0;
-          if (parts != null && !listeners.isEmpty()) {
-            for (Partition part : parts) {
-              Map<String, String> parameters =
-                  (!transactionalListenerResponses.isEmpty()) ? transactionalListenerResponses.get(i) : null;
+          if (parts != null && !parts.isEmpty() && !listeners.isEmpty()) {
+            MetaStoreListenerNotifier.notifyEvent(listeners, EventType.DROP_PARTITION,
+                new DropPartitionEvent(tbl, parts, success, deleteData, this), envContext,
+                transactionalListenerResponses, ms);
 
-              MetaStoreListenerNotifier.notifyEvent(listeners,
-                                                    EventType.DROP_PARTITION,
-                                                    new DropPartitionEvent(tbl, part, success, deleteData, this),
-                                                    envContext,
-                                                    parameters, ms);
-
-              i++;
-            }
           }
         }
       }
