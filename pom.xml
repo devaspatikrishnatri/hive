@@ -225,7 +225,6 @@
     <gson.version>2.2.4</gson.version>
     <re2j.version>1.2</re2j.version>
     <rs-api.version>2.0.1</rs-api.version>
-    <springframework.version>4.3.29.RELEASE</springframework.version>
     <validation-api.version>1.1.0.Final</validation-api.version>
   </properties>
 
@@ -330,13 +329,6 @@
         <artifactId>parquet-column</artifactId>
         <version>${parquet.version}</version>
         <classifier>tests</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-framework-bom</artifactId>
-        <version>${springframework.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.sun.jersey</groupId>
@@ -1466,7 +1458,6 @@
 	    <exclude>**/*.m</exclude>
 	    <exclude>**/gen-java/**</exclude>
 	    <exclude>**/testdata/**</exclude>
-	    <exclude>**/ptest2/*.md</exclude>
 	    <exclude>**/test/org/apache/hadoop/hive/hbase/avro/**</exclude>
 	    <exclude>**/avro_test.avpr</exclude>
 	    <exclude>**/xmlReport.pl</exclude>
