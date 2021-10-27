@@ -1,0 +1,78 @@
+PREHOOK: query: CREATE TABLE default.`dwd_fib_bond_info_di`(    
+   `issue_prc` decimal(28,4) ,
+   `per_100y_acr_int_fc` decimal(28,8) ) 
+ PARTITIONED BY (
+   `p_dt` string)
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:default
+PREHOOK: Output: default@dwd_fib_bond_info_di
+POSTHOOK: query: CREATE TABLE default.`dwd_fib_bond_info_di`(    
+   `issue_prc` decimal(28,4) ,
+   `per_100y_acr_int_fc` decimal(28,8) ) 
+ PARTITIONED BY (
+   `p_dt` string)
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:default
+POSTHOOK: Output: default@dwd_fib_bond_info_di
+PREHOOK: query: insert into default.dwd_fib_bond_info_di values (100.0, 6.443, 'hello')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+PREHOOK: Output: default@dwd_fib_bond_info_di
+POSTHOOK: query: insert into default.dwd_fib_bond_info_di values (100.0, 6.443, 'hello')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+POSTHOOK: Output: default@dwd_fib_bond_info_di
+POSTHOOK: Output: default@dwd_fib_bond_info_di@p_dt=hello
+POSTHOOK: Lineage: dwd_fib_bond_info_di PARTITION(p_dt=hello).issue_prc SCRIPT []
+POSTHOOK: Lineage: dwd_fib_bond_info_di PARTITION(p_dt=hello).per_100y_acr_int_fc SCRIPT []
+PREHOOK: query: explain cbo select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where p_dt='20220512' and issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc=6.44300000 order by total_int limit 3
+PREHOOK: type: QUERY
+PREHOOK: Input: default@dwd_fib_bond_info_di
+#### A masked pattern was here ####
+POSTHOOK: query: explain cbo select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where p_dt='20220512' and issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc=6.44300000 order by total_int limit 3
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@dwd_fib_bond_info_di
+#### A masked pattern was here ####
+CBO PLAN:
+HiveProject(issue_prc=[$0], per_100y_acr_int_fc=[CAST(6.443:DECIMAL(28, 8)):DECIMAL(28, 8)], total_int=[$1])
+  HiveSortLimit(sort0=[$1], dir0=[ASC], fetch=[3])
+    HiveProject(issue_prc=[$0], total_int=[/($0, 6.443:DECIMAL(28, 8))])
+      HiveFilter(condition=[AND(=($2, _UTF-16LE'20220512'), =($1, 6.443:DECIMAL(4, 3)), IS NOT NULL($0))])
+        HiveTableScan(table=[[default, dwd_fib_bond_info_di]], table:alias=[dwd_fib_bond_info_di])
+
+PREHOOK: query: explain cbo select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where p_dt='20220512' and issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc!=6.44300000 order by total_int limit 3
+PREHOOK: type: QUERY
+PREHOOK: Input: default@dwd_fib_bond_info_di
+#### A masked pattern was here ####
+POSTHOOK: query: explain cbo select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where p_dt='20220512' and issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc!=6.44300000 order by total_int limit 3
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@dwd_fib_bond_info_di
+#### A masked pattern was here ####
+CBO PLAN:
+HiveSortLimit(sort0=[$2], dir0=[ASC], fetch=[3])
+  HiveProject(issue_prc=[$0], per_100y_acr_int_fc=[$1], total_int=[/($0, $1)])
+    HiveFilter(condition=[AND(=($2, _UTF-16LE'20220512'), <>($1, 6.443:DECIMAL(4, 3)), IS NOT NULL($0))])
+      HiveTableScan(table=[[default, dwd_fib_bond_info_di]], table:alias=[dwd_fib_bond_info_di])
+
+PREHOOK: query: select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc=6.44300000 order by total_int limit 3
+PREHOOK: type: QUERY
+PREHOOK: Input: default@dwd_fib_bond_info_di
+PREHOOK: Input: default@dwd_fib_bond_info_di@p_dt=hello
+#### A masked pattern was here ####
+POSTHOOK: query: select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc=6.44300000 order by total_int limit 3
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@dwd_fib_bond_info_di
+POSTHOOK: Input: default@dwd_fib_bond_info_di@p_dt=hello
+#### A masked pattern was here ####
+100.0000	6.44300000	15.520720
+PREHOOK: query: select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc!=0.00000000 order by total_int limit 3
+PREHOOK: type: QUERY
+PREHOOK: Input: default@dwd_fib_bond_info_di
+PREHOOK: Input: default@dwd_fib_bond_info_di@p_dt=hello
+#### A masked pattern was here ####
+POSTHOOK: query: select issue_prc, per_100y_acr_int_fc, issue_prc/per_100y_acr_int_fc as total_int from default.dwd_fib_bond_info_di where issue_prc is not null and per_100y_acr_int_fc is not null and per_100y_acr_int_fc!=0.00000000 order by total_int limit 3
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@dwd_fib_bond_info_di
+POSTHOOK: Input: default@dwd_fib_bond_info_di@p_dt=hello
+#### A masked pattern was here ####
+100.0000	6.44300000	15.520720

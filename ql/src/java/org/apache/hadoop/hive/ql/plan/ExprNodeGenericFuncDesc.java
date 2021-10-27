@@ -37,6 +37,7 @@ import org.apache.hadoop.hive.ql.exec.FunctionRegistry;
 import org.apache.hadoop.hive.ql.exec.UDF;
 import org.apache.hadoop.hive.ql.exec.UDFArgumentException;
 import org.apache.hadoop.hive.ql.exec.Utilities;
+import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.ql.session.SessionState.LogHelper;
 import org.apache.hadoop.hive.ql.udf.UDFType;
@@ -46,6 +47,7 @@ import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBridge;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFMacro;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorUtils;
+import org.apache.hadoop.hive.serde2.typeinfo.DecimalTypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoFactory;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoUtils;
@@ -217,6 +219,12 @@ public class ExprNodeGenericFuncDesc extends ExprNodeDesc implements
     return clone;
   }
 
+  public static ExprNodeGenericFuncDesc newInstance(GenericUDF genericUDF,
+      String funcText,
+      List<ExprNodeDesc> children) throws UDFArgumentException {
+    return newInstance(genericUDF, funcText, children, null);
+  }
+
   /**
    * Create a ExprNodeGenericFuncDesc based on the genericUDFClass and the
    * children parameters. If the function has an explicit name, the
@@ -227,7 +235,8 @@ public class ExprNodeGenericFuncDesc extends ExprNodeDesc implements
    */
   public static ExprNodeGenericFuncDesc newInstance(GenericUDF genericUDF,
       String funcText,
-      List<ExprNodeDesc> children) throws UDFArgumentException {
+      List<ExprNodeDesc> children,
+      ASTNode node) throws UDFArgumentException {
     ObjectInspector[] childrenOIs = new ObjectInspector[children.size()];
     for (int i = 0; i < childrenOIs.length; i++) {
       childrenOIs[i] = children.get(i).getWritableObjectInspector();
@@ -258,6 +267,10 @@ public class ExprNodeGenericFuncDesc extends ExprNodeDesc implements
     }
 
     ObjectInspector oi = genericUDF.initializeAndFoldConstants(childrenOIs);
+    if (node != null && node.getTypeInfo() != null && node.getTypeInfo() instanceof DecimalTypeInfo)  {
+      oi = TypeInfoUtils.getStandardWritableObjectInspectorFromTypeInfo(node.getTypeInfo());
+    }
+
 
     String[] requiredJars = genericUDF.getRequiredJars();
     String[] requiredFiles = genericUDF.getRequiredFiles();

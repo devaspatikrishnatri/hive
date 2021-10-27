@@ -1273,7 +1273,7 @@ public class TypeCheckProcFactory {
           }
         } else {
           desc = ExprNodeGenericFuncDesc.newInstance(genericUDF, funcText,
-              children);
+              children, expr);
         }
 
         // If the function is deterministic and the children are constants,

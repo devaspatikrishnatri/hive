@@ -786,7 +786,7 @@ public class ASTConverter {
       if (isFlat(call)) {
         return SqlFunctionConverter.buildAST(op, astNodeLst, 0);
       } else {
-        return SqlFunctionConverter.buildAST(op, astNodeLst);
+        return SqlFunctionConverter.buildAST(op, astNodeLst, call.getType());
       }
     }
   }
