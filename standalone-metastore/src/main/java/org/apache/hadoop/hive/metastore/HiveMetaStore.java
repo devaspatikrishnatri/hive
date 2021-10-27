@@ -1131,7 +1131,6 @@ public class HiveMetaStore extends ThriftHiveMetastore {
     public void shutdown() {
       cleanupRawStore();
       PerfLogger.getPerfLogger(false).cleanupPerfLogMetrics();
-      ThreadPool.shutdown();
     }
 
     @Override
