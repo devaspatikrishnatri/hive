@@ -38916,13 +38916,14 @@ final class Constant extends \Thrift\Type\TConstant {
   static protected $DRUID_CONFIG_PREFIX;
   static protected $JDBC_CONFIG_PREFIX;
   static protected $TABLE_IS_CTAS;
+  static protected $CTAS_LEGACY_CONFIG;
 
   static protected function init_DDL_TIME() {
     return "transient_lastDdlTime";
   }
 
   static protected function init_HMS_API() {
-    return "1.2.8";
+    return "1.2.9";
   }
 
   static protected function init_ACCESSTYPE_NONE() {
@@ -39047,6 +39048,10 @@ final class Constant extends \Thrift\Type\TConstant {
 
   static protected function init_TABLE_IS_CTAS() {
     return "created_with_ctas";
+  }
+
+  static protected function init_CTAS_LEGACY_CONFIG() {
+    return "create_table_as_external";
   }
 }
 

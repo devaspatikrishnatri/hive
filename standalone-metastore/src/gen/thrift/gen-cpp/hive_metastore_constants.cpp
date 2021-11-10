@@ -13,7 +13,7 @@ const hive_metastoreConstants g_hive_metastore_constants;
 hive_metastoreConstants::hive_metastoreConstants() {
   DDL_TIME = "transient_lastDdlTime";
 
-  HMS_API = "1.2.8";
+  HMS_API = "1.2.9";
 
   ACCESSTYPE_NONE = 1;
 
@@ -76,6 +76,8 @@ hive_metastoreConstants::hive_metastoreConstants() {
   JDBC_CONFIG_PREFIX = "hive.sql.";
 
   TABLE_IS_CTAS = "created_with_ctas";
+
+  CTAS_LEGACY_CONFIG = "create_table_as_external";
 
 }
 
