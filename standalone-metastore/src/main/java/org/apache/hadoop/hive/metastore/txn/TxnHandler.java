@@ -3435,7 +3435,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
             .append("   FROM \"COMPACTION_QUEUE\"")
             .append("     WHERE \"CQ_STATE\" = " + quoteChar(READY_FOR_CLEANING))
             .append(") AS compactions ")
-            .append(" WHERE \"CC_DATABASE\"=? AND \"CC_TABLE\"=?");
+            .append(" WHERE \"CC_DATABASE\" = ? AND \"CC_TABLE\" = ?");
         params.add(rqst.getDbname());
         params.add(rqst.getTablename());
         if (rqst.getPartitionnamesSize() > 0) {
@@ -3444,8 +3444,10 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
               Collections.nCopies(rqst.getPartitionnamesSize(), "?")));
           sb.append(")");
           params.addAll(rqst.getPartitionnames());
-        } else {
-          sb.append(" AND \"CC_PARTITION\" IS NULL");
+        }
+        if (rqst.isSetLastCompactionId()) {
+          sb.append(" AND \"CC_ID\" > ?");
+          params.add(String.valueOf(rqst.getLastCompactionId()));
         }
         sb.append(" ORDER BY \"CC_ID\" DESC");
 

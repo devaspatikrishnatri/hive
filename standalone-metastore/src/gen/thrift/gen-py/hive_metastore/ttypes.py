@@ -14321,14 +14321,16 @@ class GetLatestCommittedCompactionInfoRequest(object):
      - dbname
      - tablename
      - partitionnames
+     - lastCompactionId
 
     """
 
 
-    def __init__(self, dbname=None, tablename=None, partitionnames=None,):
+    def __init__(self, dbname=None, tablename=None, partitionnames=None, lastCompactionId=None,):
         self.dbname = dbname
         self.tablename = tablename
         self.partitionnames = partitionnames
+        self.lastCompactionId = lastCompactionId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -14359,6 +14361,11 @@ class GetLatestCommittedCompactionInfoRequest(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I64:
+                    self.lastCompactionId = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -14383,6 +14390,10 @@ class GetLatestCommittedCompactionInfoRequest(object):
             for iter685 in self.partitionnames:
                 oprot.writeString(iter685.encode('utf-8') if sys.version_info[0] == 2 else iter685)
             oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.lastCompactionId is not None:
+            oprot.writeFieldBegin('lastCompactionId', TType.I64, 4)
+            oprot.writeI64(self.lastCompactionId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -25773,6 +25784,7 @@ GetLatestCommittedCompactionInfoRequest.thrift_spec = (
     (1, TType.STRING, 'dbname', 'UTF8', None, ),  # 1
     (2, TType.STRING, 'tablename', 'UTF8', None, ),  # 2
     (3, TType.LIST, 'partitionnames', (TType.STRING, 'UTF8', False), None, ),  # 3
+    (4, TType.I64, 'lastCompactionId', None, None, ),  # 4
 )
 all_structs.append(GetLatestCommittedCompactionInfoResponse)
 GetLatestCommittedCompactionInfoResponse.thrift_spec = (

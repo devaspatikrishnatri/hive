@@ -9348,8 +9348,9 @@ void swap(ShowCompactResponse &a, ShowCompactResponse &b);
 std::ostream& operator<<(std::ostream& out, const ShowCompactResponse& obj);
 
 typedef struct _GetLatestCommittedCompactionInfoRequest__isset {
-  _GetLatestCommittedCompactionInfoRequest__isset() : partitionnames(false) {}
+  _GetLatestCommittedCompactionInfoRequest__isset() : partitionnames(false), lastCompactionId(false) {}
   bool partitionnames :1;
+  bool lastCompactionId :1;
 } _GetLatestCommittedCompactionInfoRequest__isset;
 
 class GetLatestCommittedCompactionInfoRequest : public virtual ::apache::thrift::TBase {
@@ -9357,13 +9358,14 @@ class GetLatestCommittedCompactionInfoRequest : public virtual ::apache::thrift:
 
   GetLatestCommittedCompactionInfoRequest(const GetLatestCommittedCompactionInfoRequest&);
   GetLatestCommittedCompactionInfoRequest& operator=(const GetLatestCommittedCompactionInfoRequest&);
-  GetLatestCommittedCompactionInfoRequest() : dbname(), tablename() {
+  GetLatestCommittedCompactionInfoRequest() : dbname(), tablename(), lastCompactionId(0) {
   }
 
   virtual ~GetLatestCommittedCompactionInfoRequest() noexcept;
   std::string dbname;
   std::string tablename;
   std::vector<std::string>  partitionnames;
+  int64_t lastCompactionId;
 
   _GetLatestCommittedCompactionInfoRequest__isset __isset;
 
@@ -9372,6 +9374,8 @@ class GetLatestCommittedCompactionInfoRequest : public virtual ::apache::thrift:
   void __set_tablename(const std::string& val);
 
   void __set_partitionnames(const std::vector<std::string> & val);
+
+  void __set_lastCompactionId(const int64_t val);
 
   bool operator == (const GetLatestCommittedCompactionInfoRequest & rhs) const
   {
@@ -9382,6 +9386,10 @@ class GetLatestCommittedCompactionInfoRequest : public virtual ::apache::thrift:
     if (__isset.partitionnames != rhs.__isset.partitionnames)
       return false;
     else if (__isset.partitionnames && !(partitionnames == rhs.partitionnames))
+      return false;
+    if (__isset.lastCompactionId != rhs.__isset.lastCompactionId)
+      return false;
+    else if (__isset.lastCompactionId && !(lastCompactionId == rhs.lastCompactionId))
       return false;
     return true;
   }
