@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
@@ -532,12 +533,12 @@ public abstract class HivePointLookupOptimizerRule extends RelOptRule {
       }
 
       private static boolean isColumnExpr(RexNode node) {
-        return !node.getType().isStruct() && HiveCalciteUtil.getInputRefs(node).size() > 0
+        return !node.getType().isStruct() && !HiveCalciteUtil.getInputRefs(node).isEmpty()
             && HiveCalciteUtil.isDeterministic(node);
       }
 
       private static boolean isConstExpr(RexNode node) {
-        return !node.getType().isStruct() && HiveCalciteUtil.getInputRefs(node).size() == 0
+        return !node.getType().isStruct() && HiveCalciteUtil.getInputRefs(node).isEmpty()
             && HiveCalciteUtil.isDeterministic(node);
       }
 
@@ -628,7 +629,7 @@ public abstract class HivePointLookupOptimizerRule extends RelOptRule {
 
       for (Entry<Set<RexNodeRef>, Collection<ConstraintGroup>> sa : assignmentGroups.asMap().entrySet()) {
         // skip opaque
-        if (sa.getKey().size() == 0) {
+        if (sa.getKey().isEmpty()) {
           continue;
         }
         // not enough equalities should not be handled
@@ -704,6 +705,7 @@ public abstract class HivePointLookupOptimizerRule extends RelOptRule {
         case AND:
           // IN clauses need to be combined by keeping only common elements
           operands = Lists.newArrayList(RexUtil.flattenAnd(call.getOperands()));
+
           for (int i = 0; i < operands.size(); i++) {
             RexNode operand = operands.get(i);
             if (operand.getKind() == SqlKind.IN) {
@@ -720,7 +722,11 @@ public abstract class HivePointLookupOptimizerRule extends RelOptRule {
                   expressions.add(expr);
                   stringToExpr.put(expr, inCall.getOperands().get(j));
                 }
-                inLHSExprToRHSExprs.get(ref).retainAll(expressions);
+                Collection<String> knownConstants = inLHSExprToRHSExprs.get(ref);
+                if (!shareSameType(knownConstants, expressions, stringToExpr)) {
+                  return call;
+                }
+                knownConstants.retainAll(expressions);
                 if (!inLHSExprToRHSExprs.containsKey(ref)) {
                   // Note that Multimap does not keep a key if all its values are removed.
                   // Hence, since there are no common expressions and it is within an AND,
@@ -775,6 +781,21 @@ public abstract class HivePointLookupOptimizerRule extends RelOptRule {
           return super.visitCall(call);
       }
       return node;
+    }
+
+    /**
+     * Check if the type of nodes in the two collections is homogeneous within the collections
+     * and identical between them.
+     * @param nodes1 the first collection of nodes
+     * @param nodes2 the second collection of nodes
+     * @return true if nodes in both collections is unique and identical, false otherwise
+     */
+    private static boolean shareSameType(Collection<String> nodes1, Collection<String> nodes2, Map<String,RexNode> stringToExpr) {
+      return Stream.of(nodes1, nodes2).flatMap(Collection::stream)
+          .map(stringToExpr::get)
+          .map(n -> n.getType().getSqlTypeName())
+          .distinct()
+          .count() == 1;
     }
 
     private static List<RexNode> createInClauses(RexBuilder rexBuilder, Map<String, RexNode> stringToExpr,

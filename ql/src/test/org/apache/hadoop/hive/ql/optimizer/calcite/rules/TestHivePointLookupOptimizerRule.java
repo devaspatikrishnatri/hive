@@ -61,6 +61,7 @@ public class TestHivePointLookupOptimizerRule {
     public int f1;
     public int f2;
     public int f3;
+    public double f4;
   }
 
   @Before
@@ -90,7 +91,7 @@ public class TestHivePointLookupOptimizerRule {
     return builder.call(SqlStdOperatorTable.AND, args);
   }
 
-  public RexNode eq(String field, int value) {
+  public RexNode eq(String field, Number value) {
     return builder.call(SqlStdOperatorTable.EQUALS,
         builder.field(field), builder.literal(value));
   }
@@ -122,6 +123,164 @@ public class TestHivePointLookupOptimizerRule {
     HiveFilter filter = (HiveFilter) optimizedRelNode;
     RexNode condition = filter.getCondition();
     assertEquals("AND(IN($0, 1, 2), IN($1, 3, 4))", condition.toString());
+  }
+
+  @Test
+  public void testInExprsMergedSingleOverlap() {
+
+    // @formatter:off
+    final RelNode basePlan = builder
+        .scan("t")
+        .filter(
+            and(
+                or(
+                    eq("f1",1),
+                    eq("f1",2)
+                ),
+                or(
+                    eq("f1",1),
+                    eq("f1",3)
+                )
+            )
+        )
+        .build();
+    // @formatter:on
+
+    planner.setRoot(basePlan);
+    RelNode optimizedRelNode = planner.findBestExp();
+
+    HiveFilter filter = (HiveFilter) optimizedRelNode;
+    RexNode condition = filter.getCondition();
+    assertEquals("IN($0, 1)", condition.toString());
+  }
+
+  @Test
+  public void testInExprsAndEqualsMerged() {
+
+    // @formatter:off
+    final RelNode basePlan = builder
+        .scan("t")
+        .filter(
+            and(
+                or(
+                    eq("f1",1),
+                    eq("f1",2)
+                ),
+                or(
+                    eq("f1",1),
+                    eq("f1",3)
+                ),
+                eq("f1",1)
+            )
+        )
+        .build();
+    // @formatter:on
+
+    planner.setRoot(basePlan);
+    RelNode optimizedRelNode = planner.findBestExp();
+
+    HiveFilter filter = (HiveFilter) optimizedRelNode;
+    RexNode condition = filter.getCondition();
+    assertEquals("AND(IN($0, 1), =($0, 1))", condition.toString());
+  }
+
+  @Test
+  public void testInExprsMergedMultipleOverlap() {
+
+    // @formatter:off
+    final RelNode basePlan = builder
+        .scan("t")
+        .filter(
+            and(
+                or(
+                    eq("f1",1),
+                    eq("f1",2),
+                    eq("f1",4),
+                    eq("f1",3)
+                ),
+                or(
+                    eq("f1",5),
+                    eq("f1",1),
+                    eq("f1",2),
+                    eq("f1",3)
+                )
+            )
+        )
+        .build();
+    // @formatter:on
+
+    planner.setRoot(basePlan);
+    RelNode optimizedRelNode = planner.findBestExp();
+
+    HiveFilter filter = (HiveFilter) optimizedRelNode;
+    RexNode condition = filter.getCondition();
+    assertEquals("IN($0, 1, 2, 3)", condition.toString());
+  }
+
+  @Test
+  public void testCaseWithConstantsOfDifferentType() {
+
+    // @formatter:off
+    final RelNode basePlan = builder
+        .scan("t")
+        .filter(
+            and(
+                or(
+                    eq("f1",1),
+                    eq("f1",2)
+                ),
+                eq("f1", 1.0),
+                or(
+                    eq("f4",3.0),
+                    eq("f4",4.1)
+                )
+            )
+        )
+        .build();
+    // @formatter:on
+
+    planner.setRoot(basePlan);
+    RelNode optimizedRelNode = planner.findBestExp();
+
+    HiveFilter filter = (HiveFilter) optimizedRelNode;
+    RexNode condition = filter.getCondition();
+    // ideally the result would be AND(=($0, 1), IN($3, 3.0E0:DOUBLE, 4.1E0:DOUBLE)), but we
+    // don't try to compare constants of different type for the same column, even if comparable
+    assertEquals("AND(IN($0, 1, 2), IN($3, 3.0E0:DOUBLE, 4.1E0:DOUBLE), =($0, 1.0E0:DOUBLE))",
+        condition.toString());
+  }
+
+  @Test
+  public void testCaseInAndEqualsWithConstantsOfDifferentType() {
+
+    // @formatter:off
+    final RelNode basePlan = builder
+        .scan("t")
+        .filter(
+            and(
+                or(
+                    eq("f1",1),
+                    eq("f1",2)
+                ),
+                eq("f1",1),
+                or(
+                    eq("f4",3.0),
+                    eq("f4",4.1)
+                ),
+                eq("f4",4.1)
+            )
+        )
+        .build();
+    // @formatter:on
+
+    planner.setRoot(basePlan);
+    RelNode optimizedRelNode = planner.findBestExp();
+
+    HiveFilter filter = (HiveFilter) optimizedRelNode;
+    RexNode condition = filter.getCondition();
+    assertEquals("AND(IN($0, 1, 2), IN($3, 3.0E0:DOUBLE, 4.1E0:DOUBLE), =($0, 1), =($3, 4.1E0:DOUBLE))",
+        condition.toString());
+    
   }
 
   @Test
@@ -196,11 +355,8 @@ public class TestHivePointLookupOptimizerRule {
                         or(eq("f2",3),eq("f2",4)),
                         or(eq("f3",3),eq("f3",4))
                         )
-
-
                 )
               ))
-
           .build();
     // @formatter:on
 
@@ -210,7 +366,8 @@ public class TestHivePointLookupOptimizerRule {
     HiveFilter filter = (HiveFilter) optimizedRelNode;
     RexNode condition = filter.getCondition();
     System.out.println(condition);
-    assertEquals("AND(IN($0, 1, 2), OR(AND(IN($1, 1, 2), IN($2, 1, 2)), AND(IN($1, 3, 4), IN($2, 3, 4))))",
+    assertEquals("AND(IN($0, 1, 2), OR(AND(IN($1, 1, 2), IN($2, 1, 2)), "
+            + "AND(IN($1, 3, 4), IN($2, 3, 4))))",
         condition.toString());
   }
 
