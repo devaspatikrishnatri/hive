@@ -50,8 +50,16 @@ public enum DatabaseProduct {
     }
   }
 
+  public final boolean isMYSQL() {
+    return this == MYSQL;
+  }
+
   public final boolean isORACLE() {
     return this == ORACLE;
+  }
+
+  public final boolean isPOSTGRES() {
+    return this == POSTGRES;
   }
 
   public static boolean isDeadlock(DatabaseProduct dbProduct, SQLException e) {
