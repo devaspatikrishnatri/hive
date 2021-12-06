@@ -93,6 +93,8 @@ public class PerfLogger {
   public static final String LOAD_PARTITION = "LoadPartition";
   public static final String LOAD_DYNAMIC_PARTITIONS = "LoadDynamicPartitions";
 
+  public static final String HIVE_GET_TABLE_COLUMN_STATS = "getTableColumnStatistics";
+
   protected final Map<String, Long> startTimes = new HashMap<String, Long>();
   protected final Map<String, Long> endTimes = new HashMap<String, Long>();
 

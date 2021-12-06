@@ -5741,7 +5741,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
       List<SQLPrimaryKey> primaryKeys = getMSC().getPrimaryKeys(new PrimaryKeysRequest(dbName, tblName));
       if (onlyReliable && primaryKeys != null && !primaryKeys.isEmpty()) {
         primaryKeys = primaryKeys.stream()
-          .filter(pk -> pk.isRely_cstr())
+          .filter(SQLPrimaryKey::isRely_cstr)
           .collect(Collectors.toList());
       }
       return new PrimaryKeyInfo(primaryKeys, tblName, dbName);
@@ -5780,7 +5780,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
       List<SQLForeignKey> foreignKeys = getMSC().getForeignKeys(new ForeignKeysRequest(null, null, dbName, tblName));
       if (onlyReliable && foreignKeys != null && !foreignKeys.isEmpty()) {
         foreignKeys = foreignKeys.stream()
-          .filter(fk -> fk.isRely_cstr())
+          .filter(SQLForeignKey::isRely_cstr)
           .collect(Collectors.toList());
       }
       return new ForeignKeyInfo(foreignKeys, tblName, dbName);
@@ -5820,7 +5820,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
               new UniqueConstraintsRequest(getDefaultCatalog(conf), dbName, tblName));
       if (onlyReliable && uniqueConstraints != null && !uniqueConstraints.isEmpty()) {
         uniqueConstraints = uniqueConstraints.stream()
-          .filter(uk -> uk.isRely_cstr())
+          .filter(SQLUniqueConstraint::isRely_cstr)
           .collect(Collectors.toList());
       }
       return new UniqueConstraint(uniqueConstraints, tblName, dbName);
@@ -5868,7 +5868,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
               new NotNullConstraintsRequest(getDefaultCatalog(conf), dbName, tblName));
       if (notNullConstraints != null && !notNullConstraints.isEmpty()) {
         notNullConstraints = notNullConstraints.stream()
-          .filter(nnc -> nnc.isEnable_cstr())
+          .filter(SQLNotNullConstraint::isEnable_cstr)
           .collect(Collectors.toList());
       }
       return new NotNullConstraint(notNullConstraints, tblName, dbName);
@@ -5892,7 +5892,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
           new CheckConstraintsRequest(getDefaultCatalog(conf), dbName, tblName));
       if (checkConstraints != null && !checkConstraints.isEmpty()) {
         checkConstraints = checkConstraints.stream()
-            .filter(nnc -> nnc.isEnable_cstr())
+            .filter(SQLCheckConstraint::isEnable_cstr)
             .collect(Collectors.toList());
       }
       return new CheckConstraint(checkConstraints);
@@ -5915,7 +5915,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
           new DefaultConstraintsRequest(getDefaultCatalog(conf), dbName, tblName));
       if (defaultConstraints != null && !defaultConstraints.isEmpty()) {
         defaultConstraints = defaultConstraints.stream()
-            .filter(nnc -> nnc.isEnable_cstr())
+            .filter(SQLDefaultConstraint::isEnable_cstr)
             .collect(Collectors.toList());
       }
       return new DefaultConstraint(defaultConstraints, tblName, dbName);
@@ -5931,7 +5931,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
               new NotNullConstraintsRequest(getDefaultCatalog(conf), dbName, tblName));
       if (onlyReliable && notNullConstraints != null && !notNullConstraints.isEmpty()) {
         notNullConstraints = notNullConstraints.stream()
-          .filter(nnc -> nnc.isRely_cstr())
+          .filter(SQLNotNullConstraint::isRely_cstr)
           .collect(Collectors.toList());
       }
       return new NotNullConstraint(notNullConstraints, tblName, dbName);

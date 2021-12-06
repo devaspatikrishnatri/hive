@@ -57,8 +57,8 @@ import org.apache.hadoop.hive.ql.metadata.Partition;
 import org.apache.hadoop.hive.ql.metadata.PrimaryKeyInfo;
 import org.apache.hadoop.hive.ql.metadata.Table;
 import org.apache.hadoop.hive.ql.metadata.UniqueConstraint;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.apache.hadoop.hive.conf.Constants.MATERIALIZED_VIEW_REWRITING_TIME_WINDOW;
 
@@ -201,19 +201,19 @@ public class JsonMetaDataFormatter implements MetaDataFormatter {
       if (PrimaryKeyInfo.isPrimaryKeyInfoNotEmpty(tbl.getPrimaryKeyInfo())) {
         builder.put("primaryKeyInfo", tbl.getPrimaryKeyInfo());
       }
-      if (ForeignKeyInfo.isForeignKeyInfoNotEmpty(tbl.getForeignKeyInfo())) {
+      if (ForeignKeyInfo.isNotEmpty(tbl.getForeignKeyInfo())) {
         builder.put("foreignKeyInfo", tbl.getForeignKeyInfo());
       }
-      if (UniqueConstraint.isUniqueConstraintNotEmpty(tbl.getUniqueKeyInfo())) {
+      if (UniqueConstraint.isNotEmpty(tbl.getUniqueKeyInfo())) {
         builder.put("uniqueConstraintInfo", tbl.getUniqueKeyInfo());
       }
-      if (NotNullConstraint.isNotNullConstraintNotEmpty(tbl.getNotNullConstraint())) {
+      if (NotNullConstraint.isNotEmpty(tbl.getNotNullConstraint())) {
         builder.put("notNullConstraintInfo", tbl.getNotNullConstraint());
       }
-      if (DefaultConstraint.isCheckConstraintNotEmpty(tbl.getDefaultConstraint())) {
+      if (DefaultConstraint.isNotEmpty(tbl.getDefaultConstraint())) {
         builder.put("defaultConstraintInfo", tbl.getDefaultConstraint());
       }
-      if (CheckConstraint.isCheckConstraintNotEmpty(tbl.getCheckConstraint())) {
+      if (CheckConstraint.isNotEmpty(tbl.getCheckConstraint())) {
         builder.put("checkConstraintInfo", tbl.getCheckConstraint());
       }
       if (tbl.getStorageHandlerInfo() != null) {
