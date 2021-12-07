@@ -92,11 +92,11 @@ import com.google.common.collect.Lists;
  * Mostly uses bucketed tables
  */
 public class TestTxnCommands extends TxnCommandsBaseForTests {
-
   static final private Logger LOG = LoggerFactory.getLogger(TestTxnCommands.class);
   private static final String TEST_DATA_DIR = new File(System.getProperty("java.io.tmpdir") +
       File.separator + TestTxnCommands.class.getCanonicalName() + "-" + System.currentTimeMillis()
   ).getPath().replaceAll("\\\\", "/");
+
   @Override
   protected String getTestDataDir() {
     return TEST_DATA_DIR;
@@ -1154,7 +1154,7 @@ public class TestTxnCommands extends TxnCommandsBaseForTests {
       }
     }, 5000);
     long start = System.currentTimeMillis();
-    runStatementOnDriver("alter table "+ TestTxnCommands2.Table.ACIDTBL +" compact 'major' AND WAIT");
+    runStatementOnDriver("alter table " + Table.ACIDTBL + " compact 'major' AND WAIT");
     //no Worker so it stays in initiated state
     //w/o AND WAIT the above alter table retunrs almost immediately, so the test here to check that
     //> 2 seconds pass, i.e. that the command in Driver actually blocks before cancel is fired
@@ -1199,7 +1199,7 @@ public class TestTxnCommands extends TxnCommandsBaseForTests {
         BucketCodec.V1.encode(new AcidOutputFormat.Options(hiveConf).bucket(1)));
 
     //run Compaction
-    runStatementOnDriver("alter table "+ TestTxnCommands2.Table.NONACIDORCTBL +" compact 'major'");
+    runStatementOnDriver("alter table " + Table.NONACIDORCTBL + " compact 'major'");
     TestTxnCommands2.runWorker(hiveConf);
 
     query = "select ROW__ID, a, b" + (isVectorized ? "" : ", INPUT__FILE__NAME") + " from "
@@ -1282,14 +1282,14 @@ public class TestTxnCommands extends TxnCommandsBaseForTests {
     //create 1 delta file bucket_00000
     runStatementOnDriver("insert into T" + makeValuesClause(data));
     runStatementOnDriver("update T set a=3 where b=2");
-    
+
     FileSystem fs = FileSystem.get(hiveConf);
     RemoteIterator<LocatedFileStatus> files = fs.listFiles(new Path(getWarehouseDir(), "t"), true);
     CompactorTestUtilities.checkAcidVersion(files, fs, enableVersionFile,
         new String[] { AcidUtils.DELTA_PREFIX, AcidUtils.DELETE_DELTA_PREFIX });
 
     runStatementOnDriver("alter table T compact 'minor'");
-    TestTxnCommands2.runWorker(hiveConf);
+    runWorker(hiveConf);
 
     // Check status of compaction job
     TxnStore txnHandler = TxnUtils.getTxnStore(hiveConf);
@@ -1308,7 +1308,7 @@ public class TestTxnCommands extends TxnCommandsBaseForTests {
     runStatementOnDriver("insert into T" + makeValuesClause(data));
 
     runStatementOnDriver("alter table T compact 'major'");
-    TestTxnCommands2.runWorker(hiveConf);
+    runWorker(hiveConf);
 
     // Check status of compaction job
     txnHandler = TxnUtils.getTxnStore(hiveConf);
