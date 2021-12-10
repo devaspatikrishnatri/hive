@@ -31,12 +31,15 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -152,7 +155,7 @@ class MetaStoreDirectSql {
    * @return The concatenated list
    * @throws MetaException If the list contains wrong data
    */
-  public static <T> String getIdListForIn(List<T> objectIds) throws MetaException {
+  public static <T> String getIdListForIn(Collection<T> objectIds) throws MetaException {
     return objectIds.stream()
         .map(i -> i.toString())
         .collect(Collectors.joining(","));
@@ -2508,7 +2511,7 @@ class MetaStoreDirectSql {
     List<Object[]> sqlResult = MetastoreDirectSqlUtils.ensureList(MetastoreDirectSqlUtils.executeWithArray(query, null, queryText));
 
     List<Object> sdIdList = new ArrayList<>(partitionIdList.size());
-    List<Object> columnDescriptorIdList = new ArrayList<>(1);
+    List<Long> columnDescriptorIdList = new ArrayList<>(1);
     List<Object> serdeIdList = new ArrayList<>(partitionIdList.size());
 
     if (!sqlResult.isEmpty()) {
@@ -2686,33 +2689,30 @@ class MetaStoreDirectSql {
    * @throws MetaException If there is an SQL exception during the execution it converted to
    * MetaException
    */
-  private void dropDanglingColumnDescriptors(List<Object> columnDescriptorIdList)
+  private void dropDanglingColumnDescriptors(List<Long> columnDescriptorIdList)
       throws MetaException {
     String queryText;
     String colIds = getIdListForIn(columnDescriptorIdList);
 
     // Drop column descriptor, if no relation left
     queryText =
-        "SELECT " + SDS + ".\"CD_ID\", count(1) "
+        "SELECT " + SDS + ".\"CD_ID\" "
             + "from " + SDS + " "
             + "WHERE " + SDS + ".\"CD_ID\" in (" + colIds + ") "
             + "GROUP BY " + SDS + ".\"CD_ID\"";
     Query query = pm.newQuery("javax.jdo.query.SQL", queryText);
-    List<Object[]> sqlResult = MetastoreDirectSqlUtils.ensureList(MetastoreDirectSqlUtils.executeWithArray(query, null, queryText));
-
-    List<Object> danglingColumnDescriptorIdList = new ArrayList<>(columnDescriptorIdList.size());
+    List<Long> sqlResult = MetastoreDirectSqlUtils.executeWithArray(query, null, queryText);
+    Set<Long> danglingColumnDescriptorIdSet = new HashSet<>(columnDescriptorIdList);
     if (!sqlResult.isEmpty()) {
-      for (Object[] fields : sqlResult) {
-        if (extractSqlInt(fields[1]) == 0) {
-          danglingColumnDescriptorIdList.add(MetastoreDirectSqlUtils.extractSqlLong(fields[0]));
-        }
+      for (Long cdId : sqlResult) {
+        // the returned CD is not dangling, so remove it from the list
+        danglingColumnDescriptorIdSet.remove(cdId);
       }
     }
     query.closeAll();
-
-    if (!danglingColumnDescriptorIdList.isEmpty()) {
+    if (!danglingColumnDescriptorIdSet.isEmpty()) {
       try {
-        String danglingCDIds = getIdListForIn(danglingColumnDescriptorIdList);
+        String danglingCDIds = getIdListForIn(danglingColumnDescriptorIdSet);
 
         // Drop the columns_v2
         queryText = "delete from " + COLUMNS_V2 + " where \"CD_ID\" in (" + danglingCDIds + ")";

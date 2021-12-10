@@ -568,7 +568,7 @@ public class TestObjectStore {
    * @throws SQLException
    */
   @Test
-  public void testDirectSQLDropParitionsCleanup() throws MetaException, InvalidObjectException,
+  public void testDirectSQLDropPartitionsCleanup() throws MetaException, InvalidObjectException,
       NoSuchObjectException, SQLException, InvalidInputException {
 
     createPartitionedTable(true, true);
@@ -607,6 +607,38 @@ public class TestObjectStore {
     checkBackendTableSize("SORT_COLS", 0);
     checkBackendTableSize("SERDE_PARAMS", 0);
     checkBackendTableSize("SERDES", 1); // Table has a serde
+  }
+
+  @Test
+  public void testDirectSQLCDsCleanup() throws Exception {
+    createPartitionedTable(true, true);
+    // Checks there is only one CD before altering partition
+    checkBackendTableSize("PARTITIONS", 3);
+    checkBackendTableSize("CDS", 1);
+    checkBackendTableSize("COLUMNS_V2", 5);
+    // Alters a partition to create a new column descriptor
+    List<String> partVals = Arrays.asList("a0");
+    try (AutoCloseable c = deadline()) {
+      Partition part = objectStore.getPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, partVals);
+      StorageDescriptor newSd = part.getSd().deepCopy();
+      newSd.addToCols(new FieldSchema("test_add_col", "int", null));
+      Partition newPart = part.deepCopy();
+      newPart.setSd(newSd);
+      objectStore.alterPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, partVals, newPart, null);
+    }
+    // Checks now there is one more column descriptor
+    checkBackendTableSize("PARTITIONS", 3);
+    checkBackendTableSize("CDS", 2);
+    checkBackendTableSize("COLUMNS_V2", 11);
+    // drop the partitions
+    try (AutoCloseable c = deadline()) {
+      objectStore.dropPartitionsInternal(DEFAULT_CATALOG_NAME, DB1, TABLE1,
+          Arrays.asList("test_part_col=a0", "test_part_col=a1", "test_part_col=a2"), true, false);
+    }
+    // Checks if the data connected to the partitions is dropped
+    checkBackendTableSize("PARTITIONS", 0);
+    checkBackendTableSize("CDS", 1); // Table has a CD
+    checkBackendTableSize("COLUMNS_V2", 5);
   }
 
   @Test
