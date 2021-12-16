@@ -266,14 +266,14 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf {
    */
   public function add_check_constraint(\metastore\AddCheckConstraintRequest $req);
   /**
-   * @param \metastore\Table $tbl
+   * @param \metastore\CreateTableRequest $request
    * @return \metastore\Table
    * @throws \metastore\AlreadyExistsException
    * @throws \metastore\InvalidObjectException
    * @throws \metastore\MetaException
    * @throws \metastore\NoSuchObjectException
    */
-  public function translate_table_dryrun(\metastore\Table $tbl);
+  public function translate_table_dryrun(\metastore\CreateTableRequest $request);
   /**
    * @param string $dbname
    * @param string $name
@@ -3680,16 +3680,16 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
     return;
   }
 
-  public function translate_table_dryrun(\metastore\Table $tbl)
+  public function translate_table_dryrun(\metastore\CreateTableRequest $request)
   {
-    $this->send_translate_table_dryrun($tbl);
+    $this->send_translate_table_dryrun($request);
     return $this->recv_translate_table_dryrun();
   }
 
-  public function send_translate_table_dryrun(\metastore\Table $tbl)
+  public function send_translate_table_dryrun(\metastore\CreateTableRequest $request)
   {
     $args = new \metastore\ThriftHiveMetastore_translate_table_dryrun_args();
-    $args->tbl = $tbl;
+    $args->request = $request;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -22567,23 +22567,23 @@ class ThriftHiveMetastore_translate_table_dryrun_args {
   static $_TSPEC;
 
   /**
-   * @var \metastore\Table
+   * @var \metastore\CreateTableRequest
    */
-  public $tbl = null;
+  public $request = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'tbl',
+          'var' => 'request',
           'type' => TType::STRUCT,
-          'class' => '\metastore\Table',
+          'class' => '\metastore\CreateTableRequest',
           ),
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['tbl'])) {
-        $this->tbl = $vals['tbl'];
+      if (isset($vals['request'])) {
+        $this->request = $vals['request'];
       }
     }
   }
@@ -22609,8 +22609,8 @@ class ThriftHiveMetastore_translate_table_dryrun_args {
       {
         case 1:
           if ($ftype == TType::STRUCT) {
-            $this->tbl = new \metastore\Table();
-            $xfer += $this->tbl->read($input);
+            $this->request = new \metastore\CreateTableRequest();
+            $xfer += $this->request->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -22628,12 +22628,12 @@ class ThriftHiveMetastore_translate_table_dryrun_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ThriftHiveMetastore_translate_table_dryrun_args');
-    if ($this->tbl !== null) {
-      if (!is_object($this->tbl)) {
+    if ($this->request !== null) {
+      if (!is_object($this->request)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('tbl', TType::STRUCT, 1);
-      $xfer += $this->tbl->write($output);
+      $xfer += $output->writeFieldBegin('request', TType::STRUCT, 1);
+      $xfer += $this->request->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
