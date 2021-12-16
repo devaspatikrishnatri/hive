@@ -140,7 +140,7 @@
     <commons-lang3.version>3.9</commons-lang3.version>
     <commons-math3.version>3.6.1</commons-math3.version>
     <commons-pool.version>1.5.4</commons-pool.version>
-    <cdh.logredactor.version>2.0.8</cdh.logredactor.version>
+    <cdh.logredactor.version>2.0.11</cdh.logredactor.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <derby.version>10.14.2.0</derby.version>
     <dropwizard.version>3.1.0</dropwizard.version>
@@ -188,7 +188,7 @@
     <libfb303.version>0.9.3</libfb303.version>
     <libthrift.version>0.9.3-1</libthrift.version>
     <log4j.version>1.2.17-cloudera1</log4j.version>
-    <log4j2.version>2.13.3</log4j2.version>
+    <log4j2.version>2.16.0</log4j2.version>
     <opencsv.version>2.3</opencsv.version>
     <orc.version>1.5.1.7.1.7.0-SNAPSHOT</orc.version>
     <mockito-all.version>1.10.19</mockito-all.version>
