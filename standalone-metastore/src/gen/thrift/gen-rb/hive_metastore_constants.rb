@@ -75,3 +75,5 @@ TABLE_IS_CTAS = %q"created_with_ctas"
 
 CTAS_LEGACY_CONFIG = %q"create_table_as_external"
 
+DEFAULT_TABLE_TYPE = %q"defaultTableType"
+

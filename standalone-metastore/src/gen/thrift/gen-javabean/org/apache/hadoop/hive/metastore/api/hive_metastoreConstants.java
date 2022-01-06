@@ -104,4 +104,6 @@ import org.slf4j.LoggerFactory;
 
   public static final String CTAS_LEGACY_CONFIG = "create_table_as_external";
 
+  public static final java.lang.String DEFAULT_TABLE_TYPE = "defaultTableType";
+
 }
