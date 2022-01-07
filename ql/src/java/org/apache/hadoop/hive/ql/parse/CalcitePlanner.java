@@ -1969,10 +1969,13 @@ public class CalcitePlanner extends SemanticAnalyzer {
       // 5. Run other optimizations that do not need stats
       perfLogger.PerfLogBegin(this.getClass().getName(), PerfLogger.OPTIMIZER);
       calciteOptimizedPlan = hepPlan(calciteOptimizedPlan, false, mdProvider.getMetadataProvider(), null,
-          HepMatchOrder.BOTTOM_UP, ProjectRemoveRule.INSTANCE, HiveUnionMergeRule.INSTANCE,
-          HiveAggregateProjectMergeRule.INSTANCE, HiveProjectMergeRule.INSTANCE_NO_FORCE,
-          new HiveUnionSimpleSelectsToInlineTableRule(dummyTableScan),
-              HiveJoinCommuteRule.INSTANCE, HiveAggregateSortLimitRule.getInstance(conf));
+              HepMatchOrder.BOTTOM_UP, ProjectRemoveRule.INSTANCE,
+              HiveUnionMergeRule.INSTANCE,
+              HiveAggregateProjectMergeRule.INSTANCE,
+              HiveProjectMergeRule.INSTANCE_NO_FORCE,
+              new HiveUnionSimpleSelectsToInlineTableRule(dummyTableScan),
+              HiveJoinCommuteRule.INSTANCE,
+              new HiveAggregateSortLimitRule(conf.getBoolVar(ConfVars.HIVE_DEFAULT_NULLS_LAST)));
       perfLogger.PerfLogEnd(this.getClass().getName(), PerfLogger.OPTIMIZER, "Calcite: Optimizations without stats 1");
 
       // 6. Run aggregate-join transpose (cost based)
