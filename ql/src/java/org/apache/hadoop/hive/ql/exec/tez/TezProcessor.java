@@ -36,6 +36,7 @@ import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.util.StringUtils;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.tez.common.TezUtils;
 import org.apache.tez.mapreduce.processor.MRTaskReporter;
 import org.apache.tez.runtime.api.AbstractLogicalIOProcessor;
@@ -175,6 +176,7 @@ public class TezProcessor extends AbstractLogicalIOProcessor {
     perfLogger.PerfLogBegin(CLASS_NAME, PerfLogger.TEZ_INITIALIZE_PROCESSOR);
     Configuration conf = TezUtils.createConfFromBaseConfAndPayload(getContext());
     this.jobConf = new JobConf(conf);
+    this.jobConf.getCredentials().mergeAll(UserGroupInformation.getCurrentUser().getCredentials());
     this.processorContext = getContext();
     ExecutionContext execCtx = processorContext.getExecutionContext();
     if (execCtx instanceof Hook) {
