@@ -19,10 +19,7 @@ package org.apache.hadoop.hive.ql;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hive.conf.Constants;
 import org.apache.hadoop.hive.conf.HiveConf;
-import org.apache.hadoop.hive.metastore.IMetaStoreClient;
-import org.apache.hadoop.hive.metastore.api.ColumnStatisticsObj;
 import org.apache.hadoop.hive.metastore.api.ShowCompactRequest;
 import org.apache.hadoop.hive.metastore.api.ShowCompactResponse;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
@@ -40,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -783,15 +779,18 @@ ekoifman:apache-hive-3.0.0-SNAPSHOT-bin ekoifman$ tree /Users/ekoifman/dev/hiver
     runStatementOnDriver("insert into T partition(p=1,q) " + makeValuesClause(targetVals));
     runStatementOnDriver("analyze table T  partition(p=1) compute statistics for columns");
 
-    IMetaStoreClient hms = Hive.get().getMSC();
-    List<String> partNames = new ArrayList<>();
-    partNames.add("p=1/q=2");
-    List<String> colNames = new ArrayList<>();
-    colNames.add("a");
-    Map<String, List<ColumnStatisticsObj>> map = hms.getPartitionColumnStatistics("default",
-      "T", partNames, colNames, Constants.HIVE_ENGINE);
-    Assert.assertEquals(4, map.get(partNames.get(0)).get(0).getStatsData().getLongStats().getHighValue());
-
+    //Check basic stats for p=1/q=2
+    org.apache.hadoop.hive.ql.metadata.Table hiveTable = Hive.get().getTable("T");
+    List<org.apache.hadoop.hive.ql.metadata.Partition> partitions = Hive.get().getPartitions(hiveTable);
+    Map<String, String> parameters = partitions
+            .stream()
+            .filter(p -> p.getName().equals("p=1/q=2"))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Could not get Partition"))
+            .getParameters();
+    Assert.assertEquals("The number of files is differing from the expected", "1", parameters.get("numFiles"));
+    Assert.assertEquals("The number of rows is differing from the expected", "2", parameters.get("numRows"));
+    Assert.assertEquals("The total table size is differing from the expected", "686", parameters.get("totalSize"));
 
     int[][] targetVals2 = {{5, 1, 1}, {5, 2, 2}, {5, 3, 1}, {5, 4, 2}};
     runStatementOnDriver("insert into T partition(p=1,q) " + makeValuesClause(targetVals2));
@@ -835,10 +834,19 @@ ekoifman:apache-hive-3.0.0-SNAPSHOT-bin ekoifman$ tree /Users/ekoifman/dev/hiver
     Assert.assertEquals("Unexpected 0 compaction state", TxnStore.CLEANING_RESPONSE, resp.getCompacts().get(0).getState());
     Assert.assertTrue(resp.getCompacts().get(0).getHadoopJobId().startsWith("job_local"));
 
-    //now check that stats were updated
-    map = hms.getPartitionColumnStatistics("default","T", partNames, colNames, Constants.HIVE_ENGINE);
-    Assert.assertEquals("", 5, map.get(partNames.get(0)).get(0).getStatsData().getLongStats().getHighValue());
+    //Check basic stats are updated for p=1/q=2, and compaction is done (numFiles=1)
+    partitions = Hive.get().getPartitions(hiveTable);
+    parameters = partitions
+            .stream()
+            .filter(p -> p.getName().equals("p=1/q=2"))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Could not get Partition"))
+            .getParameters();
+    Assert.assertEquals("The number of files is differing from the expected", "1", parameters.get("numFiles"));
+    Assert.assertEquals("The number of rows is differing from the expected", "4", parameters.get("numRows"));
+    Assert.assertEquals("The total table size is differing from the expected", "698", parameters.get("totalSize"));
   }
+
   @Test
   public void testDefault() throws Exception {
     hiveConf.set(MetastoreConf.ConfVars.CREATE_TABLES_AS_ACID.getVarname(), "true");
