@@ -176,6 +176,9 @@ public final class TxnDbUtil {
           " CQ_META_INFO varchar(2048) for bit data," +
           " CQ_HADOOP_JOB_ID varchar(32)," +
           " CQ_ERROR_MESSAGE clob," +
+          " CQ_NEXT_TXN_ID bigint," +
+          " CQ_TXN_ID bigint," +
+          " CQ_COMMIT_TIME bigint," +
           " CQ_INITIATOR_ID varchar(128)," +
           " CQ_INITIATOR_VERSION varchar(128)," +
           " CQ_WORKER_VERSION varchar(128))");

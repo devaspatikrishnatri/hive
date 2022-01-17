@@ -593,7 +593,7 @@ public class TestCompactionMetrics  extends CompactorTest {
 
     txnHandler.cleanTxnToWriteIdTable();
     runAcidMetricService();
-    Assert.assertEquals(2,
+    Assert.assertEquals(24,
         Metrics.getOrCreateGauge(MetricsConstants.NUM_TXN_TO_WRITEID).intValue());
 
     start = System.currentTimeMillis();

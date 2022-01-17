@@ -49,4 +49,12 @@ public class ThrowingTxnHandler extends CompactionTxnHandler {
     return super.showCompact(rqst);
 
   }
+
+  @Override
+  public long findMinOpenTxnId() throws MetaException {
+    if (doThrow) {
+      throw new RuntimeException("during findMinOpenTxnId");
+    }
+    return super.findMinOpenTxnId();
+  }
 }

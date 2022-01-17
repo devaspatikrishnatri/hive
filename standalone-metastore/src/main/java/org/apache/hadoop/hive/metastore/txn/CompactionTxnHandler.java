@@ -21,6 +21,7 @@ import org.apache.hadoop.hive.common.classification.RetrySemantics;
 import org.apache.hadoop.hive.metastore.api.CompactionType;
 import org.apache.hadoop.hive.metastore.api.FindNextCompactRequest;
 import org.apache.hadoop.hive.metastore.api.MetaException;
+import org.apache.hadoop.hive.metastore.api.TxnType;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf.ConfVars;
 import org.apache.hadoop.util.StringUtils;
@@ -952,7 +953,7 @@ class CompactionTxnHandler extends TxnHandler {
         dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
         stmt = dbConn.createStatement();
         String sqlText = "UPDATE \"COMPACTION_QUEUE\" SET \"CQ_HIGHEST_WRITE_ID\" = " +
-            ci.highestWriteId + ", \"CQ_RUN_AS\" = " + quoteString(ci.runAs) +
+            ci.highestWriteId + ", \"CQ_RUN_AS\" = " + quoteString(ci.runAs) + ", \"CQ_TXN_ID\" = " + compactionTxnId +
             " WHERE \"CQ_ID\" = " + ci.id;
         if(LOG.isDebugEnabled()) {
           LOG.debug("About to execute: " + sqlText);
@@ -1361,6 +1362,16 @@ class CompactionTxnHandler extends TxnHandler {
       }
     } catch (RetryException e) {
       setHadoopJobId(hadoopJobId, id);
+    }
+  }
+
+  @Override
+  protected void updateCommitIdAndCleanUpMetadata(Statement stmt, long txnid, TxnType txnType, Long commitId,
+      long tempId) throws SQLException, MetaException {
+    super.updateCommitIdAndCleanUpMetadata(stmt, txnid, txnType, commitId, tempId);
+    if (txnType == TxnType.COMPACTION) {
+      stmt.execute("UPDATE \"COMPACTION_QUEUE\" SET \"CQ_NEXT_TXN_ID\" = " + commitId + ", \"CQ_COMMIT_TIME\" = " +
+          TxnDbUtil.getEpochFn(dbProduct) + " WHERE \"CQ_TXN_ID\" = " + txnid);
     }
   }
 }

@@ -47,8 +47,7 @@ import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
 import org.apache.hadoop.hive.ql.io.AcidUtils;
-import org.apache.hadoop.hive.ql.io.AcidUtils.Directory;
-import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedBase;
+import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedBaseLight;
 import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedDelta;
 import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedDeltaLight;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -335,7 +334,7 @@ public class Cleaner extends MetaStoreCompactorThread {
     return true;
   }
 
-  private boolean hasDataBelowWatermark(Directory acidDir, FileSystem fs, Path path, long highWatermark) throws IOException {
+  private boolean hasDataBelowWatermark(AcidDirectory acidDir, FileSystem fs, Path path, long highWatermark) throws IOException {
     Set<Path> acidPaths = new HashSet<>();
     for (ParsedDelta delta : acidDir.getCurrentDirectories()) {
       acidPaths.add(delta.getPath());
@@ -361,7 +360,7 @@ public class Cleaner extends MetaStoreCompactorThread {
       return false;
     }
     if (fn.startsWith(AcidUtils.BASE_PREFIX)) {
-      ParsedBase b = ParsedBase.parseBase(p);
+      ParsedBaseLight b = AcidUtils.ParsedBase.parseBase(p);
       return b.getWriteId() < highWatermark;
     }
     if (fn.startsWith(AcidUtils.DELTA_PREFIX) || fn.startsWith(AcidUtils.DELETE_DELTA_PREFIX)) {

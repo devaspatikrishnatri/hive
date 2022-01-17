@@ -65,11 +65,7 @@ public class TestCleaner extends CompactorTest {
     burnThroughTransactions("default", "camtc", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "camtc", CompactionType.MAJOR);
-    txnHandler.compact(rqst);
-    CompactionInfo ci = txnHandler.findNextToCompact(new FindNextCompactRequest("fred", "4.0.0"));
-    ci.runAs = System.getProperty("user.name");
-    txnHandler.updateCompactorState(ci, openTxn());
-    txnHandler.markCompacted(ci);
+    compactInTxn(rqst);
 
     startCleaner();
 

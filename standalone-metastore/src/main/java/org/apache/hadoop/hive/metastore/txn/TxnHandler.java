@@ -1238,7 +1238,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     }
   }
 
-  private void updateCommitIdAndCleanUpMetadata(Statement stmt, long txnid, TxnType txnType, Long commitId, long tempId) throws SQLException {
+  protected void updateCommitIdAndCleanUpMetadata(Statement stmt, long txnid, TxnType txnType, Long commitId, long tempId)
+      throws SQLException, MetaException {
     List<String> queryBatch = new ArrayList<>(5);
     // update write_set with real commitId
     if (commitId != null) {
