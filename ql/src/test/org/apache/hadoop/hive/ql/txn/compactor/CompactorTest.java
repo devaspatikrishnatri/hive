@@ -52,7 +52,6 @@ import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.TxnAbortedException;
 import org.apache.hadoop.hive.metastore.api.TxnType;
 import org.apache.hadoop.hive.metastore.api.hive_metastoreConstants;
-import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
 import org.apache.hadoop.hive.metastore.txn.TxnDbUtil;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
@@ -91,7 +90,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Arrays;
 import java.util.Stack;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -172,7 +170,9 @@ public abstract class CompactorTest {
               TransactionalValidationListener.INSERTONLY_TRANSACTIONAL_PROPERTY);
     }
     table.setParameters(parameters);
-    if (isTemporary) table.setTemporary(true);
+    if (isTemporary) {
+      table.setTemporary(true);
+    }
 
     // drop the table first, in case some previous test created it
     ms.dropTable(dbName, tableName);
@@ -234,6 +234,10 @@ public abstract class CompactorTest {
     addFile(t, p, 0, maxTxn, numRecords, FileType.BASE, 2, true);
   }
 
+  protected void addBaseFile(Table t, Partition p, long maxTxn, int numRecords, long visibilityId) throws Exception {
+    addFile(t, p, 0, maxTxn, numRecords, FileType.BASE, 2, true, visibilityId);
+  }
+
   protected void addLegacyFile(Table t, Partition p, int numRecords) throws Exception {
     addFile(t, p, 0, 0, numRecords, FileType.LEGACY, 2, true);
   }
@@ -255,7 +259,9 @@ public abstract class CompactorTest {
     FileSystem fs = FileSystem.get(conf);
     FileStatus[] stats = fs.listStatus(dir);
     List<Path> paths = new ArrayList<Path>(stats.length);
-    for (int i = 0; i < stats.length; i++) paths.add(stats[i].getPath());
+    for (int i = 0; i < stats.length; i++) {
+      paths.add(stats[i].getPath());
+    }
     return paths;
   }
 
@@ -322,8 +328,11 @@ public abstract class CompactorTest {
     t.setConf(conf);
     stop.set(stopAfterOne);
     t.init(stop);
-    if (stopAfterOne) t.run();
-    else t.start();
+    if (stopAfterOne) {
+      t.run();
+    } else {
+      t.start();
+    }
   }
 
   private String getLocation(String tableName, String partValue) {
@@ -337,14 +346,21 @@ public abstract class CompactorTest {
 
   private enum FileType {BASE, DELTA, LEGACY, LENGTH_FILE};
 
+  private void addFile(Table t, Partition p, long minTxn, long maxTxn, int numRecords, FileType type, int numBuckets,
+      boolean allBucketsPresent) throws Exception {
+    addFile(t, p, minTxn, maxTxn, numRecords, type, numBuckets, allBucketsPresent, 0);
+  }
+
   private void addFile(Table t, Partition p, long minTxn, long maxTxn,
                        int numRecords,  FileType type, int numBuckets,
-                       boolean allBucketsPresent) throws Exception {
+                       boolean allBucketsPresent, long visibilityId) throws Exception {
     String partValue = (p == null) ? null : p.getValues().get(0);
     Path location = new Path(getLocation(t.getTableName(), partValue));
     String filename = null;
     switch (type) {
-      case BASE: filename = "base_" + maxTxn; break;
+    case BASE:
+      filename = AcidUtils.BASE_PREFIX + maxTxn + (visibilityId > 0 ? AcidUtils.VISIBILITY_PREFIX + visibilityId : "");
+      break;
       case LENGTH_FILE: // Fall through to delta
       case DELTA: filename = makeDeltaDirName(minTxn, maxTxn); break;
       case LEGACY: break; // handled below
@@ -352,7 +368,10 @@ public abstract class CompactorTest {
 
     FileSystem fs = FileSystem.get(conf);
     for (int bucket = 0; bucket < numBuckets; bucket++) {
-      if (bucket == 0 && !allBucketsPresent) continue; // skip one
+      if (bucket == 0 && !allBucketsPresent)
+       {
+        continue; // skip one
+      }
       Path partFile = null;
       if (type == FileType.LEGACY) {
         partFile = new Path(location, String.format(AcidUtils.LEGACY_FILE_BUCKET_DIGITS, bucket) + "_0");
@@ -397,7 +416,9 @@ public abstract class CompactorTest {
         if (baseDirectory.getName().startsWith(AcidUtils.BASE_PREFIX)) {
           Path p = AcidUtils.createBucketFile(baseDirectory, bucket);
           FileSystem fs = p.getFileSystem(conf);
-          if (fs.exists(p)) filesToRead.add(p);
+          if (fs.exists(p)) {
+            filesToRead.add(p);
+          }
         } else {
           filesToRead.add(new Path(baseDirectory, "000000_0"));
 
@@ -406,7 +427,9 @@ public abstract class CompactorTest {
       for (int i = 0; i < deltaDirectory.length; i++) {
         Path p = AcidUtils.createBucketFile(deltaDirectory[i], bucket);
         FileSystem fs = p.getFileSystem(conf);
-        if (fs.exists(p)) filesToRead.add(p);
+        if (fs.exists(p)) {
+          filesToRead.add(p);
+        }
       }
       return new MockRawReader(conf, filesToRead);
     }
@@ -438,7 +461,9 @@ public abstract class CompactorTest {
 
     MockRawReader(Configuration conf, List<Path> files) throws IOException {
       filesToRead = new Stack<Path>();
-      for (Path file : files) filesToRead.push(file);
+      for (Path file : files) {
+        filesToRead.push(file);
+      }
       this.conf = conf;
       fs = FileSystem.get(conf);
     }
@@ -466,7 +491,9 @@ public abstract class CompactorTest {
     public boolean next(RecordIdentifier identifier, Text text) throws IOException {
       if (is == null) {
         // Open the next file
-        if (filesToRead.empty()) return false;
+        if (filesToRead.empty()) {
+          return false;
+        }
         Path p = filesToRead.pop();
         LOG.debug("Reading records from " + p.toString());
         is = fs.open(p);

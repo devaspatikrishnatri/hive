@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.hive.ql.txn.compactor;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.FileUtils;
 import org.apache.hadoop.hive.common.ValidTxnList;
 import org.apache.hadoop.hive.metastore.ReplChangeManager;
@@ -29,6 +28,7 @@ import org.apache.hadoop.hive.metastore.txn.TxnUtils;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.ValidWriteIdList;
@@ -41,6 +41,10 @@ import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
 import org.apache.hadoop.hive.ql.io.AcidUtils;
+import org.apache.hadoop.hive.ql.io.AcidUtils.Directory;
+import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedBase;
+import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedDelta;
+import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedDeltaLight;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.util.StringUtils;
 import org.apache.hive.common.util.Ref;
@@ -49,7 +53,9 @@ import java.io.IOException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -274,6 +280,13 @@ public class Cleaner extends MetaStoreCompactorThread {
         LOG.info(idWatermark(ci) + " found unexpected file: " + stat);
       }
     }
+
+    if (filesToDelete.isEmpty()
+        && !hasDataBelowWatermark(dir,locPath.getFileSystem(conf), locPath, ci.highestWriteId)) {
+      LOG.info(idWatermark(ci) + " nothing to remove below watermark " + ci.highestWriteId + ", ");
+      return true;
+    }
+
     extraDebugInfo.setCharAt(extraDebugInfo.length() - 1, ']');
     LOG.info(idWatermark(ci) + " About to remove " + filesToDelete.size() +
          " obsolete directories from " + location + ". " + extraDebugInfo.toString());
@@ -295,5 +308,42 @@ public class Cleaner extends MetaStoreCompactorThread {
       fs.delete(dead, true);
     }
     return true;
+  }
+
+  private boolean hasDataBelowWatermark(Directory acidDir, FileSystem fs, Path path, long highWatermark) throws IOException {
+    Set<Path> acidPaths = new HashSet<>();
+    for (ParsedDelta delta : acidDir.getCurrentDirectories()) {
+      acidPaths.add(delta.getPath());
+    }
+    if (acidDir.getBaseDirectory() != null) {
+      acidPaths.add(acidDir.getBaseDirectory());
+    }
+    FileStatus[] children = fs.listStatus(path, p -> {
+      return !acidPaths.contains(p);
+    });
+    for (FileStatus child : children) {
+      if (isFileBelowWatermark(child, highWatermark)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isFileBelowWatermark(FileStatus child, long highWatermark) {
+    Path p = child.getPath();
+    String fn = p.getName();
+    if (!child.isDirectory()) {
+      return false;
+    }
+    if (fn.startsWith(AcidUtils.BASE_PREFIX)) {
+      ParsedBase b = ParsedBase.parseBase(p);
+      return b.getWriteId() < highWatermark;
+    }
+    if (fn.startsWith(AcidUtils.DELTA_PREFIX) || fn.startsWith(AcidUtils.DELETE_DELTA_PREFIX)) {
+      ParsedDeltaLight d = ParsedDeltaLight.parse(p);
+      return d.getMaxWriteId() < highWatermark;
+    }
+    return false;
+
   }
 }

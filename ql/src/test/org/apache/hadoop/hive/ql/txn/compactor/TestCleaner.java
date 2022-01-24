@@ -33,7 +33,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * Tests for the compactor Cleaner thread
@@ -129,9 +133,13 @@ public class TestCleaner extends CompactorTest {
     Assert.assertEquals(2, paths.size());
     boolean sawBase = false, sawDelta = false;
     for (Path p : paths) {
-      if (p.getName().equals("base_20")) sawBase = true;
-      else if (p.getName().equals(makeDeltaDirName(21, 24))) sawDelta = true;
-      else Assert.fail("Unexpected file " + p.getName());
+      if (p.getName().equals("base_20")) {
+        sawBase = true;
+      } else if (p.getName().equals(makeDeltaDirName(21, 24))) {
+        sawDelta = true;
+      } else {
+        Assert.fail("Unexpected file " + p.getName());
+      }
     }
     Assert.assertTrue(sawBase);
     Assert.assertTrue(sawDelta);
@@ -165,9 +173,13 @@ public class TestCleaner extends CompactorTest {
     Assert.assertEquals(2, paths.size());
     boolean sawBase = false, sawDelta = false;
     for (Path path : paths) {
-      if (path.getName().equals("base_20")) sawBase = true;
-      else if (path.getName().equals(makeDeltaDirNameCompacted(21, 24))) sawDelta = true;
-      else Assert.fail("Unexpected file " + path.getName());
+      if (path.getName().equals("base_20")) {
+        sawBase = true;
+      } else if (path.getName().equals(makeDeltaDirNameCompacted(21, 24))) {
+        sawDelta = true;
+      } else {
+        Assert.fail("Unexpected file " + path.getName());
+      }
     }
     Assert.assertTrue(sawBase);
     Assert.assertTrue(sawDelta);
@@ -370,5 +382,129 @@ public class TestCleaner extends CompactorTest {
   @After
   public void tearDown() throws Exception {
     compactorTestCleanup();
+  }
+
+  @Test
+  public void withSingleBaseCleanerSucceeds() throws Exception {
+    Map<String, String> parameters = new HashMap<>();
+
+    Table t = newTable("default", "dcamc", false, parameters);
+
+    addBaseFile(t, null, 25L, 25);
+
+    burnThroughTransactions("default", "dcamc", 25);
+
+    CompactionRequest rqst = new CompactionRequest("default", "dcamc", CompactionType.MAJOR);
+    compactInTxn(rqst);
+
+    startCleaner();
+
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(1, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+  }
+
+  @Test
+  public void withNewerBaseCleanerSucceeds() throws Exception {
+    Map<String, String> parameters = new HashMap<>();
+
+    Table t = newTable("default", "dcamc", false, parameters);
+
+    addBaseFile(t, null, 25L, 25);
+
+    burnThroughTransactions("default", "dcamc", 25);
+
+    CompactionRequest rqst = new CompactionRequest("default", "dcamc", CompactionType.MAJOR);
+    compactInTxn(rqst);
+
+    burnThroughTransactions("default", "dcamc", 1);
+    addBaseFile(t, null, 26L, 26);
+
+    startCleaner();
+
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(1, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+
+    List<Path> paths = getDirectories(conf, t, null);
+    // we should retain both 25 and 26
+    Assert.assertEquals(2, paths.size());
+  }
+
+  @Test
+  public void withNotYetVisibleBase() throws Exception {
+
+    String dbName = "default";
+    String tableName = "camtc";
+    Table t = newTable(dbName, tableName, false);
+
+    addBaseFile(t, null, 20L, 20);
+    burnThroughTransactions(dbName, tableName, 25);
+
+    CompactionRequest rqst = new CompactionRequest(dbName, tableName, CompactionType.MAJOR);
+
+    long compactTxn = compactInTxn(rqst);
+    addBaseFile(t, null, 25L, 25, compactTxn);
+    startCleaner();
+
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(1, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+  }
+
+  @Test
+  public void cleanMultipleTimesWithSameWatermark() throws Exception {
+    String dbName = "default";
+    String tableName = "camtc";
+    Table t = newTable(dbName, tableName, false);
+
+    addBaseFile(t, null, 20L, 20);
+    addDeltaFile(t, null, 21L, 22L, 2);
+    burnThroughTransactions(dbName, tableName, 22);
+
+    CompactionRequest rqst = new CompactionRequest(dbName, tableName, CompactionType.MAJOR);
+    addBaseFile(t, null, 22L, 22);
+    compactInTxn(rqst);
+    compactInTxn(rqst);
+
+    startCleaner();
+
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(2, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(1).getState());
+
+    List<Path> paths = getDirectories(conf, t, null);
+    Assert.assertEquals(1, paths.size());
+    Assert.assertEquals("base_22", paths.get(0).getName());
+  }
+
+  @Test
+  public void nothingToCleanForGivenWatermark2() throws Exception {
+    String dbName = "default";
+    String tableName = "camtc";
+    Table t = newTable(dbName, tableName, false);
+
+    addDeltaFile(t, null, 20L, 20L, 1);
+    addDeltaFile(t, null, 21L, 21L, 2);
+    addDeltaFile(t, null, 22L, 22L, 2);
+    burnThroughTransactions(dbName, tableName, 22, null, new HashSet<Long>(Arrays.asList(21L, 22L)));
+
+    CompactionRequest rqst = new CompactionRequest(dbName, tableName, CompactionType.MAJOR);
+
+    compactInTxn(rqst);
+    compactInTxn(rqst);
+
+    startCleaner();
+    startCleaner();
+
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(2, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(1).getState());
+
+    List<Path> paths = getDirectories(conf, t, null);
+    Assert.assertEquals(1, paths.size());
+    Assert.assertEquals("delta_0000020_0000020", paths.get(0).getName());
   }
 }
