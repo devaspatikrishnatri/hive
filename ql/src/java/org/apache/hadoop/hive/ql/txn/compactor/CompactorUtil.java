@@ -100,4 +100,5 @@ public class CompactorUtil {
     }
     return conf.getVar(HiveConf.ConfVars.COMPACTOR_JOB_QUEUE);
   }
+
 }
