@@ -304,6 +304,12 @@ public abstract class ExprFactory<T> {
    * Returns true if a CASE expression can be converted into a COALESCE function call.
    */
   protected abstract boolean canConvertCASEIntoCOALESCEFuncCallExpr(GenericUDF genericUDF, List<T> inputs);
+  /**
+   * Returns true if a CASE expression can be converted into an IF function call.
+   */
+  protected boolean convertCASEIntoIFFuncCallExpr(GenericUDF genericUDF, List<T> inputs) {
+    return false;
+  }
 
   /* SUBQUERIES */
   /**

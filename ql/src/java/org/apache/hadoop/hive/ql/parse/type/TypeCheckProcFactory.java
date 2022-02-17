@@ -60,6 +60,7 @@ import org.apache.hadoop.hive.ql.udf.SettableUDF;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBaseCompare;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFCoalesce;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFIf;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFIn;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPAnd;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqual;
@@ -1032,6 +1033,9 @@ public class TypeCheckProcFactory<T> {
           if (Boolean.FALSE.equals(exprFactory.getConstantValue(children.get(1)))) {
             desc = exprFactory.createFuncCallExpr(new GenericUDFOPNot(), null, Lists.newArrayList(desc));
           }
+        } else if (ctx.isFoldExpr() && exprFactory.convertCASEIntoIFFuncCallExpr(genericUDF, children)) {
+          // Rewrite CASE(C,A,B) into IF(C,A,B)
+          desc = exprFactory.createFuncCallExpr(new GenericUDFIf(), null, children);
         } else {
           desc = exprFactory.createFuncCallExpr(genericUDF, funcText, children);
         }

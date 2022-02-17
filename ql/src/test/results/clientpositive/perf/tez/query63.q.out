@@ -92,7 +92,7 @@ Stage-0
                 Top N Key Operator [TNK_52] (rows=65 width=228)
                   keys:_col0, avg_window_0, _col2,top n:100
                   Filter Operator [FIL_46] (rows=65 width=228)
-                    predicate:CASE WHEN ((avg_window_0 > 0)) THEN (((abs((_col2 - avg_window_0)) / avg_window_0) > 0.1)) ELSE (false) END
+                    predicate:if((avg_window_0 > 0), ((abs((_col2 - avg_window_0)) / avg_window_0) > 0.1), false)
                     Select Operator [SEL_29] (rows=130 width=116)
                       Output:["avg_window_0","_col0","_col2"]
                       PTF Operator [PTF_28] (rows=130 width=116)
