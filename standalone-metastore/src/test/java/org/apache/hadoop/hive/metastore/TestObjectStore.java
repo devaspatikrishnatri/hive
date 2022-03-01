@@ -339,14 +339,15 @@ public class TestObjectStore {
    * Tests partition operations
    */
   @Test
-  public void testPartitionOps() throws MetaException, InvalidObjectException,
-      NoSuchObjectException, InvalidInputException {
+  public void testPartitionOps() throws Exception {
     Database db1 = new DatabaseBuilder()
         .setName(DB1)
         .setDescription("description")
         .setLocation("locationurl")
         .build(conf);
-    objectStore.createDatabase(db1);
+    try (AutoCloseable c = deadline()) {
+      objectStore.createDatabase(db1);
+    }
     StorageDescriptor sd = createFakeSd("location");
     HashMap<String, String> tableParams = new HashMap<>();
     tableParams.put("EXTERNAL", "false");
@@ -355,38 +356,69 @@ public class TestObjectStore {
     Table tbl1 =
         new Table(TABLE1, DB1, "owner", 1, 2, 3, sd, Arrays.asList(partitionKey1, partitionKey2),
             tableParams, null, null, "MANAGED_TABLE");
-    objectStore.createTable(tbl1);
+    try (AutoCloseable c = deadline()) {
+      objectStore.createTable(tbl1);
+    }
     HashMap<String, String> partitionParams = new HashMap<>();
     partitionParams.put("PARTITION_LEVEL_PRIVILEGE", "true");
     List<String> value1 = Arrays.asList("US", "CA");
     Partition part1 = new Partition(value1, DB1, TABLE1, 111, 111, sd, partitionParams);
     part1.setCatName(DEFAULT_CATALOG_NAME);
-    objectStore.addPartition(part1);
+    try (AutoCloseable c = deadline()) {
+      objectStore.addPartition(part1);
+    }
     List<String> value2 = Arrays.asList("US", "MA");
     Partition part2 = new Partition(value2, DB1, TABLE1, 222, 222, sd, partitionParams);
     part2.setCatName(DEFAULT_CATALOG_NAME);
-    objectStore.addPartition(part2);
+    try (AutoCloseable c = deadline()) {
+      objectStore.addPartition(part2);
+    }
 
-    Deadline.startTimer("getPartition");
-    List<Partition> partitions = objectStore.getPartitions(DEFAULT_CATALOG_NAME, DB1, TABLE1, 10);
+    List<Partition> partitions;
+
+    try (AutoCloseable c = deadline()) {
+       partitions = objectStore.getPartitions(DEFAULT_CATALOG_NAME, DB1, TABLE1, 10);
+    }
     Assert.assertEquals(2, partitions.size());
     Assert.assertEquals(111, partitions.get(0).getCreateTime());
     Assert.assertEquals(222, partitions.get(1).getCreateTime());
 
-    int numPartitions = objectStore.getNumPartitionsByFilter(DEFAULT_CATALOG_NAME, DB1, TABLE1, "");
+    int numPartitions;
+
+    try (AutoCloseable c = deadline()) {
+      numPartitions = objectStore.getNumPartitionsByFilter(DEFAULT_CATALOG_NAME, DB1, TABLE1, "");
+    }
     Assert.assertEquals(partitions.size(), numPartitions);
 
-    numPartitions = objectStore.getNumPartitionsByFilter(DEFAULT_CATALOG_NAME, DB1, TABLE1, "country = \"US\"");
+    List<String> partVal = Collections.singletonList("");
+    try (AutoCloseable c = deadline()) {
+      numPartitions = objectStore.getNumPartitionsByPs(DEFAULT_CATALOG_NAME, DB1, TABLE1, partVal);
+    }
+    Assert.assertEquals(partitions.size(), numPartitions);
+
+    try (AutoCloseable c = deadline()) {
+      numPartitions = objectStore.getNumPartitionsByFilter(DEFAULT_CATALOG_NAME, DB1, TABLE1, "country = \"US\"");
+    }
     Assert.assertEquals(2, numPartitions);
 
-    objectStore.dropPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, value1);
-    partitions = objectStore.getPartitions(DEFAULT_CATALOG_NAME, DB1, TABLE1, 10);
+    partVal = Collections.singletonList("US");
+    try (AutoCloseable c = deadline()) {
+      numPartitions = objectStore.getNumPartitionsByPs(DEFAULT_CATALOG_NAME, DB1, TABLE1, partVal);
+    }
+    Assert.assertEquals(2, numPartitions);
+
+    try (AutoCloseable c = deadline()) {
+      objectStore.dropPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, value1);
+      partitions = objectStore.getPartitions(DEFAULT_CATALOG_NAME, DB1, TABLE1, 10);
+    }
     Assert.assertEquals(1, partitions.size());
     Assert.assertEquals(222, partitions.get(0).getCreateTime());
 
-    objectStore.dropPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, value2);
-    objectStore.dropTable(DEFAULT_CATALOG_NAME, DB1, TABLE1);
-    objectStore.dropDatabase(db1.getCatalogName(), DB1);
+    try (AutoCloseable c = deadline()) {
+      objectStore.dropPartition(DEFAULT_CATALOG_NAME, DB1, TABLE1, value2);
+      objectStore.dropTable(DEFAULT_CATALOG_NAME, DB1, TABLE1);
+      objectStore.dropDatabase(db1.getCatalogName(), DB1);
+    }
   }
 
   /**
