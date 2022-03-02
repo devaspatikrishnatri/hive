@@ -464,7 +464,7 @@ public class MoveTask extends Task<MoveWork> implements Serializable {
           int statementId = tbd.getStmtId();
           if (tbd.isDirectInsert() || tbd.isMmTable()) {
             statementId = queryPlan.getStatementIdForAcidWriteType(work.getLoadTableWork().getWriteId(),
-                tbd.getMoveTaskId(), work.getLoadTableWork().getWriteType(), tbd.getSourcePath());
+                tbd.getMoveTaskId(), work.getLoadTableWork().getWriteType(), tbd.getSourcePath(), statementId);
             LOG.debug("The statementId used when loading the dynamic partitions is " + statementId);
           }
 
@@ -608,7 +608,7 @@ public class MoveTask extends Task<MoveWork> implements Serializable {
     int statementId = tbd.getStmtId();
     if (tbd.isDirectInsert() || tbd.isMmTable()) {
       statementId = queryPlan.getStatementIdForAcidWriteType(work.getLoadTableWork().getWriteId(),
-          tbd.getMoveTaskId(), work.getLoadTableWork().getWriteType(), tbd.getSourcePath());
+          tbd.getMoveTaskId(), work.getLoadTableWork().getWriteType(), tbd.getSourcePath(), statementId);
       LOG.debug("The statementId used when loading the dynamic partitions is " + statementId);
     }
     Set<String> dynamicPartitionSpecs = null;
