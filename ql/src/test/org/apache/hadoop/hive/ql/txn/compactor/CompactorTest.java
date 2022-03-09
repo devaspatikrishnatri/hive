@@ -256,6 +256,11 @@ public abstract class CompactorTest {
   }
 
   protected void addDeltaFile(Table t, Partition p, long minTxn, long maxTxn, int numRecords,
+      long visibilityId) throws Exception {
+    addFile(t, p, minTxn, maxTxn, numRecords, FileType.DELTA, 2, true, visibilityId);
+  }
+
+  protected void addDeltaFile(Table t, Partition p, long minTxn, long maxTxn, int numRecords,
                               int numBuckets, boolean allBucketsPresent) throws Exception {
     addFile(t, p, minTxn, maxTxn, numRecords, FileType.DELTA, numBuckets, allBucketsPresent);
   }
@@ -390,8 +395,7 @@ public abstract class CompactorTest {
 
     FileSystem fs = FileSystem.get(conf);
     for (int bucket = 0; bucket < numBuckets; bucket++) {
-      if (bucket == 0 && !allBucketsPresent)
-       {
+      if (bucket == 0 && !allBucketsPresent) {
         continue; // skip one
       }
       Path partFile = null;

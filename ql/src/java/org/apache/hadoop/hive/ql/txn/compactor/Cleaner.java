@@ -70,8 +70,6 @@ import static org.apache.hadoop.hive.conf.Constants.COMPACTOR_CLEANER_THREAD_NAM
 import static org.apache.hadoop.hive.metastore.HiveMetaStore.HMSHandler.getMSForConf;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.getDefaultCatalog;
 
-import com.codahale.metrics.Counter;
-
 /**
  * A class to clean directories after compactions.  This will run in a separate thread.
  */
@@ -306,7 +304,7 @@ public class Cleaner extends MetaStoreCompactorThread {
     }
 
     if (filesToDelete.isEmpty()
-        && !hasDataBelowWatermark(dir,locPath.getFileSystem(conf), locPath, ci.highestWriteId)) {
+        && !hasDataBelowWatermark(dir, fs, path, ci.highestWriteId, writeIdList.getHighWatermark())) {
       LOG.info(idWatermark(ci) + " nothing to remove below watermark " + ci.highestWriteId + ", ");
       return true;
     }
@@ -334,7 +332,9 @@ public class Cleaner extends MetaStoreCompactorThread {
     return true;
   }
 
-  private boolean hasDataBelowWatermark(AcidDirectory acidDir, FileSystem fs, Path path, long highWatermark) throws IOException {
+  private boolean hasDataBelowWatermark(AcidDirectory acidDir, FileSystem fs, Path path, long highWatermark,
+      long minOpenTxn)
+      throws IOException {
     Set<Path> acidPaths = new HashSet<>();
     for (ParsedDelta delta : acidDir.getCurrentDirectories()) {
       acidPaths.add(delta.getPath());
@@ -346,26 +346,26 @@ public class Cleaner extends MetaStoreCompactorThread {
       return !acidPaths.contains(p);
     });
     for (FileStatus child : children) {
-      if (isFileBelowWatermark(child, highWatermark)) {
+      if (isFileBelowWatermark(child, highWatermark, minOpenTxn)) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean isFileBelowWatermark(FileStatus child, long highWatermark) {
+  private boolean isFileBelowWatermark(FileStatus child, long highWatermark, long minOpenTxn) {
     Path p = child.getPath();
     String fn = p.getName();
     if (!child.isDirectory()) {
-      return false;
+      return true;
     }
     if (fn.startsWith(AcidUtils.BASE_PREFIX)) {
-      ParsedBaseLight b = AcidUtils.ParsedBase.parseBase(p);
-      return b.getWriteId() < highWatermark;
+      ParsedBaseLight b = ParsedBaseLight.parseBase(p);
+      return b.getWriteId() <= highWatermark;
     }
     if (fn.startsWith(AcidUtils.DELTA_PREFIX) || fn.startsWith(AcidUtils.DELETE_DELTA_PREFIX)) {
       ParsedDeltaLight d = ParsedDeltaLight.parse(p);
-      return d.getMaxWriteId() < highWatermark;
+      return d.getMaxWriteId() <= highWatermark;
     }
     return false;
 
