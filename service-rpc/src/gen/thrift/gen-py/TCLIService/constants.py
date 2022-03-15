@@ -41,6 +41,13 @@ COLLECTION_TYPES = set([
     11,
 ])
 TYPE_NAMES = {
+    0 : "BOOLEAN",
+    1 : "TINYINT",
+    2 : "SMALLINT",
+    3 : "INT",
+    4 : "BIGINT",
+    5 : "FLOAT",
+    6 : "DOUBLE",
     7 : "STRING",
     8 : "TIMESTAMP",
     9 : "BINARY",
@@ -54,13 +61,6 @@ TYPE_NAMES = {
     18 : "VARCHAR",
     19 : "CHAR",
     20 : "INTERVAL_YEAR_MONTH",
-    0 : "BOOLEAN",
-    1 : "TINYINT",
-    2 : "SMALLINT",
-    3 : "INT",
-    4 : "BIGINT",
-    5 : "FLOAT",
-    6 : "DOUBLE",
     21 : "INTERVAL_DAY_TIME",
     22 : "TIMESTAMP WITH LOCAL TIME ZONE",
 }

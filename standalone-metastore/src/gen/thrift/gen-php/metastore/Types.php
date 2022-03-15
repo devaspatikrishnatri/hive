@@ -37526,6 +37526,10 @@ class ReplicationMetrics {
    * @var string
    */
   public $progress = null;
+  /**
+   * @var string
+   */
+  public $messageFormat = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -37550,6 +37554,10 @@ class ReplicationMetrics {
           'var' => 'progress',
           'type' => TType::STRING,
           ),
+        6 => array(
+          'var' => 'messageFormat',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -37567,6 +37575,9 @@ class ReplicationMetrics {
       }
       if (isset($vals['progress'])) {
         $this->progress = $vals['progress'];
+      }
+      if (isset($vals['messageFormat'])) {
+        $this->messageFormat = $vals['messageFormat'];
       }
     }
   }
@@ -37625,6 +37636,13 @@ class ReplicationMetrics {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->messageFormat);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -37661,6 +37679,11 @@ class ReplicationMetrics {
     if ($this->progress !== null) {
       $xfer += $output->writeFieldBegin('progress', TType::STRING, 5);
       $xfer += $output->writeString($this->progress);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->messageFormat !== null) {
+      $xfer += $output->writeFieldBegin('messageFormat', TType::STRING, 6);
+      $xfer += $output->writeString($this->messageFormat);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -39283,7 +39306,7 @@ final class Constant extends \Thrift\Type\TConstant {
   }
 
   static protected function init_HMS_API() {
-    return "1.2.14";
+    return "1.2.17";
   }
 
   static protected function init_ACCESSTYPE_NONE() {

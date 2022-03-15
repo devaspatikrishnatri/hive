@@ -26392,6 +26392,7 @@ class ReplicationMetrics:
    - dumpExecutionId
    - metadata
    - progress
+   - messageFormat
   """
 
   thrift_spec = (
@@ -26401,14 +26402,16 @@ class ReplicationMetrics:
     (3, TType.I64, 'dumpExecutionId', None, None, ), # 3
     (4, TType.STRING, 'metadata', None, None, ), # 4
     (5, TType.STRING, 'progress', None, None, ), # 5
+    (6, TType.STRING, 'messageFormat', None, None, ), # 6
   )
 
-  def __init__(self, scheduledExecutionId=None, policy=None, dumpExecutionId=None, metadata=None, progress=None,):
+  def __init__(self, scheduledExecutionId=None, policy=None, dumpExecutionId=None, metadata=None, progress=None, messageFormat=None,):
     self.scheduledExecutionId = scheduledExecutionId
     self.policy = policy
     self.dumpExecutionId = dumpExecutionId
     self.metadata = metadata
     self.progress = progress
+    self.messageFormat = messageFormat
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -26444,6 +26447,11 @@ class ReplicationMetrics:
           self.progress = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.messageFormat = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -26474,6 +26482,10 @@ class ReplicationMetrics:
       oprot.writeFieldBegin('progress', TType.STRING, 5)
       oprot.writeString(self.progress)
       oprot.writeFieldEnd()
+    if self.messageFormat is not None:
+      oprot.writeFieldBegin('messageFormat', TType.STRING, 6)
+      oprot.writeString(self.messageFormat)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -26494,6 +26506,7 @@ class ReplicationMetrics:
     value = (value * 31) ^ hash(self.dumpExecutionId)
     value = (value * 31) ^ hash(self.metadata)
     value = (value * 31) ^ hash(self.progress)
+    value = (value * 31) ^ hash(self.messageFormat)
     return value
 
   def __repr__(self):

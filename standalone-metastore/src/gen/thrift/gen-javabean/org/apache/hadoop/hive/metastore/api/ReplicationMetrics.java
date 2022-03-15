@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField DUMP_EXECUTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("dumpExecutionId", org.apache.thrift.protocol.TType.I64, (short)3);
   private static final org.apache.thrift.protocol.TField METADATA_FIELD_DESC = new org.apache.thrift.protocol.TField("metadata", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField PROGRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("progress", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField MESSAGE_FORMAT_FIELD_DESC = new org.apache.thrift.protocol.TField("messageFormat", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
   private long dumpExecutionId; // required
   private String metadata; // optional
   private String progress; // optional
+  private String messageFormat; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -62,7 +64,8 @@ import org.slf4j.LoggerFactory;
     POLICY((short)2, "policy"),
     DUMP_EXECUTION_ID((short)3, "dumpExecutionId"),
     METADATA((short)4, "metadata"),
-    PROGRESS((short)5, "progress");
+    PROGRESS((short)5, "progress"),
+    MESSAGE_FORMAT((short)6, "messageFormat");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -87,6 +90,8 @@ import org.slf4j.LoggerFactory;
           return METADATA;
         case 5: // PROGRESS
           return PROGRESS;
+        case 6: // MESSAGE_FORMAT
+          return MESSAGE_FORMAT;
         default:
           return null;
       }
@@ -130,7 +135,7 @@ import org.slf4j.LoggerFactory;
   private static final int __SCHEDULEDEXECUTIONID_ISSET_ID = 0;
   private static final int __DUMPEXECUTIONID_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.METADATA,_Fields.PROGRESS};
+  private static final _Fields optionals[] = {_Fields.METADATA,_Fields.PROGRESS,_Fields.MESSAGE_FORMAT};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -143,6 +148,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.METADATA, new org.apache.thrift.meta_data.FieldMetaData("metadata", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PROGRESS, new org.apache.thrift.meta_data.FieldMetaData("progress", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.MESSAGE_FORMAT, new org.apache.thrift.meta_data.FieldMetaData("messageFormat", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ReplicationMetrics.class, metaDataMap);
@@ -180,6 +187,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetProgress()) {
       this.progress = other.progress;
     }
+    if (other.isSetMessageFormat()) {
+      this.messageFormat = other.messageFormat;
+    }
   }
 
   public ReplicationMetrics deepCopy() {
@@ -195,6 +205,7 @@ import org.slf4j.LoggerFactory;
     this.dumpExecutionId = 0;
     this.metadata = null;
     this.progress = null;
+    this.messageFormat = null;
   }
 
   public long getScheduledExecutionId() {
@@ -310,6 +321,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getMessageFormat() {
+    return this.messageFormat;
+  }
+
+  public void setMessageFormat(String messageFormat) {
+    this.messageFormat = messageFormat;
+  }
+
+  public void unsetMessageFormat() {
+    this.messageFormat = null;
+  }
+
+  /** Returns true if field messageFormat is set (has been assigned a value) and false otherwise */
+  public boolean isSetMessageFormat() {
+    return this.messageFormat != null;
+  }
+
+  public void setMessageFormatIsSet(boolean value) {
+    if (!value) {
+      this.messageFormat = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case SCHEDULED_EXECUTION_ID:
@@ -352,6 +386,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case MESSAGE_FORMAT:
+      if (value == null) {
+        unsetMessageFormat();
+      } else {
+        setMessageFormat((String)value);
+      }
+      break;
+
     }
   }
 
@@ -371,6 +413,9 @@ import org.slf4j.LoggerFactory;
 
     case PROGRESS:
       return getProgress();
+
+    case MESSAGE_FORMAT:
+      return getMessageFormat();
 
     }
     throw new IllegalStateException();
@@ -393,6 +438,8 @@ import org.slf4j.LoggerFactory;
       return isSetMetadata();
     case PROGRESS:
       return isSetProgress();
+    case MESSAGE_FORMAT:
+      return isSetMessageFormat();
     }
     throw new IllegalStateException();
   }
@@ -455,6 +502,15 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
+    boolean this_present_messageFormat = true && this.isSetMessageFormat();
+    boolean that_present_messageFormat = true && that.isSetMessageFormat();
+    if (this_present_messageFormat || that_present_messageFormat) {
+      if (!(this_present_messageFormat && that_present_messageFormat))
+        return false;
+      if (!this.messageFormat.equals(that.messageFormat))
+        return false;
+    }
+
     return true;
   }
 
@@ -486,6 +542,11 @@ import org.slf4j.LoggerFactory;
     list.add(present_progress);
     if (present_progress)
       list.add(progress);
+
+    boolean present_messageFormat = true && (isSetMessageFormat());
+    list.add(present_messageFormat);
+    if (present_messageFormat)
+      list.add(messageFormat);
 
     return list.hashCode();
   }
@@ -548,6 +609,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetMessageFormat()).compareTo(other.isSetMessageFormat());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMessageFormat()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.messageFormat, other.messageFormat);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -600,6 +671,16 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.progress);
+      }
+      first = false;
+    }
+    if (isSetMessageFormat()) {
+      if (!first) sb.append(", ");
+      sb.append("messageFormat:");
+      if (this.messageFormat == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.messageFormat);
       }
       first = false;
     }
@@ -700,6 +781,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // MESSAGE_FORMAT
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.messageFormat = iprot.readString();
+              struct.setMessageFormatIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -738,6 +827,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.messageFormat != null) {
+        if (struct.isSetMessageFormat()) {
+          oprot.writeFieldBegin(MESSAGE_FORMAT_FIELD_DESC);
+          oprot.writeString(struct.messageFormat);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -765,12 +861,18 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetProgress()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetMessageFormat()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetMetadata()) {
         oprot.writeString(struct.metadata);
       }
       if (struct.isSetProgress()) {
         oprot.writeString(struct.progress);
+      }
+      if (struct.isSetMessageFormat()) {
+        oprot.writeString(struct.messageFormat);
       }
     }
 
@@ -783,7 +885,7 @@ import org.slf4j.LoggerFactory;
       struct.setPolicyIsSet(true);
       struct.dumpExecutionId = iprot.readI64();
       struct.setDumpExecutionIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.metadata = iprot.readString();
         struct.setMetadataIsSet(true);
@@ -791,6 +893,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(1)) {
         struct.progress = iprot.readString();
         struct.setProgressIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.messageFormat = iprot.readString();
+        struct.setMessageFormatIsSet(true);
       }
     }
   }

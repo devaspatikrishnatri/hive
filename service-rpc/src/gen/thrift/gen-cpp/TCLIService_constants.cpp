@@ -39,6 +39,13 @@ TCLIServiceConstants::TCLIServiceConstants() {
   COLLECTION_TYPES.insert((TTypeId::type)10);
   COLLECTION_TYPES.insert((TTypeId::type)11);
 
+  TYPE_NAMES.insert(std::make_pair((TTypeId::type)0, "BOOLEAN"));
+  TYPE_NAMES.insert(std::make_pair((TTypeId::type)1, "TINYINT"));
+  TYPE_NAMES.insert(std::make_pair((TTypeId::type)2, "SMALLINT"));
+  TYPE_NAMES.insert(std::make_pair((TTypeId::type)3, "INT"));
+  TYPE_NAMES.insert(std::make_pair((TTypeId::type)4, "BIGINT"));
+  TYPE_NAMES.insert(std::make_pair((TTypeId::type)5, "FLOAT"));
+  TYPE_NAMES.insert(std::make_pair((TTypeId::type)6, "DOUBLE"));
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)7, "STRING"));
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)8, "TIMESTAMP"));
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)9, "BINARY"));
@@ -52,13 +59,6 @@ TCLIServiceConstants::TCLIServiceConstants() {
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)18, "VARCHAR"));
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)19, "CHAR"));
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)20, "INTERVAL_YEAR_MONTH"));
-  TYPE_NAMES.insert(std::make_pair((TTypeId::type)0, "BOOLEAN"));
-  TYPE_NAMES.insert(std::make_pair((TTypeId::type)1, "TINYINT"));
-  TYPE_NAMES.insert(std::make_pair((TTypeId::type)2, "SMALLINT"));
-  TYPE_NAMES.insert(std::make_pair((TTypeId::type)3, "INT"));
-  TYPE_NAMES.insert(std::make_pair((TTypeId::type)4, "BIGINT"));
-  TYPE_NAMES.insert(std::make_pair((TTypeId::type)5, "FLOAT"));
-  TYPE_NAMES.insert(std::make_pair((TTypeId::type)6, "DOUBLE"));
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)21, "INTERVAL_DAY_TIME"));
   TYPE_NAMES.insert(std::make_pair((TTypeId::type)22, "TIMESTAMP WITH LOCAL TIME ZONE"));
 

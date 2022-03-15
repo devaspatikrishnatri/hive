@@ -101,6 +101,7 @@ decode
 default.qtest_get_java_boolean
 degrees
 dense_rank
+deserialize
 div
 e
 elt
@@ -380,6 +381,7 @@ coalesce
 current_database
 current_date
 decode
+deserialize
 e
 encode
 explode
@@ -523,6 +525,7 @@ decode
 default.qtest_get_java_boolean
 degrees
 dense_rank
+deserialize
 div
 e
 elt
