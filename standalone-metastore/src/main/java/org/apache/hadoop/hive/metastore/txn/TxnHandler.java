@@ -3447,12 +3447,14 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         }
         if (rqst.isSetLastCompactionId()) {
           sb.append(" AND \"CC_ID\" > ?");
-          params.add(String.valueOf(rqst.getLastCompactionId()));
         }
         sb.append(" ORDER BY \"CC_ID\" DESC");
 
         pst = sqlGenerator.prepareStmtWithParameters(dbConn, sb.toString(), params);
-        LOG.debug("Going to execute query <" + sb.toString() + ">");
+        if (rqst.isSetLastCompactionId()) {
+          pst.setLong(params.size() + 1, rqst.getLastCompactionId());
+        }
+        LOG.debug("Going to execute query <{}>", sb);
         rs = pst.executeQuery();
         Set<String> partitionSet = new HashSet<>();
         while (rs.next()) {
@@ -3472,7 +3474,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           }
         }
       } catch (SQLException e) {
-        LOG.error("Unable to execute query " + e.getMessage());
+        LOG.error("Unable to execute query", e);
         checkRetryable(dbConn, e, "getLatestCommittedCompactionInfo");
       } finally {
         LOG.debug("Going to rollback");
