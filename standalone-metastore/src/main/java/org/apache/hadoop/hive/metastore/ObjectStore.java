@@ -27,6 +27,7 @@ import static org.apache.hadoop.hive.metastore.utils.StringUtils.normalizeIdenti
 import com.google.common.base.Joiner;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -39,6 +40,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +58,8 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import javax.jdo.JDODataStoreException;
@@ -68,7 +72,8 @@ import javax.jdo.datastore.JDOConnection;
 import javax.jdo.identity.IntIdentity;
 
 import com.google.common.base.Strings;
-
+import com.google.common.base.Supplier;
+import com.google.common.util.concurrent.Striped;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -140,94 +145,6 @@ import org.apache.hadoop.hive.metastore.api.RuntimeStat;
 import org.apache.hadoop.hive.metastore.api.ReplicationMetricList;
 import org.apache.hadoop.hive.metastore.api.GetReplicationMetricsRequest;
 import org.apache.hadoop.hive.metastore.api.ReplicationMetrics;
-import org.apache.hadoop.hive.metastore.api.SQLCheckConstraint;
-import org.apache.hadoop.hive.metastore.api.SQLDefaultConstraint;
-import org.apache.hadoop.hive.metastore.api.SQLForeignKey;
-import org.apache.hadoop.hive.metastore.api.SQLNotNullConstraint;
-import org.apache.hadoop.hive.metastore.api.SQLPrimaryKey;
-import org.apache.hadoop.hive.metastore.api.SQLUniqueConstraint;
-import org.apache.hadoop.hive.metastore.api.ScheduledQuery;
-import org.apache.hadoop.hive.metastore.api.ScheduledQueryKey;
-import org.apache.hadoop.hive.metastore.api.ScheduledQueryMaintenanceRequest;
-import org.apache.hadoop.hive.metastore.api.ScheduledQueryPollRequest;
-import org.apache.hadoop.hive.metastore.api.ScheduledQueryPollResponse;
-import org.apache.hadoop.hive.metastore.api.ScheduledQueryProgressInfo;
-import org.apache.hadoop.hive.metastore.api.SchemaCompatibility;
-import org.apache.hadoop.hive.metastore.api.SchemaType;
-import org.apache.hadoop.hive.metastore.api.SchemaValidation;
-import org.apache.hadoop.hive.metastore.api.SchemaVersion;
-import org.apache.hadoop.hive.metastore.api.SchemaVersionDescriptor;
-import org.apache.hadoop.hive.metastore.api.SchemaVersionState;
-import org.apache.hadoop.hive.metastore.api.SerDeInfo;
-import org.apache.hadoop.hive.metastore.api.SerdeType;
-import org.apache.hadoop.hive.metastore.api.SkewedInfo;
-import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
-import org.apache.hadoop.hive.metastore.api.Table;
-import org.apache.hadoop.hive.metastore.api.TableMeta;
-import org.apache.hadoop.hive.metastore.api.Type;
-import org.apache.hadoop.hive.metastore.api.UnknownDBException;
-import org.apache.hadoop.hive.metastore.api.UnknownPartitionException;
-import org.apache.hadoop.hive.metastore.api.UnknownTableException;
-import org.apache.hadoop.hive.metastore.api.WMFullResourcePlan;
-import org.apache.hadoop.hive.metastore.api.WMMapping;
-import org.apache.hadoop.hive.metastore.api.WMNullablePool;
-import org.apache.hadoop.hive.metastore.api.WMNullableResourcePlan;
-import org.apache.hadoop.hive.metastore.api.WMPool;
-import org.apache.hadoop.hive.metastore.api.WMPoolTrigger;
-import org.apache.hadoop.hive.metastore.api.WMResourcePlan;
-import org.apache.hadoop.hive.metastore.api.WMResourcePlanStatus;
-import org.apache.hadoop.hive.metastore.api.WMTrigger;
-import org.apache.hadoop.hive.metastore.api.WMValidateResourcePlanResponse;
-import org.apache.hadoop.hive.metastore.api.WriteEventInfo;
-import org.apache.hadoop.hive.metastore.api.AggrStats;
-import org.apache.hadoop.hive.metastore.api.AlreadyExistsException;
-import org.apache.hadoop.hive.metastore.api.Catalog;
-import org.apache.hadoop.hive.metastore.api.ColumnStatistics;
-import org.apache.hadoop.hive.metastore.api.ColumnStatisticsDesc;
-import org.apache.hadoop.hive.metastore.api.ColumnStatisticsObj;
-import org.apache.hadoop.hive.metastore.api.CreationMetadata;
-import org.apache.hadoop.hive.metastore.api.CurrentNotificationEventId;
-import org.apache.hadoop.hive.metastore.api.Database;
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
-import org.apache.hadoop.hive.metastore.api.FileMetadataExprType;
-import org.apache.hadoop.hive.metastore.api.Function;
-import org.apache.hadoop.hive.metastore.api.FunctionType;
-import org.apache.hadoop.hive.metastore.api.HiveObjectPrivilege;
-import org.apache.hadoop.hive.metastore.api.HiveObjectRef;
-import org.apache.hadoop.hive.metastore.api.HiveObjectType;
-import org.apache.hadoop.hive.metastore.api.GetPartitionsFilterSpec;
-import org.apache.hadoop.hive.metastore.api.GetProjectionsSpec;
-import org.apache.hadoop.hive.metastore.api.ISchema;
-import org.apache.hadoop.hive.metastore.api.ISchemaName;
-import org.apache.hadoop.hive.metastore.api.InvalidInputException;
-import org.apache.hadoop.hive.metastore.api.InvalidObjectException;
-import org.apache.hadoop.hive.metastore.api.InvalidOperationException;
-import org.apache.hadoop.hive.metastore.api.InvalidPartitionException;
-import org.apache.hadoop.hive.metastore.api.MetaException;
-import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
-import org.apache.hadoop.hive.metastore.api.NotificationEvent;
-import org.apache.hadoop.hive.metastore.api.NotificationEventRequest;
-import org.apache.hadoop.hive.metastore.api.NotificationEventResponse;
-import org.apache.hadoop.hive.metastore.api.NotificationEventsCountRequest;
-import org.apache.hadoop.hive.metastore.api.NotificationEventsCountResponse;
-import org.apache.hadoop.hive.metastore.api.Order;
-import org.apache.hadoop.hive.metastore.api.Partition;
-import org.apache.hadoop.hive.metastore.api.PartitionEventType;
-import org.apache.hadoop.hive.metastore.api.PartitionFilterMode;
-import org.apache.hadoop.hive.metastore.api.PartitionValuesResponse;
-import org.apache.hadoop.hive.metastore.api.PartitionValuesRow;
-import org.apache.hadoop.hive.metastore.api.PrincipalPrivilegeSet;
-import org.apache.hadoop.hive.metastore.api.PrincipalType;
-import org.apache.hadoop.hive.metastore.api.PrivilegeBag;
-import org.apache.hadoop.hive.metastore.api.PrivilegeGrantInfo;
-import org.apache.hadoop.hive.metastore.api.QueryState;
-import org.apache.hadoop.hive.metastore.api.ResourceType;
-import org.apache.hadoop.hive.metastore.api.ResourceUri;
-import org.apache.hadoop.hive.metastore.api.Role;
-import org.apache.hadoop.hive.metastore.api.RolePrincipalGrant;
-import org.apache.hadoop.hive.metastore.api.RuntimeStat;
-import org.apache.hadoop.hive.metastore.api.ReplicationMetricList;
-import org.apache.hadoop.hive.metastore.api.GetReplicationMetricsRequest;
 import org.apache.hadoop.hive.metastore.api.SQLCheckConstraint;
 import org.apache.hadoop.hive.metastore.api.SQLDefaultConstraint;
 import org.apache.hadoop.hive.metastore.api.SQLForeignKey;
@@ -411,6 +328,8 @@ public class ObjectStore implements RawStore, Configurable {
   private Counter directSqlErrors;
   private boolean areTxnStatsSupported = false;
 
+  private static Striped<Lock> tablelocks;
+
   public ObjectStore() {
   }
 
@@ -467,6 +386,15 @@ public class ObjectStore implements RawStore, Configurable {
       throw new RuntimeException("Unable to create persistence manager. Check log for details");
     } else {
       LOG.debug("Initialized ObjectStore");
+    }
+
+    if (tablelocks == null) {
+      synchronized (ObjectStore.class) {
+        if (tablelocks == null) {
+          int numTableLocks = MetastoreConf.getIntVar(conf, ConfVars.METASTORE_NUM_STRIPED_TABLE_LOCKS);
+          tablelocks = Striped.lazyWeakLock(numTableLocks);
+        }
+      }
     }
   }
 
@@ -8992,16 +8920,17 @@ public class ObjectStore implements RawStore, Configurable {
   }
 
   @Override
-  public Map<String, String> updateTableColumnStatistics(ColumnStatistics colStats,
-      String validWriteIds, long writeId)
-    throws NoSuchObjectException, MetaException, InvalidObjectException, InvalidInputException {
+  public Map<String, String> updateTableColumnStatistics(ColumnStatistics colStats, String validWriteIds, long writeId)
+      throws NoSuchObjectException, MetaException, InvalidObjectException, InvalidInputException {
     boolean committed = false;
 
-    openTransaction();
-    try {
-      List<ColumnStatisticsObj> statsObjs = colStats.getStatsObj();
-      ColumnStatisticsDesc statsDesc = colStats.getStatsDesc();
+    List<ColumnStatisticsObj> statsObjs = colStats.getStatsObj();
+    ColumnStatisticsDesc statsDesc = colStats.getStatsDesc();
 
+    Lock tableLock = getTableLockFor(statsDesc.getDbName(), statsDesc.getTableName());
+    tableLock.lock();
+    try {
+      openTransaction();
       // DataNucleus objects get detached all over the place for no (real) reason.
       // So let's not use them anywhere unless absolutely necessary.
       String catName = statsDesc.isSetCatName() ? statsDesc.getCatName() : getDefaultCatalog(conf);
@@ -9013,7 +8942,7 @@ public class ObjectStore implements RawStore, Configurable {
 
       Map<String, MTableColumnStatistics> oldStats = getPartitionColStats(table, colNames, colStats.getEngine());
 
-      for (ColumnStatisticsObj statsObj:statsObjs) {
+      for (ColumnStatisticsObj statsObj : statsObjs) {
         // We have to get mtable again because DataNucleus.
         MTableColumnStatistics mStatsObj = StatObjectConverter.convertToMTableColumnStatistics(
             ensureGetMTable(catName, statsDesc.getDbName(), statsDesc.getTableName()), statsDesc,
@@ -9044,7 +8973,7 @@ public class ObjectStore implements RawStore, Configurable {
             // Make sure we set the flag to invalid regardless of the current value.
             StatsSetupConst.setBasicStatsState(newParams, StatsSetupConst.FALSE);
             LOG.info("Removed COLUMN_STATS_ACCURATE from the parameters of the table "
-                + dbname + "." + name);
+              + dbname + "." + name);
           }
           oldt.setWriteId(writeId);
         }
@@ -9055,10 +8984,18 @@ public class ObjectStore implements RawStore, Configurable {
       // TODO: similar to update...Part, this used to do "return committed;"; makes little sense.
       return committed ? newParams : null;
     } finally {
-      if (!committed) {
-        rollbackTransaction();
+      try {
+        if (!committed) {
+          rollbackTransaction();
+        }
+      } finally {
+        tableLock.unlock();
       }
     }
+  }
+
+  private Lock getTableLockFor(String dbName, String tblName) {
+    return tablelocks.get(dbName + "." + tblName);
   }
 
   /**
