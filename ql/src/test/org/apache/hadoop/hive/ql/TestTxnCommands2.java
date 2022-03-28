@@ -2149,14 +2149,20 @@ public class TestTxnCommands2 {
     runCleaner(hiveConf);
     txnHandler.cleanEmptyAbortedTxns();
     txnHandler.cleanTxnToWriteIdTable();
+    // CLOUDERA-BUILD: since HIVE-24291 is not present on this branch, the Cleaner picked up
+    // the latest compaction for cleaning and removed the delta with write id 5 (which was aborted).
+    // However it will not call markCleaned() because there are still files to delete below the compaction high watermark.
+    // So TXN_TO_WRITE_ID will not be cleaned and still contain write ids 5,6,7,8 (8 was compaction's WID)
     Assert.assertEquals(TxnDbUtil.queryToString(hiveConf, "select * from TXN_TO_WRITE_ID"),
-            3, TxnDbUtil.countQueryAgent(hiveConf, "select count(*) from TXN_TO_WRITE_ID"));
+            4, TxnDbUtil.countQueryAgent(hiveConf, "select count(*) from TXN_TO_WRITE_ID"));
     Assert.assertEquals(TxnDbUtil.queryToString(hiveConf, "select * from MIN_HISTORY_LEVEL"),
             1, TxnDbUtil.countQueryAgent(hiveConf, "select count(*) from MIN_HISTORY_LEVEL"));
 
     // Commit the open txn, which lets the cleanup on TXN_TO_WRITE_ID.
     // Now all txns are removed from MIN_HISTORY_LEVEL. So, all entries from TXN_TO_WRITE_ID would be cleaned.
     txnMgr.commitTxn();
+    runCleaner(hiveConf);
+    txnHandler.cleanEmptyAbortedTxns();
     txnHandler.cleanTxnToWriteIdTable();
 
     Assert.assertEquals(TxnDbUtil.queryToString(hiveConf, "select * from TXN_TO_WRITE_ID"),

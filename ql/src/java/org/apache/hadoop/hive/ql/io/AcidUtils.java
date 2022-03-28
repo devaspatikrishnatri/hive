@@ -398,7 +398,7 @@ public class AcidUtils {
    * Since Hive 4.0, compactor produces directories with {@link #VISIBILITY_PATTERN} suffix.
    * _v0 is equivalent to no suffix, for backwards compatibility.
    */
-  static String addVisibilitySuffix(String baseOrDeltaDir, long visibilityTxnId) {
+  public static String addVisibilitySuffix(String baseOrDeltaDir, long visibilityTxnId) {
     if(visibilityTxnId == 0) {
       return baseOrDeltaDir;
     }
@@ -1274,7 +1274,7 @@ public class AcidUtils {
    * @return the state of the directory
    * @throws IOException on filesystem errors
    */
-  private static AcidDirectory getAcidState(FileSystem fileSystem, Path candidateDirectory, Configuration conf,
+  public static AcidDirectory getAcidState(FileSystem fileSystem, Path candidateDirectory, Configuration conf,
       ValidWriteIdList writeIdList, Ref<Boolean> useFileIds, boolean ignoreEmptyFiles, Map<Path,
       HdfsDirSnapshot> dirSnapshots) throws IOException {
     ValidTxnList validTxnList = getValidTxnList(conf);
@@ -2567,6 +2567,9 @@ public class AcidUtils {
         LOG.debug("isRawFormat() called on " + dataFile + " which is not an ORC file: " +
             ex.getMessage());
         return true;
+      } catch (FileNotFoundException ex) {
+        //Fallback in case file was already removed and used Snapshot is outdated
+        return false;
       }
     }
   }

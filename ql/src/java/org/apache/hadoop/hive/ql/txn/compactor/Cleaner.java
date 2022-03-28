@@ -17,8 +17,10 @@
  */
 package org.apache.hadoop.hive.ql.txn.compactor;
 
+import com.codahale.metrics.Counter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.FileUtils;
+import org.apache.hadoop.hive.common.ValidReadTxnList;
 import org.apache.hadoop.hive.common.ValidTxnList;
 import org.apache.hadoop.hive.metastore.ReplChangeManager;
 import org.apache.hadoop.hive.metastore.api.NoSuchTxnException;
@@ -26,15 +28,14 @@ import org.apache.hadoop.hive.metastore.txn.TxnStore;
 import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsRequest;
 import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsResponse;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
-import org.apache.hadoop.hive.ql.io.AcidDirectory;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.metrics.Metrics;
 import org.apache.hadoop.hive.metastore.metrics.MetricsConstants;
 import org.apache.hadoop.hive.metastore.metrics.PerfLogger;
 import org.apache.hadoop.hive.metastore.txn.TxnUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.ValidWriteIdList;
@@ -46,10 +47,8 @@ import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
+import org.apache.hadoop.hive.ql.io.AcidDirectory;
 import org.apache.hadoop.hive.ql.io.AcidUtils;
-import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedBaseLight;
-import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedDelta;
-import org.apache.hadoop.hive.ql.io.AcidUtils.ParsedDeltaLight;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.util.StringUtils;
 import org.apache.hive.common.util.Ref;
@@ -57,15 +56,17 @@ import org.apache.hive.common.util.Ref;
 import java.io.IOException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.ListUtils.subtract;
 import static org.apache.hadoop.hive.conf.Constants.COMPACTOR_CLEANER_THREAD_NAME_FORMAT;
 import static org.apache.hadoop.hive.metastore.HiveMetaStore.HMSHandler.getMSForConf;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.getDefaultCatalog;
@@ -279,9 +280,33 @@ public class Cleaner extends MetaStoreCompactorThread {
    */
   private boolean removeFiles(String location, ValidWriteIdList writeIdList, CompactionInfo ci)
       throws IOException, NoSuchObjectException, MetaException {
-    Path locPath = new Path(location);
-    AcidDirectory dir = AcidUtils.getAcidState(locPath.getFileSystem(conf), locPath, conf, writeIdList, Ref.from(
-        false), false);
+    Path path = new Path(location);
+    FileSystem fs = path.getFileSystem(conf);
+
+    // Collect all of the files/dirs
+    Map<Path, AcidUtils.HdfsDirSnapshot> dirSnapshots = AcidUtils.getHdfsDirSnapshots(fs, path);
+    AcidDirectory dir = AcidUtils.getAcidState(fs, path, conf, writeIdList, Ref.from(false), false,
+        dirSnapshots);
+    List<Path> obsoleteDirs = getObsoleteDirs(dir);
+    List<Path> deleted = remove(location, ci, obsoleteDirs, true, fs);
+
+    // Make sure there are no leftovers below the compacted watermark
+    conf.set(ValidTxnList.VALID_TXNS_KEY, new ValidReadTxnList().toString());
+    dir = AcidUtils.getAcidState(fs, path, conf, new ValidReaderWriteIdList(
+            ci.getFullTableName(), new long[0], new BitSet(), ci.highestWriteId, Long.MAX_VALUE),
+        Ref.from(false), false, dirSnapshots);
+
+    List<Path> remained = subtract(getObsoleteDirs(dir), deleted);
+    if (!remained.isEmpty()) {
+      LOG.warn(idWatermark(ci) + " Remained " + remained.size() +
+          " obsolete directories from " + location + ". " + getDebugInfo(remained));
+      return false;
+    }
+    LOG.debug(idWatermark(ci) + " All cleared below the watermark: " + ci.highestWriteId + " from " + location);
+    return true;
+  }
+
+  private List<Path> getObsoleteDirs(AcidDirectory dir) {
     List<Path> obsoleteDirs = dir.getObsolete();
     /**
      * add anything in 'dir'  that only has data from aborted transactions - no one should be
@@ -293,81 +318,33 @@ public class Cleaner extends MetaStoreCompactorThread {
      * See {@link TxnStore#markCleaned(CompactionInfo)}
      */
     obsoleteDirs.addAll(dir.getAbortedDirectories());
-    List<Path> filesToDelete = new ArrayList<>(obsoleteDirs.size());
-    StringBuilder extraDebugInfo = new StringBuilder("[");
-    for (Path stat : obsoleteDirs) {
-      filesToDelete.add(stat);
-      extraDebugInfo.append(stat.getName()).append(",");
-      if(!FileUtils.isPathWithinSubtree(stat, locPath)) {
-        LOG.info(idWatermark(ci) + " found unexpected file: " + stat);
-      }
-    }
+    return obsoleteDirs;
+  }
 
-    if (filesToDelete.isEmpty()
-        && !hasDataBelowWatermark(dir, fs, path, ci.highestWriteId, writeIdList.getHighWatermark())) {
-      LOG.info(idWatermark(ci) + " nothing to remove below watermark " + ci.highestWriteId + ", ");
-      return true;
+  private List<Path> remove(String location, CompactionInfo ci, List<Path> paths, boolean ifPurge, FileSystem fs)
+      throws NoSuchObjectException, MetaException, IOException {
+    List<Path> deleted = new ArrayList<>();
+    if (paths.size() < 1) {
+      return deleted;
     }
-
-    extraDebugInfo.setCharAt(extraDebugInfo.length() - 1, ']');
-    LOG.info(idWatermark(ci) + " About to remove " + filesToDelete.size() +
-         " obsolete directories from " + location + ". " + extraDebugInfo.toString());
-    if (filesToDelete.size() < 1) {
-      LOG.warn("Hmm, nothing to delete in the cleaner for directory " + location +
-          ", that hardly seems right.");
-      return false;
-    }
-
-    FileSystem fs = dir.getFs();
+    LOG.info(idWatermark(ci) + " About to remove " + paths.size() +
+        " obsolete directories from " + location + ". " + getDebugInfo(paths));
     Database db = getMSForConf(conf).getDatabase(getDefaultCatalog(conf), ci.dbname);
     Table table = getMSForConf(conf).getTable(getDefaultCatalog(conf), ci.dbname, ci.tableName);
 
-    for (Path dead : filesToDelete) {
+    for (Path dead : paths) {
       LOG.debug("Going to delete path " + dead.toString());
       if (ReplChangeManager.shouldEnableCm(db, table)) {
         replChangeManager.recycle(dead, ReplChangeManager.RecycleType.MOVE, true);
       }
-      fs.delete(dead, true);
-    }
-    return true;
-  }
-
-  private boolean hasDataBelowWatermark(AcidDirectory acidDir, FileSystem fs, Path path, long highWatermark,
-      long minOpenTxn)
-      throws IOException {
-    Set<Path> acidPaths = new HashSet<>();
-    for (ParsedDelta delta : acidDir.getCurrentDirectories()) {
-      acidPaths.add(delta.getPath());
-    }
-    if (acidDir.getBaseDirectory() != null) {
-      acidPaths.add(acidDir.getBaseDirectory());
-    }
-    FileStatus[] children = fs.listStatus(path, p -> {
-      return !acidPaths.contains(p);
-    });
-    for (FileStatus child : children) {
-      if (isFileBelowWatermark(child, highWatermark, minOpenTxn)) {
-        return true;
+      if (FileUtils.moveToTrash(fs, dead, conf, ifPurge)) {
+        deleted.add(dead);
       }
     }
-    return false;
+    return deleted;
   }
 
-  private boolean isFileBelowWatermark(FileStatus child, long highWatermark, long minOpenTxn) {
-    Path p = child.getPath();
-    String fn = p.getName();
-    if (!child.isDirectory()) {
-      return true;
-    }
-    if (fn.startsWith(AcidUtils.BASE_PREFIX)) {
-      ParsedBaseLight b = ParsedBaseLight.parseBase(p);
-      return b.getWriteId() <= highWatermark;
-    }
-    if (fn.startsWith(AcidUtils.DELTA_PREFIX) || fn.startsWith(AcidUtils.DELETE_DELTA_PREFIX)) {
-      ParsedDeltaLight d = ParsedDeltaLight.parse(p);
-      return d.getMaxWriteId() <= highWatermark;
-    }
-    return false;
-
+  private String getDebugInfo(List<Path> paths) {
+    return "[" + paths.stream().map(Path::getName).collect(Collectors.joining(",")) + ']';
   }
 }

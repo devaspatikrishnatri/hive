@@ -18,17 +18,23 @@
 package org.apache.hadoop.hive.ql.txn.compactor;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hive.common.ValidCompactorWriteIdList;
+import org.apache.hadoop.hive.common.ValidTxnList;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.api.CommitTxnRequest;
 import org.apache.hadoop.hive.metastore.api.CompactionRequest;
 import org.apache.hadoop.hive.metastore.api.CompactionType;
 import org.apache.hadoop.hive.metastore.api.FindNextCompactRequest;
+import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsRequest;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.ShowCompactRequest;
 import org.apache.hadoop.hive.metastore.api.ShowCompactResponse;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.hadoop.hive.metastore.api.TxnType;
+import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.txn.CompactionInfo;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
+import org.apache.hadoop.hive.metastore.txn.TxnUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,8 +46,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashSet;
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import static org.apache.hadoop.hive.metastore.conf.MetastoreConf.getTimeVar;
+import static org.apache.hadoop.hive.ql.io.AcidUtils.addVisibilitySuffix;
 
 /**
  * Tests for the compactor Cleaner thread
@@ -62,12 +70,13 @@ public class TestCleaner extends CompactorTest {
     addBaseFile(t, null, 20L, 20);
     addDeltaFile(t, null, 21L, 22L, 2);
     addDeltaFile(t, null, 23L, 24L, 2);
-    addBaseFile(t, null, 25L, 25);
+
 
     burnThroughTransactions("default", "camtc", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "camtc", CompactionType.MAJOR);
-    compactInTxn(rqst);
+    long compactTxn = compactInTxn(rqst);
+    addBaseFile(t, null, 25L, 25, compactTxn);
 
     startCleaner();
 
@@ -79,7 +88,69 @@ public class TestCleaner extends CompactorTest {
     // Check that the files are removed
     List<Path> paths = getDirectories(conf, t, null);
     Assert.assertEquals(1, paths.size());
-    Assert.assertEquals("base_25", paths.get(0).getName());
+    Assert.assertEquals(addVisibilitySuffix("base_25", 26), paths.get(0).getName());
+  }
+  
+  @Test
+  public void cleanupAfterMajorTableCompactionWithLongRunningQuery() throws Exception {
+    Table t = newTable("default", "camtc", false);
+
+    addBaseFile(t, null, 20L, 20);
+    addDeltaFile(t, null, 21L, 22L, 2);
+    addDeltaFile(t, null, 23L, 24L, 2);
+    addBaseFile(t, null, 25L, 25, 26);
+
+    burnThroughTransactions("default", "camtc", 25);
+
+    CompactionRequest rqst = new CompactionRequest("default", "camtc", CompactionType.MAJOR);
+    txnHandler.compact(rqst);
+
+    FindNextCompactRequest findNextCompactRequest = new FindNextCompactRequest();
+    findNextCompactRequest.setWorkerId("fred");
+    findNextCompactRequest.setWorkerVersion(WORKER_VERSION);
+    CompactionInfo ci = txnHandler.findNextToCompact(findNextCompactRequest);
+    ci.runAs = System.getProperty("user.name");
+    long compactTxn = openTxn(TxnType.COMPACTION);
+
+    ValidTxnList validTxnList = TxnUtils.createValidReadTxnList(
+        txnHandler.getOpenTxns(Collections.singletonList(TxnType.READ_ONLY)), compactTxn);
+    GetValidWriteIdsRequest validWriteIdsRqst = new GetValidWriteIdsRequest(Collections.singletonList(ci.getFullTableName()));
+    validWriteIdsRqst.setValidTxnList(validTxnList.writeToString());
+
+    ValidCompactorWriteIdList tblValidWriteIds = TxnUtils.createValidCompactWriteIdList(
+        txnHandler.getValidWriteIds(validWriteIdsRqst).getTblValidWriteIds().get(0));
+    ci.highestWriteId = tblValidWriteIds.getHighWatermark();
+    txnHandler.updateCompactorState(ci, compactTxn);
+
+    txnHandler.markCompacted(ci);
+    // Open a query during compaction
+    long longQuery = openTxn();
+    txnHandler.commitTxn(new CommitTxnRequest(compactTxn));
+
+    startCleaner();
+
+    // The long running query should prevent the cleanup
+    ShowCompactResponse rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(1, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.CLEANING_RESPONSE, rsp.getCompacts().get(0).getState());
+
+    // Check that the files are not removed
+    List<Path> paths = getDirectories(conf, t, null);
+    Assert.assertEquals(4, paths.size());
+
+    // After the commit cleaning can proceed
+    txnHandler.commitTxn(new CommitTxnRequest(longQuery));
+    Thread.sleep(1000);
+    startCleaner();
+
+    rsp = txnHandler.showCompact(new ShowCompactRequest());
+    Assert.assertEquals(1, rsp.getCompactsSize());
+    Assert.assertEquals(TxnStore.SUCCEEDED_RESPONSE, rsp.getCompacts().get(0).getState());
+
+    // Check that the files are removed
+    paths = getDirectories(conf, t, null);
+    Assert.assertEquals(1, paths.size());
+    Assert.assertEquals(addVisibilitySuffix("base_25", 26), paths.get(0).getName());
   }
 
   @Test
@@ -332,7 +403,7 @@ public class TestCleaner extends CompactorTest {
     burnThroughTransactions(dbName, tblName, 22);
     CompactionRequest rqst = new CompactionRequest(dbName, tblName, CompactionType.MINOR);
     rqst.setPartitionname(partName);
-    compactInTxn(rqst);
+    long compactTxn = compactInTxn(rqst);
     addDeltaFile(t, p, 21, 22, 2);
     startCleaner();
 
@@ -348,11 +419,11 @@ public class TestCleaner extends CompactorTest {
     // major compaction
     addDeltaFile(t, p, 23L, 23L, 1);
     addDeltaFile(t, p, 24L, 24L, 1);
-    burnThroughTransactions(dbName, tblName, 2);
+    burnThroughTransactions(dbName, tblName, 2, null, new HashSet<>(Collections.singletonList(compactTxn + 1)));
     rqst = new CompactionRequest(dbName, tblName, CompactionType.MAJOR);
     rqst.setPartitionname(partName);
-    compactInTxn(rqst);
-    addBaseFile(t, p, 24, 24);
+    compactTxn = compactInTxn(rqst);
+    addBaseFile(t, p, 24, 24, compactTxn);
     startCleaner();
 
     // make sure cleaner didn't remove anything, and 2 cleaning are still queued
@@ -557,8 +628,8 @@ public class TestCleaner extends CompactorTest {
     burnThroughTransactions(dbName, tblName, 22);
 
     // block cleaner with an open txn
-    long blockingTxn = openTxn();
-
+    openTxn();
+    
     CompactionRequest rqst = new CompactionRequest(dbName, tblName, CompactionType.MINOR);
     rqst.setPartitionname(partName);
     long ctxnid = compactInTxn(rqst);
