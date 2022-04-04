@@ -50,6 +50,7 @@ class hive_metastoreConstants {
   std::string TABLE_IS_CTAS;
   std::string CTAS_LEGACY_CONFIG;
   std::string DEFAULT_TABLE_TYPE;
+  std::string TABLE_IS_CTLT;
 };
 
 extern const hive_metastoreConstants g_hive_metastore_constants;

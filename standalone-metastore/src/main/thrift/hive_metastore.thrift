@@ -29,7 +29,7 @@ namespace php metastore
 namespace cpp Apache.Hadoop.Hive
 
 const string DDL_TIME = "transient_lastDdlTime"
-const string HMS_API = "1.2.18"
+const string HMS_API = "1.2.19"
 const byte ACCESSTYPE_NONE       = 1;
 const byte ACCESSTYPE_READONLY   = 2;
 const byte ACCESSTYPE_WRITEONLY  = 4;
@@ -2720,3 +2720,4 @@ const string JDBC_CONFIG_PREFIX = "hive.sql.",
 const string TABLE_IS_CTAS = "created_with_ctas",
 const string CTAS_LEGACY_CONFIG = "create_table_as_external",
 const string DEFAULT_TABLE_TYPE = "defaultTableType",
+const string TABLE_IS_CTLT = "created_with_ctlt"

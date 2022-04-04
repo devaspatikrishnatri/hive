@@ -79,4 +79,6 @@ package org.apache.hadoop.hive.metastore.api;
 
   public static final java.lang.String DEFAULT_TABLE_TYPE = "defaultTableType";
 
+  public static final java.lang.String TABLE_IS_CTLT = "created_with_ctlt";
+
 }

@@ -81,6 +81,8 @@ hive_metastoreConstants::hive_metastoreConstants() {
 
   DEFAULT_TABLE_TYPE = "defaultTableType";
 
+  TABLE_IS_CTLT = "created_with_ctlt";
+
 }
 
 }}} // namespace

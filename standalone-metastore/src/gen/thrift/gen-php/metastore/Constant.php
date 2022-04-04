@@ -53,6 +53,7 @@ final class Constant extends \Thrift\Type\TConstant
     static protected $TABLE_IS_CTAS;
     static protected $CTAS_LEGACY_CONFIG;
     static protected $DEFAULT_TABLE_TYPE;
+    static protected $TABLE_IS_CTLT;
 
     protected static function init_DDL_TIME()
     {
@@ -227,5 +228,10 @@ final class Constant extends \Thrift\Type\TConstant
     protected static function init_DEFAULT_TABLE_TYPE()
     {
         return "defaultTableType";
+    }
+
+    protected static function init_TABLE_IS_CTLT()
+    {
+        return "created_with_ctlt";
     }
 }
