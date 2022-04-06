@@ -262,7 +262,7 @@ public class ColumnStatsSemanticAnalyzer extends SemanticAnalyzer {
       }
       rewrittenQueryBuilder.append(')');
 
-      columnNamesBuilder.append(unparseIdentifier(columnName, conf));
+      columnNamesBuilder.append(columnName);
 
       columnDummyValuesBuilder.append(
           "cast(null as " + TypeInfoUtils.getTypeInfoFromTypeString(tbl.getCols().get(i).getType()).toString() + ")");
