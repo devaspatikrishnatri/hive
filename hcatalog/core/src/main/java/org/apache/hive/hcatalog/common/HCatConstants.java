@@ -30,28 +30,6 @@ public final class HCatConstants {
   public static final String SEQUENCEFILE_INPUT = SequenceFileInputFormat.class.getName();
   public static final String SEQUENCEFILE_OUTPUT = SequenceFileOutputFormat.class.getName();
 
-  public static final String HCAT_PIG_STORAGE_CLASS = "org.apache.pig.builtin.PigStorage";
-  public static final String HCAT_PIG_LOADER = "hcat.pig.loader";
-  public static final String HCAT_PIG_LOADER_LOCATION_SET = HCAT_PIG_LOADER + ".location.set";
-  public static final String HCAT_PIG_LOADER_ARGS = "hcat.pig.loader.args";
-  public static final String HCAT_PIG_STORER = "hcat.pig.storer";
-  public static final String HCAT_PIG_STORER_ARGS = "hcat.pig.storer.args";
-  public static final String HCAT_PIG_ARGS_DELIMIT = "hcat.pig.args.delimiter";
-  public static final String HCAT_PIG_ARGS_DELIMIT_DEFAULT = ",";
-  public static final String HCAT_PIG_STORER_LOCATION_SET = HCAT_PIG_STORER + ".location.set";
-  public static final String HCAT_PIG_INNER_TUPLE_NAME = "hcat.pig.inner.tuple.name";
-  public static final String HCAT_PIG_INNER_TUPLE_NAME_DEFAULT = "innertuple";
-  public static final String HCAT_PIG_INNER_FIELD_NAME = "hcat.pig.inner.field.name";
-  public static final String HCAT_PIG_INNER_FIELD_NAME_DEFAULT = "innerfield";
-
-  /**
-   * {@value} (default: null)
-   * When the property is set in the UDFContext of the org.apache.hive.hcatalog.pig.HCatStorer, HCatStorer writes
-   * to the location it specifies instead of the default HCatalog location format. An example can be found
-   * in org.apache.hive.hcatalog.pig.HCatStorerWrapper.
-   */
-  public static final String HCAT_PIG_STORER_EXTERNAL_LOCATION = HCAT_PIG_STORER + ".external.location";
-
   //The keys used to store info into the job Configuration
   public static final String HCAT_KEY_BASE = "mapreduce.lib.hcat";
 

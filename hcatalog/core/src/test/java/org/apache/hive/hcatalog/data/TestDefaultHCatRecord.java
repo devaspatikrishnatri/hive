@@ -46,7 +46,6 @@ import org.apache.hive.hcatalog.data.schema.HCatSchemaUtils;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.apache.pig.parser.AliasMasker;
 import org.junit.Test;
 
 /**

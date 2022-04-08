@@ -20,7 +20,6 @@ datanucleus.log
 TempStatsStore/
 target/
 ql/TempStatsStore
-hcatalog/hcatalog-pig-adapter/target
 hcatalog/server-extensions/target
 hcatalog/core/target
 hcatalog/webhcat/java-client/target
