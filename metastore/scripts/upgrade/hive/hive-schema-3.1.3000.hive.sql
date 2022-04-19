@@ -1186,7 +1186,7 @@ SELECT
   CC_PARTITION,
   CASE WHEN CC_TYPE = 'i' THEN 'minor' WHEN CC_TYPE = 'a' THEN 'major' ELSE 'UNKNOWN' END,
   CASE WHEN CC_STATE = 'f' THEN 'failed' WHEN CC_STATE = 's' THEN 'succeeded'
-   WHEN CC_STATE = 'a' THEN 'did not initiate' ELSE 'UNKNOWN' END,
+   WHEN CC_STATE = 'a' THEN 'did not initiate' WHEN CC_STATE = 'c' THEN 'refused' ELSE 'UNKNOWN' END,
   CASE WHEN CC_WORKER_ID IS NULL THEN cast (null as string) ELSE split(CC_WORKER_ID,"-")[0] END,
   CASE WHEN CC_WORKER_ID IS NULL THEN cast (null as string) ELSE split(CC_WORKER_ID,"-")[size(split(CC_WORKER_ID,"-"))-1] END,
   CC_WORKER_VERSION,
@@ -1764,7 +1764,7 @@ WHERE
   AND C.`COLUMN_NAME` = P.`COLUMN_NAME`
   AND (P.`PRINCIPAL_NAME`=current_user() AND P.`PRINCIPAL_TYPE`='USER'
     OR ((array_contains(current_groups(), P.`PRINCIPAL_NAME`) OR P.`PRINCIPAL_NAME` = 'public') AND P.`PRINCIPAL_TYPE`='GROUP'))
-  AND P.`TBL_COL_PRIV`='SELECT' AND P.`AUTHORIZER`=current_authorizer();
+  AND array_contains(split_map_privs(P.`TBL_COL_PRIV`),"SELECT") AND P.`AUTHORIZER`=current_authorizer();
 
 CREATE OR REPLACE VIEW `COLUMN_PRIVILEGES`
 (
@@ -1787,7 +1787,18 @@ SELECT DISTINCT
   P.`TBL_COL_PRIV`,
   IF (P.`GRANT_OPTION` == 0, 'NO', 'YES')
 FROM
-  `sys`.`TBL_COL_PRIVS` P JOIN `sys`.`TBLS` T ON (P.`TBL_ID` = T.`TBL_ID`)
+  (SELECT
+          Q.`GRANTOR`,
+          Q.`GRANT_OPTION`,
+          Q.`PRINCIPAL_NAME`,
+          Q.`PRINCIPAL_TYPE`,
+          Q.`AUTHORIZER`,
+          Q.`COLUMN_NAME`,
+          `TBL_COL_PRIV_TMP`.`TBL_COL_PRIV`,
+          Q.`TBL_ID`
+         FROM `sys`.`TBL_COL_PRIVS` AS Q
+         LATERAL VIEW explode(split_map_privs(Q.`TBL_COL_PRIV`)) `TBL_COL_PRIV_TMP` AS `TBL_COL_PRIV`) P
+                          JOIN `sys`.`TBLS` T ON (P.`TBL_ID` = T.`TBL_ID`)
                           JOIN `sys`.`DBS` D ON (T.`DB_ID` = D.`DB_ID`)
                           JOIN `sys`.`SDS` S ON (S.`SD_ID` = T.`SD_ID`)
                           LEFT JOIN `sys`.`TBL_PRIVS` P2 ON (P.`TBL_ID` = P2.`TBL_ID`)
@@ -1921,7 +1932,7 @@ SELECT 'Upgrading MetaStore schema to 3.1.3000.7.2.15.0-Update2';
 
 USE SYS;
 
-CREATE OR REPLACE VIEW `CDH_VERSION` AS SELECT 1 AS `VER_ID`, '3.1.3000.7.2.15.0-Update2' AS `SCHEMA_VERSION`,
-  'Hive release version 3.1.3000 for CDH 7.2.15.0-Update2' AS `VERSION_COMMENT`;
+CREATE OR REPLACE VIEW `CDH_VERSION` AS SELECT 1 AS `VER_ID`, '3.1.3000.7.2.15.0-Update4' AS `SCHEMA_VERSION`,
+  'Hive release version 3.1.3000 for CDH 7.2.15.0-Update4' AS `VERSION_COMMENT`;
 
-SELECT 'Finished initializing schema to 3.1.3000.7.2.15.0-Update2';
+SELECT 'Finished initializing schema to 3.1.3000.7.2.15.0-Update4';
