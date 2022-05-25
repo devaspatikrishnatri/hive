@@ -472,6 +472,9 @@ public enum ErrorMsg {
   RESOURCE_PLAN_NOT_EXISTS(10418, "Resource plan {0} does not exist", true),
   INCOMPATIBLE_STRUCT(10419, "Incompatible structs.", true),
   OBJECTNAME_CONTAINS_DOT(10420, "Table or database name may not contain dot(.) character", true),
+  CBO_IS_REQUIRED(10433,
+      "The following functionality requires CBO (" + HiveConf.ConfVars.HIVE_CBO_ENABLED.varname + "): {0}", true),
+
 
   //========================== 20000 range starts here ========================//
 

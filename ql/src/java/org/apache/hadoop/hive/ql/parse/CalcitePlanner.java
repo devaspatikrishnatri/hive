@@ -4915,34 +4915,27 @@ public class CalcitePlanner extends SemanticAnalyzer {
               throw new SemanticException(SemanticAnalyzer.generateErrorMessage(obAST, error));
             }
           }
-          List<RexNode> originalInputRefs = Lists.transform(srcRel.getRowType().getFieldList(),
-              new Function<RelDataTypeField, RexNode>() {
-                @Override
-                public RexNode apply(RelDataTypeField input) {
-                  return new RexInputRef(input.getIndex(), input.getType());
-                }
-              });
-          originalRR = out_rwsch.duplicate();
-          for (int i = 0; i < inputRR.getColumnInfos().size(); i++) {
-            ColumnInfo colInfo = new ColumnInfo(inputRR.getColumnInfos().get(i));
-            String internalName = SemanticAnalyzer.getColumnInternalName(out_rwsch.getColumnInfos()
-                .size() + i);
-            colInfo.setInternalName(internalName);
-            // if there is any confict, then we do not generate it in the new select
-            // otherwise, we add it into the calciteColLst and generate the new select
-            if (!out_rwsch.putWithCheck(colInfo.getTabAlias(), colInfo.getAlias(), internalName,
-                colInfo)) {
-              LOG.trace("Column already present in RR. skipping.");
-            } else {
-              calciteColLst.add(originalInputRefs.get(i));
-            }
-          }
+          originalRR = appendInputColumns(srcRel, calciteColLst, out_rwsch, inputRR);
           outputRel = genSelectRelNode(calciteColLst, out_rwsch, srcRel);
           // outputRel is the generated augmented select with extra unselected
           // columns, and originalRR is the original generated select
           return new Pair<RelNode, RowResolver>(outputRel, originalRR);
         } else {
-          outputRel = genSelectRelNode(calciteColLst, out_rwsch, srcRel);
+          if (qbp.getQualifyExprForClause(dest) != null) {
+            int originalColumnListSize = calciteColLst.size();
+            originalRR = appendInputColumns(srcRel, calciteColLst, out_rwsch, inputRR);
+            RelNode combinedProject = genSelectRelNode(calciteColLst, out_rwsch, srcRel);
+            RelNode qualifyRel = genQualifyLogicalPlan(qb, combinedProject);
+            List<RexNode> topProjectColumnList = new ArrayList<>(originalColumnListSize);
+            for (int i = 0; i < originalColumnListSize; ++i) {
+              topProjectColumnList.add(qualifyRel.getCluster().getRexBuilder().makeInputRef(
+                      qualifyRel.getRowType().getFieldList().get(i).getType(), i));
+            }
+            outputRel = genSelectRelNode(topProjectColumnList, originalRR, qualifyRel);
+            out_rwsch = originalRR;
+          } else {
+            outputRel = genSelectRelNode(calciteColLst, out_rwsch, srcRel);
+          }
         }
       }
       // 9. Handle select distinct as GBY if there exist windowing functions
@@ -4964,6 +4957,34 @@ public class CalcitePlanner extends SemanticAnalyzer {
       inputRR.setCheckForAmbiguity(false);
       return new Pair<RelNode, RowResolver>(outputRel, null);
     }
+
+    private RowResolver appendInputColumns(RelNode srcRel, List<RexNode> columnList, RowResolver outputRR, RowResolver inputRR) throws SemanticException {
+      RowResolver originalRR;
+      List<RexNode> originalInputRefs = Lists.transform(srcRel.getRowType().getFieldList(),
+          new Function<RelDataTypeField, RexNode>() {
+            @Override
+            public RexNode apply(RelDataTypeField input) {
+              return new RexInputRef(input.getIndex(), input.getType());
+            }
+          });
+      originalRR = outputRR.duplicate();
+      for (int i = 0; i < inputRR.getColumnInfos().size(); i++) {
+        ColumnInfo colInfo = new ColumnInfo(inputRR.getColumnInfos().get(i));
+        String internalName = SemanticAnalyzer.getColumnInternalName(outputRR.getColumnInfos()
+            .size() + i);
+        colInfo.setInternalName(internalName);
+        // if there is any confict, then we do not generate it in the new select
+        // otherwise, we add it into the calciteColLst and generate the new select
+        if (!outputRR.putWithCheck(colInfo.getTabAlias(), colInfo.getAlias(), internalName,
+            colInfo)) {
+          LOG.trace("Column already present in RR. skipping.");
+        } else {
+          columnList.add(originalInputRefs.get(i));
+        }
+      }
+      return originalRR;
+    }
+
 
     private RelNode genUDTFPlan(GenericUDTF genericUDTF, String genericUDTFName, String outputTableAlias,
         ArrayList<String> colAliases, QB qb, List<RexNode> selectColLst, RowResolver selectRR, RelNode input) throws SemanticException {
@@ -5277,6 +5298,19 @@ public class CalcitePlanner extends SemanticAnalyzer {
       }
 
       return gbFilter;
+    }
+
+    private RelNode genQualifyLogicalPlan(QB qb, RelNode srcRel) throws SemanticException {
+      QBParseInfo qbp = getQBParseInfo(qb);
+      String destClauseName = qbp.getClauseNames().iterator().next();
+      ASTNode qualifyClause = qbp.getQualifyExprForClause(destClauseName);
+
+      if (qualifyClause == null) {
+        throw new SemanticException("Missing expression: qualify.");
+      }
+
+      ASTNode targetNode = (ASTNode) qualifyClause.getChild(0);
+      return genFilterRelNode(qb, targetNode, srcRel, null, null, true);
     }
 
     /*
