@@ -89,6 +89,23 @@ public class TestParquetTimestampsHive2Compatibility {
   }
 
   /**
+   * Tests that timestamps written using Hive2 APIs are read correctly by Hive4 APIs when legacy conversion is on.
+   */
+  @Test
+  public void testWriteHive2ReadHive4UsingLegacyConversionWithZone() {
+    TimeZone original = TimeZone.getDefault();
+    try {
+      String zoneId = "US/Pacific";
+      TimeZone.setDefault(TimeZone.getTimeZone(zoneId));
+      NanoTime nt = writeHive2(timestampString);
+      Timestamp ts = readHive4(nt, zoneId, true);
+      assertEquals(timestampString, ts.toString());
+    } finally {
+      TimeZone.setDefault(original);
+    }
+  }
+
+  /**
    * Tests that timestamps written using Hive4 APIs are read correctly by Hive4 APIs when legacy conversion is on. 
    */
   @Test
@@ -123,7 +140,7 @@ public class TestParquetTimestampsHive2Compatibility {
 
   @Parameterized.Parameters
   public static List<String[]> generateTimestamps() {
-    return Stream.generate(new Supplier<String[]>() {
+    return Stream.concat(Stream.generate(new Supplier<String[]>() {
       int i = 0;
 
       @Override
@@ -164,7 +181,7 @@ public class TestParquetTimestampsHive2Compatibility {
     // Exclude dates falling in the default Gregorian change date since legacy code does not handle that interval
     // gracefully. It is expected that these do not work well when legacy APIs are in use. 
     .filter(s -> !s[0].startsWith("1582-10"))
-    .limit(3000).collect(Collectors.toList());
+    .limit(3000), Stream.<String[]>of(new String[]{"9999-12-31 23:59:59.999"})).collect(Collectors.toList());
   }
 
   private static int digits(int number) {
