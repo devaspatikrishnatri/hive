@@ -147,7 +147,7 @@ expressionsInParenthesis[boolean isStruct, boolean forceStruct]
 
 expressionsNotInParenthesis[boolean isStruct, boolean forceStruct]
     :
-    first=expression more=expressionPart[$expression.tree, isStruct]?
+    first=expressionOrDefault more=expressionPart[$expressionOrDefault.tree, isStruct]?
     -> {forceStruct && more==null}?
        ^(TOK_FUNCTION Identifier["struct"] {$first.tree})
     -> {more==null}?
@@ -157,9 +157,15 @@ expressionsNotInParenthesis[boolean isStruct, boolean forceStruct]
 
 expressionPart[CommonTree t, boolean isStruct]
     :
-    (COMMA expression)+
-    -> {isStruct}? ^(TOK_FUNCTION Identifier["struct"] {$t} expression+)
-    -> {$t} expression+
+    (COMMA expressionOrDefault)+
+    -> {isStruct}? ^(TOK_FUNCTION Identifier["struct"] {$t} expressionOrDefault+)
+    -> {$t} expressionOrDefault+
+    ;
+
+expressionOrDefault
+    :
+    (KW_DEFAULT ~DOT) => defaultValue
+    | expression
     ;
 
 expressions
