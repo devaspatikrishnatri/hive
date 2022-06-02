@@ -2917,7 +2917,7 @@ public class Vectorizer implements PhysicalPlanResolver {
     List<ExprNodeDesc>[] evaluatorInputExprNodeDescLists = vectorPTFDesc.getEvaluatorInputExprNodeDescLists();
 
     for (int i = 0; i < count; i++) {
-      String functionName = evaluatorFunctionNames[i];
+      String functionName = evaluatorFunctionNames[i].toLowerCase();
       SupportedFunctionType supportedFunctionType = VectorPTFDesc.supportedFunctionsMap.get(functionName);
       if (supportedFunctionType == null) {
         setOperatorIssue(functionName + " not in supported functions " + VectorPTFDesc.supportedFunctionNames);
