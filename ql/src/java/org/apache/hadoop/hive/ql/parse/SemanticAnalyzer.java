@@ -8070,7 +8070,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     // operation is the same (the table location) and this can lead to invalid lineage information
     // in case of a merge statement.
     if (!isDirectInsert || acidOperation == AcidUtils.Operation.INSERT) {
-      handleLineage(ltd, output);
+      handleLineage(destinationTable, ltd, output);
     }
     setWriteIdForSurrogateKeys(ltd, input);
 
@@ -8381,7 +8381,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     return fileSinkDesc;
   }
 
-  private void handleLineage(LoadTableDesc ltd, Operator output)
+  private void handleLineage(Table destinationTable, LoadTableDesc ltd, Operator output)
       throws SemanticException {
     if (ltd != null) {
       queryState.getLineageState().mapDirToOp(ltd.getSourcePath(), output);
@@ -8394,6 +8394,11 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         Warehouse wh = new Warehouse(conf);
         tlocation = wh.getDefaultTablePath(db.getDatabase(tableDesc.getDatabaseName()),
             tName, tableDesc.isExternal());
+
+        if (destinationTable != null && destinationTable.getSd() != null
+                && destinationTable.getPath() != null) {
+          tlocation = destinationTable.getPath();
+        }
       } catch (MetaException|HiveException e) {
         throw new SemanticException(e);
       }
