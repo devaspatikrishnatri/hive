@@ -8056,7 +8056,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         && conf.getBoolVar(ConfVars.HIVESTATSCOLAUTOGATHER)
         && destinationTable != null && !destinationTable.isNonNative()
         && !destTableIsTemporary && !destTableIsMaterialization
-        && ColumnStatsAutoGatherContext.canRunAutogatherStats(fso)) {
+        && ColumnStatsAutoGatherContext.canRunAutogatherStats(fso)
+        && !(this instanceof UpdateDeleteSemanticAnalyzer)) {
       if (destType == QBMetaData.DEST_TABLE) {
         genAutoColumnStatsGatheringPipeline(qb, destinationTable, partSpec, input,
             qb.getParseInfo().isInsertIntoTable(destinationTable.getDbName(), destinationTable.getTableName()),
@@ -8282,7 +8283,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         conf.getBoolVar(HiveConf.ConfVars.COMPRESSRESULT), currentTableId, rsCtx.isMultiFileSpray(),
         canBeMerged, rsCtx.getNumFiles(), rsCtx.getTotalFiles(), rsCtx.getPartnCols(), dpCtx,
         dest_path, mmWriteId, isMmCtas, isInsertOverwrite, qb.getIsQuery(),
-        qb.isCTAS() || qb.isMaterializedView(), isDirectInsert);
+        qb.isCTAS() || qb.isMaterializedView(), isDirectInsert, ctx.isDeleteBranchOfUpdate(dest));
 
     boolean isHiveServerQuery = SessionState.get().isHiveServerQuery();
     fileSinkDesc.setHiveServerQuery(isHiveServerQuery);
@@ -8410,8 +8411,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     if ((dpCtx == null || dpCtx.getNumDPCols() == 0)) {
       output = new WriteEntity(dest_tab, determineWriteType(ltd, isNonNativeTable, dest));
       if (!outputs.add(output)) {
-        if(!((this instanceof MergeSemanticAnalyzer) &&
-            conf.getBoolVar(ConfVars.MERGE_SPLIT_UPDATE))) {
+        if(!allowOutputMultipleTimes()) {
           /**
            * Merge stmt with early split update may create several (2) writes to the same
            * table with the same {@link WriteType}, e.g. if original Merge stmt has both update and
@@ -8450,6 +8450,10 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       }
     }
     return output;
+  }
+
+  protected boolean allowOutputMultipleTimes() {
+    return false;
   }
 
   private void checkExternalTable(Table dest_tab) throws SemanticException {

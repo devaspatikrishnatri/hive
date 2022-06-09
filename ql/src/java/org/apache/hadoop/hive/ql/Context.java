@@ -160,6 +160,7 @@ public class Context {
    * different prefixes to encode the purpose of different Insert branches
    */
   private Map<Integer, DestClausePrefix> insertBranchToNamePrefix = new HashMap<>();
+  private int deleteBranchOfUpdateIdx = -1;
   private Operation operation = Operation.OTHER;
   private WmContext wmContext;
 
@@ -269,39 +270,47 @@ public class Context {
       case OTHER:
         return DestClausePrefix.INSERT;
       case UPDATE:
+        if (HiveConf.getBoolVar(conf, HiveConf.ConfVars.SPLIT_UPDATE)) {
+          return getMergeDestClausePrefix(curNode);
+        }
         return DestClausePrefix.UPDATE;
       case DELETE:
         return DestClausePrefix.DELETE;
       case MERGE:
-      /* This is the structure expected here
-        HiveParser.TOK_QUERY;
-          HiveParser.TOK_FROM
-          HiveParser.TOK_INSERT;
-            HiveParser.TOK_INSERT_INTO;
-          HiveParser.TOK_INSERT;
-            HiveParser.TOK_INSERT_INTO;
-          .....*/
-        ASTNode insert = (ASTNode) curNode.getParent();
-        assert insert != null && insert.getType() == HiveParser.TOK_INSERT;
-        ASTNode query = (ASTNode) insert.getParent();
-        assert query != null && query.getType() == HiveParser.TOK_QUERY;
-
-        for(int childIdx = 1; childIdx < query.getChildCount(); childIdx++) {//1st child is TOK_FROM
-          assert query.getChild(childIdx).getType() == HiveParser.TOK_INSERT;
-          if(insert == query.getChild(childIdx)) {
-            DestClausePrefix prefix = insertBranchToNamePrefix.get(childIdx);
-            if(prefix == null) {
-              throw new IllegalStateException("Found a node w/o branch mapping: '" +
-                getMatchedText(insert) + "'");
-            }
-            return prefix;
-          }
-        }
-        throw new IllegalStateException("Could not locate '" + getMatchedText(insert) + "'");
+        return getMergeDestClausePrefix(curNode);
       default:
         throw new IllegalStateException("Unexpected operation: " + operation);
     }
   }
+
+  private DestClausePrefix getMergeDestClausePrefix(ASTNode curNode) {
+    /* This is the structure expected here
+      HiveParser.TOK_QUERY;
+        HiveParser.TOK_FROM
+        HiveParser.TOK_INSERT;
+          HiveParser.TOK_INSERT_INTO;
+        HiveParser.TOK_INSERT;
+          HiveParser.TOK_INSERT_INTO;
+        .....*/
+    ASTNode insert = (ASTNode) curNode.getParent();
+    assert insert != null && insert.getType() == HiveParser.TOK_INSERT;
+    ASTNode query = (ASTNode) insert.getParent();
+    assert query != null && query.getType() == HiveParser.TOK_QUERY;
+
+    for(int childIdx = 1; childIdx < query.getChildCount(); childIdx++) {//1st child is TOK_FROM
+      assert query.getChild(childIdx).getType() == HiveParser.TOK_INSERT;
+      if(insert == query.getChild(childIdx)) {
+        DestClausePrefix prefix = insertBranchToNamePrefix.get(childIdx);
+        if(prefix == null) {
+          throw new IllegalStateException("Found a node w/o branch mapping: '" +
+            getMatchedText(insert) + "'");
+        }
+        return prefix;
+      }
+    }
+    throw new IllegalStateException("Could not locate '" + getMatchedText(insert) + "'");
+  }
+
   /**
    * Will make SemanticAnalyzer.Phase1Ctx#dest in subtree rooted at 'tree' use 'prefix'.  This to
    * handle multi-insert stmt that represents Merge stmt and has insert branches representing
@@ -311,6 +320,12 @@ public class Context {
    */
   public DestClausePrefix addDestNamePrefix(int pos, DestClausePrefix prefix) {
     return insertBranchToNamePrefix.put(pos, prefix);
+  }
+
+  public DestClausePrefix addDeleteOfUpdateDestNamePrefix(int pos, DestClausePrefix prefix) {
+    DestClausePrefix destClausePrefix = addDestNamePrefix(pos, prefix);
+    deleteBranchOfUpdateIdx = pos;
+    return destClausePrefix;
   }
 
   public Context(Configuration conf) throws IOException {
@@ -1227,4 +1242,36 @@ public class Context {
     this.enableUnparse = enableUnparse;
   }
 
+  public boolean isDeleteBranchOfUpdate(String dest) {
+    if (!HiveConf.getBoolVar(conf, HiveConf.ConfVars.SPLIT_UPDATE) &&
+            !HiveConf.getBoolVar(conf, HiveConf.ConfVars.MERGE_SPLIT_UPDATE)) {
+      return false;
+    }
+
+    if (deleteBranchOfUpdateIdx > 0) {
+      return dest.endsWith(Integer.toString(deleteBranchOfUpdateIdx - 1));
+    }
+
+    for (Context subContext : subContexts) {
+      if (subContext.isDeleteBranchOfUpdate(dest)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public boolean hasSplitUpdate() {
+    if (deleteBranchOfUpdateIdx > 0) {
+      return true;
+    }
+
+    for (Context subContext : subContexts) {
+      if (subContext.hasSplitUpdate()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

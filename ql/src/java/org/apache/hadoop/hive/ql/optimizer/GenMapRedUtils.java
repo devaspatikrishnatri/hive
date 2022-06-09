@@ -1567,7 +1567,7 @@ public final class GenMapRedUtils {
    * @return
    */
   public static boolean isInsertInto(ParseContext parseCtx, FileSinkOperator fsOp) {
-    return fsOp.getConf().getTableInfo().getTableName() != null;
+    return fsOp.getConf().getTableInfo().getTableName() != null && !parseCtx.getContext().hasSplitUpdate();
   }
 
   /**

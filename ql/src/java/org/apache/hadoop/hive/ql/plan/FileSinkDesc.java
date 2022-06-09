@@ -115,6 +115,8 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
 
   private boolean isDirectInsert = false;
 
+  private boolean deleteOfSplitUpdate;
+
   private boolean isQuery = false;
 
   private boolean isCTASorCM = false;
@@ -129,7 +131,8 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
       final boolean compressed, final int destTableId, final boolean multiFileSpray,
       final boolean canBeMerged, final int numFiles, final int totalFiles,
       final List<ExprNodeDesc> partitionCols, final DynamicPartitionCtx dpCtx, Path destPath,
-      Long mmWriteId, boolean isMmCtas, boolean isInsertOverwrite, boolean isQuery, boolean isCTASorCM, boolean isDirectInsert) {
+      Long mmWriteId, boolean isMmCtas, boolean isInsertOverwrite, boolean isQuery, boolean isCTASorCM,
+      boolean isDirectInsert, boolean deleteOfSplitUpdate) {
     this.dirName = dirName;
     setTableInfo(tableInfo);
     this.compressed = compressed;
@@ -148,6 +151,7 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
     this.isQuery = isQuery;
     this.isCTASorCM = isCTASorCM;
     this.isDirectInsert = isDirectInsert;
+    this.deleteOfSplitUpdate = deleteOfSplitUpdate;
   }
 
   public FileSinkDesc(final Path dirName, final TableDesc tableInfo,
@@ -169,7 +173,7 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
   public Object clone() throws CloneNotSupportedException {
     FileSinkDesc ret = new FileSinkDesc(dirName, tableInfo, compressed, destTableId, multiFileSpray, canBeMerged,
         numFiles, totalFiles, partitionCols, dpCtx, destPath, mmWriteId, isMmCtas, isInsertOverwrite, isQuery,
-        isCTASorCM, isDirectInsert);
+        isCTASorCM, isDirectInsert, deleteOfSplitUpdate);
     ret.setCompressCodec(compressCodec);
     ret.setCompressType(compressType);
     ret.setGatherStats(gatherStats);
@@ -233,6 +237,10 @@ public class FileSinkDesc extends AbstractOperatorDesc implements IStatsGatherDe
 
   public boolean isDirectInsert() {
     return this.isDirectInsert;
+  }
+
+  public boolean isDeleteOfSplitUpdate() {
+    return deleteOfSplitUpdate;
   }
 
   @Explain(displayName = "directory", explainLevels = { Level.EXTENDED })
