@@ -294,7 +294,7 @@ public class DescTableOperation extends DDLOperation<DescTableDesc> {
     }
   }
 
-  private void handleMaterializedView(Table table) throws LockException {
+  private void handleMaterializedView(Table table) throws HiveException {
     if (table.isMaterializedView()) {
       String validTxnsList = context.getDb().getConf().get(ValidTxnList.VALID_TXNS_KEY);
       if (validTxnsList != null) {
