@@ -57,8 +57,6 @@ public class CliConfigs {
         excludesFrom(testConfigProps, "spark.only.query.files");
         excludesFrom(testConfigProps, "miniSparkOnYarn.only.query.files");
         excludesFrom(testConfigProps, "localSpark.only.query.files");
-        excludesFrom(testConfigProps, "druid.query.files");
-        excludesFrom(testConfigProps, "druid.kafka.query.files");
         excludesFrom(testConfigProps, "hive.kafka.query.files");
         excludesFrom(testConfigProps, "erasurecoding.only.query.files");
         excludesFrom(testConfigProps, "erasurecoding.shared.query.files");
@@ -165,50 +163,6 @@ public class CliConfigs {
         setHiveConfDir("data/conf/llap");
         setClusterType(MiniClusterType.LLAP);
         setMetastoreType(MetastoreType.sql);
-      } catch (Exception e) {
-        throw new RuntimeException("can't construct cliconfig", e);
-      }
-    }
-  }
-
-  public static class MiniDruidCliConfig extends AbstractCliConfig {
-    public MiniDruidCliConfig() {
-      super(CoreCliDriver.class);
-      try {
-        setQueryDir("ql/src/test/queries/clientpositive");
-
-        includesFrom(testConfigProps, "druid.query.files");
-
-        setResultsDir("ql/src/test/results/clientpositive/druid");
-        setLogDir("itests/qtest/target/tmp/log");
-
-        setInitScript("q_test_druid_init.sql");
-        setCleanupScript("q_test_cleanup_druid.sql");
-        setHiveConfDir("data/conf/llap");
-        setClusterType(MiniClusterType.DRUID);
-        setMetastoreType(MetastoreType.sql);
-        setFsType(QTestMiniClusters.FsType.HDFS);
-      } catch (Exception e) {
-        throw new RuntimeException("can't construct cliconfig", e);
-      }
-    }
-  }
-
-  public static class MiniDruidKafkaCliConfig extends AbstractCliConfig {
-    public MiniDruidKafkaCliConfig() {
-      super(CoreCliDriver.class);
-      try {
-        setQueryDir("ql/src/test/queries/clientpositive");
-        includesFrom(testConfigProps, "druid.kafka.query.files");
-        setResultsDir("ql/src/test/results/clientpositive/druid");
-        setLogDir("itests/qtest/target/tmp/log");
-
-        setInitScript("q_test_druid_init.sql");
-        setCleanupScript("q_test_cleanup_druid.sql");
-        setHiveConfDir("data/conf/llap");
-        setClusterType(MiniClusterType.DRUID_KAFKA);
-        setMetastoreType(MetastoreType.sql);
-        setFsType(QTestMiniClusters.FsType.HDFS);
       } catch (Exception e) {
         throw new RuntimeException("can't construct cliconfig", e);
       }
