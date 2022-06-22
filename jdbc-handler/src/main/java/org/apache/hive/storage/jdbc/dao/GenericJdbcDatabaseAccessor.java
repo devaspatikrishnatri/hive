@@ -22,6 +22,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.Constants;
 import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.serde.serdeConstants;
+import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
+import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoFactory;
 import org.apache.hadoop.hive.serde2.typeinfo.PrimitiveTypeInfo;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.security.Credentials;
@@ -37,12 +39,14 @@ import org.apache.hive.storage.jdbc.exception.HiveJdbcDatabaseAccessException;
 import javax.sql.DataSource;
 
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,9 +69,8 @@ public class GenericJdbcDatabaseAccessor implements DatabaseAccessor {
   public GenericJdbcDatabaseAccessor() {
   }
 
-
-  @Override
-  public List<String> getColumnNames(Configuration conf) throws HiveJdbcDatabaseAccessException {
+  private <T> List<T> getColumnMetadata(Configuration conf, ColumnMetadataAccessor<T> colAccessor)
+      throws HiveJdbcDatabaseAccessException {
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -84,16 +87,15 @@ public class GenericJdbcDatabaseAccessor implements DatabaseAccessor {
 
       ResultSetMetaData metadata = rs.getMetaData();
       int numColumns = metadata.getColumnCount();
-      List<String> columnNames = new ArrayList<String>(numColumns);
+      List<T> columnMeta = new ArrayList<>(numColumns);
       for (int i = 0; i < numColumns; i++) {
-        columnNames.add(metadata.getColumnName(i + 1));
+        columnMeta.add(colAccessor.get(metadata, i + 1));
       }
 
-      return columnNames;
+      return columnMeta;
     }
     catch (Exception e) {
-      LOGGER.error("Error while trying to get column names.", e);
-      throw new HiveJdbcDatabaseAccessException("Error while trying to get column names: " + e.getMessage(), e);
+      throw new HiveJdbcDatabaseAccessException("", e);
     }
     finally {
       cleanupResources(conn, ps, rs);
@@ -101,6 +103,60 @@ public class GenericJdbcDatabaseAccessor implements DatabaseAccessor {
 
   }
 
+  @Override
+  public List<String> getColumnNames(Configuration conf) throws HiveJdbcDatabaseAccessException {
+    return getColumnMetadata(conf, ResultSetMetaData::getColumnName);
+  }
+
+  @Override
+  public List<TypeInfo> getColumnTypes(Configuration conf) throws HiveJdbcDatabaseAccessException {
+    return getColumnMetadata(conf, (meta, col) -> {
+      JDBCType type = JDBCType.valueOf(meta.getColumnType(col));
+      int prec = meta.getPrecision(col);
+      int scal = meta.getScale(col);
+      switch (type) {
+      case BIT:
+      case BOOLEAN:
+        return TypeInfoFactory.booleanTypeInfo;
+      case TINYINT:
+        return TypeInfoFactory.byteTypeInfo;
+      case SMALLINT:
+        return TypeInfoFactory.shortTypeInfo;
+      case INTEGER:
+        return TypeInfoFactory.intTypeInfo;
+      case BIGINT:
+        return TypeInfoFactory.longTypeInfo;
+      case CHAR:
+        return TypeInfoFactory.getCharTypeInfo(prec);
+      case VARCHAR:
+      case NVARCHAR:
+      case LONGNVARCHAR:
+      case LONGVARCHAR:
+        return TypeInfoFactory.getVarcharTypeInfo(Math.min(prec, 65535));
+      case DOUBLE:
+        return TypeInfoFactory.doubleTypeInfo;
+      case REAL:
+      case FLOAT:
+        return TypeInfoFactory.floatTypeInfo;
+      case DATE:
+        return TypeInfoFactory.dateTypeInfo;
+      case TIMESTAMP:
+      case TIMESTAMP_WITH_TIMEZONE:
+        return TypeInfoFactory.timestampTypeInfo;
+      case DECIMAL:
+      case NUMERIC:
+        return TypeInfoFactory.getDecimalTypeInfo(Math.min(prec, 38), scal);
+      case ARRAY:
+        // Best effort with the info that we have at the moment
+        return TypeInfoFactory.getListTypeInfo(TypeInfoFactory.unknownTypeInfo);
+      case STRUCT:
+        // Best effort with the info that we have at the moment
+        return TypeInfoFactory.getStructTypeInfo(Collections.emptyList(), Collections.emptyList());
+      default:
+        return TypeInfoFactory.unknownTypeInfo;
+      }
+    });
+  }
 
   protected String getMetaDataQuery(String sql) {
     return addLimitToQuery(sql, 1);
@@ -413,5 +469,9 @@ public class GenericJdbcDatabaseAccessor implements DatabaseAccessor {
   @Override
   public boolean needColumnQuote() {
     return true;
+  }
+
+  private interface ColumnMetadataAccessor<T> {
+    T get(ResultSetMetaData metadata, Integer column) throws SQLException;
   }
 }

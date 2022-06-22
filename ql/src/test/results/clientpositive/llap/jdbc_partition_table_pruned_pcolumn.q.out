@@ -1,0 +1,88 @@
+PREHOOK: query: CREATE TEMPORARY FUNCTION dboutput AS 'org.apache.hadoop.hive.contrib.genericudf.example.GenericUDFDBOutput'
+PREHOOK: type: CREATEFUNCTION
+PREHOOK: Output: dboutput
+POSTHOOK: query: CREATE TEMPORARY FUNCTION dboutput AS 'org.apache.hadoop.hive.contrib.genericudf.example.GenericUDFDBOutput'
+POSTHOOK: type: CREATEFUNCTION
+POSTHOOK: Output: dboutput
+#### A masked pattern was here ####
+                'CREATE TABLE BOOK ("id" INTEGER, "title" VARCHAR(20), "author" INTEGER)')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+#### A masked pattern was here ####
+                'CREATE TABLE BOOK ("id" INTEGER, "title" VARCHAR(20), "author" INTEGER)')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+#### A masked pattern was here ####
+0
+#### A masked pattern was here ####
+                'INSERT INTO book VALUES(?,?,?)','1','Les Miserables','1')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+#### A masked pattern was here ####
+                'INSERT INTO book VALUES(?,?,?)','1','Les Miserables','1')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+#### A masked pattern was here ####
+0
+#### A masked pattern was here ####
+                'INSERT INTO book VALUES(?,?,?)','2','The Count Of Monte','2')
+PREHOOK: type: QUERY
+PREHOOK: Input: _dummy_database@_dummy_table
+#### A masked pattern was here ####
+                'INSERT INTO book VALUES(?,?,?)','2','The Count Of Monte','2')
+POSTHOOK: type: QUERY
+POSTHOOK: Input: _dummy_database@_dummy_table
+#### A masked pattern was here ####
+0
+PREHOOK: query: CREATE EXTERNAL TABLE book
+(
+    id int,
+    title varchar(20),
+    author int
+)
+STORED BY                                          
+'org.apache.hive.storage.jdbc.JdbcStorageHandler'
+TBLPROPERTIES (                                    
+    "hive.sql.database.type" = "DERBY",
+    "hive.sql.jdbc.driver" = "org.apache.derby.jdbc.EmbeddedDriver",
+#### A masked pattern was here ####
+    "hive.sql.dbcp.username" = "qtestuser",
+    "hive.sql.dbcp.password" = "qtestpassword",
+    "hive.sql.table" = "BOOK",
+    "hive.sql.partitionColumn" = "author",
+    "hive.sql.numPartitions" = "2"
+)
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:default
+PREHOOK: Output: default@book
+POSTHOOK: query: CREATE EXTERNAL TABLE book
+(
+    id int,
+    title varchar(20),
+    author int
+)
+STORED BY                                          
+'org.apache.hive.storage.jdbc.JdbcStorageHandler'
+TBLPROPERTIES (                                    
+    "hive.sql.database.type" = "DERBY",
+    "hive.sql.jdbc.driver" = "org.apache.derby.jdbc.EmbeddedDriver",
+#### A masked pattern was here ####
+    "hive.sql.dbcp.username" = "qtestuser",
+    "hive.sql.dbcp.password" = "qtestpassword",
+    "hive.sql.table" = "BOOK",
+    "hive.sql.partitionColumn" = "author",
+    "hive.sql.numPartitions" = "2"
+)
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:default
+POSTHOOK: Output: default@book
+PREHOOK: query: select book.id from book
+PREHOOK: type: QUERY
+PREHOOK: Input: default@book
+#### A masked pattern was here ####
+POSTHOOK: query: select book.id from book
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@book
+#### A masked pattern was here ####
+1
+2
