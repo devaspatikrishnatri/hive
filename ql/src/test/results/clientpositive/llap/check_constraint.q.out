@@ -2341,6 +2341,7 @@ PREHOOK: Input: default@nonacid
 PREHOOK: Input: default@tmerge
 PREHOOK: Output: default@tmerge
 PREHOOK: Output: default@tmerge
+PREHOOK: Output: default@tmerge
 POSTHOOK: query: explain MERGE INTO tmerge as t using nonacid as s ON t.key = s.key
 WHEN MATCHED AND s.key < 5 THEN DELETE
 WHEN MATCHED AND s.key < 3 THEN UPDATE set a1 = '1'
@@ -2578,6 +2579,7 @@ PREHOOK: type: QUERY
 PREHOOK: Input: default@nonacid
 PREHOOK: Input: default@tmerge
 PREHOOK: Output: default@merge_tmp_table
+PREHOOK: Output: default@tmerge
 PREHOOK: Output: default@tmerge
 PREHOOK: Output: default@tmerge
 POSTHOOK: query: explain MERGE INTO tmerge as t using nonacid as s ON t.key = s.key
@@ -2855,20 +2857,9 @@ STAGE PLANS:
               output format: org.apache.hadoop.hive.ql.io.orc.OrcOutputFormat
               serde: org.apache.hadoop.hive.ql.io.orc.OrcSerde
               name: default.tmerge
-          Write Type: INSERT
+          Write Type: UPDATE
 
   Stage: Stage-3
-    Move Operator
-      tables:
-          replace: false
-          table:
-              input format: org.apache.hadoop.hive.ql.io.orc.OrcInputFormat
-              output format: org.apache.hadoop.hive.ql.io.orc.OrcOutputFormat
-              serde: org.apache.hadoop.hive.ql.io.orc.OrcSerde
-              name: default.tmerge
-          Write Type: INSERT
-
-  Stage: Stage-4
     Move Operator
       tables:
           replace: false
