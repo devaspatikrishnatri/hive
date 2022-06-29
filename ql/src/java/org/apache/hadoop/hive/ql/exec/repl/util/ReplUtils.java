@@ -491,4 +491,9 @@ public class ReplUtils {
       DAGTraversal.traverse(tasks, new AddDependencyToLeaves(Collections.singletonList(task)));
     }
   }
+
+  // True if REPL DUMP should do transaction optimization
+  public static boolean filterTransactionOperations(HiveConf conf) {
+    return (conf.getBoolVar(HiveConf.ConfVars.REPL_FILTER_TRANSACTIONS));
+  }
 }
