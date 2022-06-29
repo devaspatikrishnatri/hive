@@ -1747,12 +1747,11 @@ STAGE PLANS:
   Stage: Stage-4
     Tez
       Edges:
-        Reducer 2 <- Map 1 (SIMPLE_EDGE), Reducer 8 (SIMPLE_EDGE)
+        Reducer 2 <- Map 1 (SIMPLE_EDGE), Reducer 7 (SIMPLE_EDGE)
         Reducer 3 <- Reducer 2 (SIMPLE_EDGE)
         Reducer 4 <- Reducer 2 (SIMPLE_EDGE)
         Reducer 5 <- Reducer 2 (SIMPLE_EDGE)
-        Reducer 6 <- Reducer 2 (SIMPLE_EDGE)
-        Reducer 8 <- Map 7 (SIMPLE_EDGE)
+        Reducer 7 <- Map 6 (SIMPLE_EDGE)
       Vertices:
         Map 1 
             Map Operator Tree:
@@ -1792,7 +1791,7 @@ STAGE PLANS:
                     partitionColumnCount: 2
                     partitionColumns: ds:string, hr:string
                     scratchColumnTypeNames: []
-        Map 7 
+        Map 6 
             Map Operator Tree:
                   TableScan Vectorization:
                       native: true
@@ -1859,14 +1858,6 @@ STAGE PLANS:
                       className: VectorFileSinkOperator
                       native: false
         Reducer 4 
-            Execution mode: llap
-            Reduce Vectorization:
-                enabled: true
-                enableConditionsMet: hive.vectorized.execution.reduce.enabled IS true, hive.execution.engine tez IN [tez, spark] IS true
-                notVectorizedReason: Aggregation Function expression for GROUPBY operator: UDF compute_stats not supported
-                vectorized: false
-            Reduce Operator Tree:
-        Reducer 5 
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -1889,7 +1880,7 @@ STAGE PLANS:
                   File Sink Vectorization:
                       className: VectorFileSinkOperator
                       native: false
-        Reducer 6 
+        Reducer 5 
             Execution mode: llap
             Reduce Vectorization:
                 enabled: true
@@ -1897,7 +1888,7 @@ STAGE PLANS:
                 notVectorizedReason: Key expression for GROUPBY operator: Vectorizing complex type STRUCT not supported
                 vectorized: false
             Reduce Operator Tree:
-        Reducer 8 
+        Reducer 7 
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -2609,13 +2600,12 @@ STAGE PLANS:
   Stage: Stage-4
     Tez
       Edges:
-        Reducer 2 <- Map 1 (SIMPLE_EDGE), Reducer 9 (SIMPLE_EDGE)
+        Reducer 2 <- Map 1 (SIMPLE_EDGE), Reducer 8 (SIMPLE_EDGE)
         Reducer 3 <- Reducer 2 (SIMPLE_EDGE)
         Reducer 4 <- Reducer 2 (SIMPLE_EDGE)
-        Reducer 5 <- Reducer 4 (SIMPLE_EDGE)
+        Reducer 5 <- Reducer 2 (SIMPLE_EDGE)
         Reducer 6 <- Reducer 2 (SIMPLE_EDGE)
-        Reducer 7 <- Reducer 2 (SIMPLE_EDGE)
-        Reducer 9 <- Map 8 (SIMPLE_EDGE)
+        Reducer 8 <- Map 7 (SIMPLE_EDGE)
       Vertices:
         Map 1 
             Map Operator Tree:
@@ -2655,7 +2645,7 @@ STAGE PLANS:
                     partitionColumnCount: 2
                     partitionColumns: ds:string, hr:string
                     scratchColumnTypeNames: []
-        Map 8 
+        Map 7 
             Map Operator Tree:
                   TableScan Vectorization:
                       native: true
@@ -2722,22 +2712,29 @@ STAGE PLANS:
                       className: VectorFileSinkOperator
                       native: false
         Reducer 4 
-            Execution mode: llap
+            Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
                 enableConditionsMet: hive.vectorized.execution.reduce.enabled IS true, hive.execution.engine tez IN [tez, spark] IS true
-                notVectorizedReason: Aggregation Function expression for GROUPBY operator: UDF compute_stats not supported
-                vectorized: false
+                reduceColumnNullOrder: a
+                reduceColumnSortOrder: +
+                allNative: false
+                usesVectorUDFAdaptor: false
+                vectorized: true
+                rowBatchContext:
+                    dataColumnCount: 4
+                    dataColumns: KEY.reducesinkkey0:string, VALUE._col0:string, VALUE._col1:string, VALUE._col2:string
+                    partitionColumnCount: 0
+                    scratchColumnTypeNames: []
             Reduce Operator Tree:
+                Select Vectorization:
+                    className: VectorSelectOperator
+                    native: true
+                    projectedOutputColumnNums: [0, 1, 2, 3]
+                  File Sink Vectorization:
+                      className: VectorFileSinkOperator
+                      native: false
         Reducer 5 
-            Execution mode: llap
-            Reduce Vectorization:
-                enabled: true
-                enableConditionsMet: hive.vectorized.execution.reduce.enabled IS true, hive.execution.engine tez IN [tez, spark] IS true
-                notVectorizedReason: Aggregation Function expression for GROUPBY operator: UDF compute_stats not supported
-                vectorized: false
-            Reduce Operator Tree:
-        Reducer 6 
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -2760,7 +2757,7 @@ STAGE PLANS:
                   File Sink Vectorization:
                       className: VectorFileSinkOperator
                       native: false
-        Reducer 7 
+        Reducer 6 
             Execution mode: llap
             Reduce Vectorization:
                 enabled: true
@@ -2768,7 +2765,7 @@ STAGE PLANS:
                 notVectorizedReason: Key expression for GROUPBY operator: Vectorizing complex type STRUCT not supported
                 vectorized: false
             Reduce Operator Tree:
-        Reducer 9 
+        Reducer 8 
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
