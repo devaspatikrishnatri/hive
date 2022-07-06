@@ -169,7 +169,7 @@
     <javax-servlet-jsp.version>2.3.1</javax-servlet-jsp.version>
     <javolution.version>5.5.1</javolution.version>
     <jettison.version>1.1</jettison.version>
-    <jetty.version>9.4.40.v20210413</jetty.version>
+    <jetty.version>9.4.43.v20210629</jetty.version>
     <jersey.version>1.19</jersey.version>
     <!-- Glassfish jersey is included for Spark client test only -->
     <glassfish.jersey.version>2.32</glassfish.jersey.version>
