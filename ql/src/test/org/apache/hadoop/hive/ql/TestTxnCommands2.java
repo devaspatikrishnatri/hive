@@ -28,9 +28,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -62,9 +65,15 @@ import org.apache.hadoop.hive.ql.lockmgr.TxnManagerFactory;
 import org.apache.hadoop.hive.ql.processors.CommandProcessorException;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.metastore.txn.AcidOpenTxnsCounterService;
+import org.apache.hadoop.hive.ql.scheduled.ScheduledQueryExecutionContext;
+import org.apache.hadoop.hive.ql.scheduled.ScheduledQueryExecutionService;
+import org.apache.hadoop.hive.ql.schq.MockScheduledQueryService;
+import org.apache.hadoop.hive.ql.schq.TestScheduledQueryService;
+import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.orc.OrcFile;
 import org.apache.orc.Reader;
 import org.apache.orc.TypeDescription;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,6 +82,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1069,7 +1085,7 @@ public class TestTxnCommands2 {
     //COMPACTOR_HISTORY_RETENTION_FAILED failed compacts left (and no other since we only have failed ones here)
     checkCompactionState(new CompactionsByState(
       MetastoreConf.getIntVar(hiveConf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_DID_NOT_INITIATE),
-            MetastoreConf.getIntVar(hiveConf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_FAILED),0,0,0,0, 
+            MetastoreConf.getIntVar(hiveConf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_FAILED),0,0,0,0,
             MetastoreConf.getIntVar(hiveConf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_FAILED) + MetastoreConf.getIntVar(hiveConf, MetastoreConf.ConfVars.COMPACTOR_HISTORY_RETENTION_DID_NOT_INITIATE)),
         countCompacts(txnHandler));
 
@@ -2295,6 +2311,79 @@ public class TestTxnCommands2 {
     }
   }
 
+  @Test
+  public void testNoTxnComponentsForScheduledQueries() throws Exception {
+    String tableName = "scheduledquerytable";
+    int[][] tableData = {{1, 2},{3, 4}};
+    runStatementOnDriver("create table " + tableName + " (a int, b int) stored as orc tblproperties ('transactional'='true')");
+
+    int noOfTimesScheduledQueryExecuted = 4;
+
+    // Logic for executing scheduled queries multiple times.
+    for (int index = 0;index < noOfTimesScheduledQueryExecuted;index++) {
+      ExecutorService executor =
+              Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true)
+                      .setNameFormat("Scheduled queries for transactional tables").build());
+
+      // Mock service which initialises the query for execution.
+      MockScheduledQueryService qService = new
+              MockScheduledQueryService("insert into " + tableName + " (a,b) " + makeValuesClause(tableData));
+      ScheduledQueryExecutionContext ctx = new ScheduledQueryExecutionContext(executor, hiveConf, qService);
+
+      // Start the scheduled query execution.
+      try (ScheduledQueryExecutionService sQ = ScheduledQueryExecutionService.startScheduledQueryExecutorService(ctx)) {
+        // Wait for the scheduled query to finish. Hopefully 30 seconds should be more than enough.
+        SessionState.getConsole().logInfo("Waiting for query execution to finish ...");
+        synchronized (qService.notifier) {
+          qService.notifier.wait(30000);
+        }
+        SessionState.getConsole().logInfo("Done waiting for query execution!");
+      }
+
+      assertThat(qService.lastProgressInfo.isSetExecutorQueryId(), is(true));
+      assertThat(qService.lastProgressInfo.getExecutorQueryId(),
+              Matchers.containsString(ctx.executorHostName + "/"));
+    }
+
+    // Check whether the table has delta files corresponding to the number of scheduled executions.
+    FileSystem fs = FileSystem.get(hiveConf);
+    FileStatus[] fileStatuses = fs.globStatus(new Path(getWarehouseDir() + "/" + tableName + "/*"));
+    Assert.assertEquals(fileStatuses.length, noOfTimesScheduledQueryExecuted);
+    for(FileStatus fileStatus : fileStatuses) {
+      Assert.assertTrue(fileStatus.getPath().getName().startsWith(AcidUtils.DELTA_PREFIX));
+    }
+
+    // Check whether the COMPLETED_TXN_COMPONENTS table has records with
+    // '__global_locks' database and associate writeId corresponding to the
+    // number of scheduled executions.
+    Assert.assertEquals(TxnDbUtil.countQueryAgent(hiveConf,
+            "select count(*) from completed_txn_components" +
+            " where ctc_database='__global_locks'"),
+            0);
+
+    // Compact the table which has inserts from the scheduled query.
+    runStatementOnDriver("alter table " + tableName + " compact 'major'");
+    runWorker(hiveConf);
+    runCleaner(hiveConf);
+
+    // Run AcidHouseKeeperService to cleanup the COMPLETED_TXN_COMPONENTS.
+    MetastoreTaskThread houseKeeper = new AcidHouseKeeperService();
+    houseKeeper.setConf(hiveConf);
+    houseKeeper.run();
+
+    // Check whether the table is compacted.
+    fileStatuses = fs.globStatus(new Path(getWarehouseDir() + "/" + tableName + "/*"));
+    Assert.assertEquals(fileStatuses.length, 1);
+    for(FileStatus fileStatus : fileStatuses) {
+      Assert.assertTrue(fileStatus.getPath().getName().startsWith(AcidUtils.BASE_PREFIX));
+    }
+
+    // Check whether the data in the table is correct.
+    int[][] actualData = {{1,2}, {1,2}, {1,2}, {1,2}, {3,4}, {3,4}, {3,4}, {3,4}};
+    List<String> resData = runStatementOnDriver("select a,b from " + tableName + " order by a");
+    Assert.assertEquals(resData, stringifyValues(actualData));
+  }
+
   /**
    * takes raw data and turns it into a string as if from Driver.getResults()
    * sorts rows in dictionary order
@@ -2313,6 +2402,10 @@ public class TestTxnCommands2 {
       rs.add(sb.toString());
     }
     return rs;
+  }
+
+  protected String getWarehouseDir() {
+    return TEST_DATA_DIR + "/warehouse";
   }
 
   static class RowComp implements Comparator<int[]> {
