@@ -1324,4 +1324,29 @@ public class TestTxnCommands extends TxnCommandsBaseForTests {
 
     hiveConf.setBoolVar(HiveConf.ConfVars.HIVE_WRITE_ACID_VERSION_FILE, originalEnableVersionFile);
   }
+
+  @Test
+  public void testIsRawFormatFile() throws Exception {
+    dropTable(new String[]{"file_formats"});
+
+    runStatementOnDriver("CREATE TABLE `file_formats`(`id` int, `name` string) " +
+            " ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' " +
+            "WITH SERDEPROPERTIES ( " +
+            " 'field.delim'='|', " +
+            " 'line.delim'='\n'," +
+            " 'serialization.format'='|')  " +
+            "STORED AS " +
+            " INPUTFORMAT " +
+            "   'org.apache.hadoop.mapred.TextInputFormat' " +
+            " OUTPUTFORMAT " +
+            "   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat' " +
+            "TBLPROPERTIES ( " +
+            " 'transactional'='true'," +
+            " 'transactional_properties'='insert_only')");
+
+    runStatementOnDriver("insert into file_formats (id, name) values (1, 'Avro'),(2, 'Parquet'),(3, 'ORC')");
+
+    List<String> res = runStatementOnDriver("select * from file_formats");
+    Assert.assertEquals(3, res.size());
+  }
 }
