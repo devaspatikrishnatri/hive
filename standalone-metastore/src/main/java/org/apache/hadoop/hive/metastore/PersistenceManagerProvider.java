@@ -233,11 +233,17 @@ public class PersistenceManagerProvider {
     } else {
       try {
         DataSource ds = dsp.create(conf);
+        // The secondary connection factory is used for schema generation, and for value generation operations.
+        // We should use a different pool for the secondary connection factory to avoid resource starvation.
+        // Since DataNucleus uses locks for schema generation and value generation, 2 connections should be sufficient.
+        Configuration newConf = new Configuration(conf);
+        MetastoreConf.setLongVar(newConf, ConfVars.CONNECTION_POOLING_MAX_CONNECTIONS, 2);
+        DataSource ds2 = dsp.create(newConf);
         Map<Object, Object> dsProperties = new HashMap<>();
         //Any preexisting datanucleus property should be passed along
         dsProperties.putAll(prop);
         dsProperties.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, ds);
-        dsProperties.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2, ds);
+        dsProperties.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2, ds2);
         dsProperties.put(ConfVars.MANAGER_FACTORY_CLASS.getVarname(),
             "org.datanucleus.api.jdo.JDOPersistenceManagerFactory");
         pmf = JDOHelper.getPersistenceManagerFactory(dsProperties);
