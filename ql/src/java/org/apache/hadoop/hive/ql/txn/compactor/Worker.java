@@ -537,7 +537,9 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
     } catch (TException | IOException t) {
       LOG.error("Caught an exception in the main loop of compactor worker " + workerName + ", " +
                     StringUtils.stringifyException(t));
-      markFailed(ci, t);
+
+       markFailed(ci, t);
+
       if (msc != null) {
         msc.close();
         msc = null;
@@ -550,6 +552,7 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
         perfLogger.PerfLogEnd(CLASS_NAME, workerMetric);
       }
     }
+
     if (computeStats) {
       StatsUpdater.gatherStats(ci, conf, runJobAsSelf(ci.runAs) ? ci.runAs : t1.getOwner(),
               CompactorUtil.getCompactorJobQueueName(conf, ci, t1));
@@ -607,9 +610,13 @@ public class Worker extends RemoteCompactorThread implements MetaStoreThread {
   }
 
   private void markFailed(CompactionInfo ci, Throwable e) {
-    if (ci != null) {
-      ci.errorMessage = e.getMessage();
+    if (ci == null) {
+      LOG.warn("CompactionInfo client was null. Could not mark failed");
+      return;
     }
+
+    ci.errorMessage = e.getMessage();
+   
     if (msc == null) {
       LOG.warn("Metastore client was null. Could not mark failed: {}", ci);
       return;
