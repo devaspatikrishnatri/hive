@@ -216,18 +216,18 @@ public class Cleaner extends MetaStoreCompactorThread {
         LOG.info("Cleaning as user " + ci.runAs + " for " + ci.getFullPartitionName());
         UserGroupInformation ugi = UserGroupInformation.createProxyUser(ci.runAs,
             UserGroupInformation.getLoginUser());
-        ugi.doAs(new PrivilegedExceptionAction<Object>() {
-          @Override
-          public Object run() throws Exception {
+        try {
+          ugi.doAs((PrivilegedExceptionAction<Void>) () -> {
             removedFiles.value = removeFiles(location, validWriteIdList, ci);
             return null;
+          });
+        } finally {
+          try {
+            FileSystem.closeAllForUGI(ugi);
+          } catch (IOException exception) {
+            LOG.error("Could not clean up file-system handles for UGI: " + ugi + " for " +
+                ci.getFullPartitionName() + idWatermark(ci), exception);
           }
-        });
-        try {
-          FileSystem.closeAllForUGI(ugi);
-        } catch (IOException exception) {
-          LOG.error("Could not clean up file-system handles for UGI: " + ugi + " for " +
-              ci.getFullPartitionName() + idWatermark(ci), exception);
         }
       }
       if (removedFiles.value) {
