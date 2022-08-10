@@ -413,6 +413,11 @@ public class MiniHS2 extends AbstractHiveService {
     setStarted(true);
   }
 
+  public void graceful_stop() {
+    verifyStarted();
+    hiveServer2.graceful_stop();
+  }
+
   public void stop() {
     verifyStarted();
     // Currently there is no way to stop the MetaStore service. It will be stopped when the

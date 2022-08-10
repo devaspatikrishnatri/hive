@@ -94,6 +94,7 @@ public class TestRestrictedList {
     addToExpectedRestrictedMap("hive.spark.client.rpc.server.address");
     addToExpectedRestrictedMap("hive.spark.client.rpc.server.port");
     addToExpectedRestrictedMap("hive.spark.client.rpc.sasl.mechanisms");
+    addToExpectedRestrictedMap("hive.server2.graceful.stop.timeout");
     addToExpectedRestrictedMap("hive.query.max.length");
     addToExpectedRestrictedMap("bonecp.test");
     addToExpectedRestrictedMap("hive.druid.broker.address.default");
