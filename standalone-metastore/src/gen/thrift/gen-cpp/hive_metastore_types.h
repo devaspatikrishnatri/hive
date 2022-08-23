@@ -8429,10 +8429,11 @@ void swap(TxnToWriteId &a, TxnToWriteId &b);
 std::ostream& operator<<(std::ostream& out, const TxnToWriteId& obj);
 
 typedef struct _AllocateTableWriteIdsRequest__isset {
-  _AllocateTableWriteIdsRequest__isset() : txnIds(false), replPolicy(false), srcTxnToWriteIdList(false) {}
+  _AllocateTableWriteIdsRequest__isset() : txnIds(false), replPolicy(false), srcTxnToWriteIdList(false), reallocate(true) {}
   bool txnIds :1;
   bool replPolicy :1;
   bool srcTxnToWriteIdList :1;
+  bool reallocate :1;
 } _AllocateTableWriteIdsRequest__isset;
 
 class AllocateTableWriteIdsRequest : public virtual ::apache::thrift::TBase {
@@ -8443,7 +8444,8 @@ class AllocateTableWriteIdsRequest : public virtual ::apache::thrift::TBase {
   AllocateTableWriteIdsRequest() noexcept
                                : dbName(),
                                  tableName(),
-                                 replPolicy() {
+                                 replPolicy(),
+                                 reallocate(false) {
   }
 
   virtual ~AllocateTableWriteIdsRequest() noexcept;
@@ -8452,6 +8454,7 @@ class AllocateTableWriteIdsRequest : public virtual ::apache::thrift::TBase {
   std::vector<int64_t>  txnIds;
   std::string replPolicy;
   std::vector<TxnToWriteId>  srcTxnToWriteIdList;
+  bool reallocate;
 
   _AllocateTableWriteIdsRequest__isset __isset;
 
@@ -8464,6 +8467,8 @@ class AllocateTableWriteIdsRequest : public virtual ::apache::thrift::TBase {
   void __set_replPolicy(const std::string& val);
 
   void __set_srcTxnToWriteIdList(const std::vector<TxnToWriteId> & val);
+
+  void __set_reallocate(const bool val);
 
   bool operator == (const AllocateTableWriteIdsRequest & rhs) const
   {
@@ -8482,6 +8487,10 @@ class AllocateTableWriteIdsRequest : public virtual ::apache::thrift::TBase {
     if (__isset.srcTxnToWriteIdList != rhs.__isset.srcTxnToWriteIdList)
       return false;
     else if (__isset.srcTxnToWriteIdList && !(srcTxnToWriteIdList == rhs.srcTxnToWriteIdList))
+      return false;
+    if (__isset.reallocate != rhs.__isset.reallocate)
+      return false;
+    else if (__isset.reallocate && !(reallocate == rhs.reallocate))
       return false;
     return true;
   }

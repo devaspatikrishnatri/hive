@@ -3245,14 +3245,25 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
 
   @Override
   public long allocateTableWriteId(long txnId, String dbName, String tableName) throws TException {
-    return allocateTableWriteIdsBatch(Collections.singletonList(txnId), dbName, tableName).get(0).getWriteId();
+    return allocateTableWriteId(txnId, dbName, tableName, false);
   }
 
   @Override
-  public List<TxnToWriteId> allocateTableWriteIdsBatch(List<Long> txnIds, String dbName, String tableName)
-          throws TException {
+  public long allocateTableWriteId(long txnId, String dbName, String tableName, boolean shouldRealloc) throws TException {
+    return allocateTableWriteIdsBatch(Collections.singletonList(txnId), dbName, tableName, shouldRealloc).get(0).getWriteId();
+  }
+
+
+  @Override
+  public List<TxnToWriteId> allocateTableWriteIdsBatch(List<Long> txnIds, String dbName, String tableName) throws TException {
+    return allocateTableWriteIdsBatch(txnIds, dbName, tableName, false);
+  }
+
+  private List<TxnToWriteId> allocateTableWriteIdsBatch(List<Long> txnIds, String dbName, String tableName,
+      boolean shouldRealloc) throws TException {
     AllocateTableWriteIdsRequest rqst = new AllocateTableWriteIdsRequest(dbName, tableName);
     rqst.setTxnIds(txnIds);
+    rqst.setReallocate(shouldRealloc);
     return allocateTableWriteIdsBatchIntr(rqst);
   }
 
