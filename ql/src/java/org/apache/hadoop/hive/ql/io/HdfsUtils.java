@@ -135,4 +135,5 @@ public class HdfsUtils {
       throw new HiveException(e);
     }
   }
+
 }
