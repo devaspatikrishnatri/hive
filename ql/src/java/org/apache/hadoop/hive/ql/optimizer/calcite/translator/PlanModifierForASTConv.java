@@ -52,6 +52,7 @@ import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveSortExchange
 import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveSortLimit;
 import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveSemiJoin;
 import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveTableScan;
+import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveValues;
 import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.jdbc.HiveJdbcConverter;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveRelColumnsAlignment;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoFactory;
@@ -67,6 +68,10 @@ public class PlanModifierForASTConv {
 
   public static RelNode convertOpTree(RelNode rel, List<FieldSchema> resultSchema, boolean alignColumns)
       throws CalciteSemanticException {
+    if (rel instanceof HiveValues) {
+      return rel;
+    }
+
     RelNode newTopNode = rel;
     if (LOG.isDebugEnabled()) {
       LOG.debug("Original plan for PlanModifier\n " + RelOptUtil.toString(newTopNode));

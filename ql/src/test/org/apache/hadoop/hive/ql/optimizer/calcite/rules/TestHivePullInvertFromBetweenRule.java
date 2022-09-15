@@ -24,6 +24,7 @@ import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
@@ -34,6 +35,7 @@ import org.apache.hadoop.hive.ql.optimizer.calcite.HiveRelFactories;
 import org.apache.hadoop.hive.ql.optimizer.calcite.RelOptHiveTable;
 import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveBetween;
 import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveFilter;
+import org.apache.hadoop.hive.ql.optimizer.calcite.reloperators.HiveValues;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +45,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestHivePullInvertFromBetweenRule {
@@ -213,9 +216,9 @@ public class TestHivePullInvertFromBetweenRule {
     planner.setRoot(basePlan);
     RelNode optimizedRelNode = planner.findBestExp();
 
-    HiveFilter filter = (HiveFilter) optimizedRelNode;
-    RexNode condition = filter.getCondition();
-    assertEquals("AND(<($0, 10), >($0, 100))", condition.toString());
+    assertTrue(optimizedRelNode instanceof HiveValues);
+    HiveValues values = (HiveValues) optimizedRelNode;
+    assertTrue(Values.isEmpty(values));
   }
 
 }

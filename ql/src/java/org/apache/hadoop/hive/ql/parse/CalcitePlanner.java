@@ -228,6 +228,7 @@ import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveReduceExpressionsRu
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveReduceExpressionsWithStatsRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveRelDecorrelator;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveRelFieldTrimmer;
+import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveRemoveEmptySingleRules;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveRemoveGBYSemiJoinRule;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveRemoveSqCountCheck;
 import org.apache.hadoop.hive.ql.optimizer.calcite.rules.HiveRulesRegistry;
@@ -2289,6 +2290,22 @@ public class CalcitePlanner extends SemanticAnalyzer {
           ProjectRemoveRule.INSTANCE, HiveSortMergeRule.INSTANCE);
       perfLogger.PerfLogEnd(this.getClass().getName(), PerfLogger.OPTIMIZER,
         "Calcite: Prejoin ordering transformation, Rerun PPD");
+
+      perfLogger.PerfLogBegin(this.getClass().getName(), PerfLogger.OPTIMIZER);
+      basePlan = hepPlan(basePlan, true, mdProvider, executorProvider,
+              HiveRemoveEmptySingleRules.PROJECT_INSTANCE,
+              HiveRemoveEmptySingleRules.FILTER_INSTANCE,
+              HiveRemoveEmptySingleRules.JOIN_LEFT_INSTANCE,
+              HiveRemoveEmptySingleRules.SEMI_JOIN_LEFT_INSTANCE,
+              HiveRemoveEmptySingleRules.JOIN_RIGHT_INSTANCE,
+              HiveRemoveEmptySingleRules.SEMI_JOIN_RIGHT_INSTANCE,
+              HiveRemoveEmptySingleRules.SORT_INSTANCE,
+              HiveRemoveEmptySingleRules.SORT_FETCH_ZERO_INSTANCE,
+              HiveRemoveEmptySingleRules.AGGREGATE_INSTANCE,
+              HiveRemoveEmptySingleRules.UNION_INSTANCE);
+
+      perfLogger.PerfLogEnd(this.getClass().getName(), PerfLogger.OPTIMIZER,
+          "Calcite: Prejoin ordering transformation, Rerun PPD");
 
       return basePlan;
     }
