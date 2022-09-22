@@ -20,9 +20,11 @@ package org.apache.hadoop.hive.ql.exec.vector.expressions;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Deque;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.type.DataTypePhysicalVariation;
 import org.apache.hadoop.hive.ql.exec.vector.ColumnVector;
@@ -34,28 +36,28 @@ import org.apache.hadoop.hive.ql.metadata.HiveException;
 
 /**
  * Base class for vector expressions.
- *
+ * <p>
  * A vector expression is a vectorized execution tree that evaluates the same result as a (row-mode)
  * ExprNodeDesc tree describes.
- *
+ * <p>
  * A vector expression has 0, 1, or more parameters and an optional output column.  These are
  * normally passed to the vector expression object' constructor.  A few special case classes accept
  * extra parameters via set* method.
- *
+ * <p>
  * A ExprNodeColumnDesc vectorizes to the IdentityExpression class where the input column number
  * parameter is the same as the output column number.
- *
+ * <p>
  * A ExprNodeGenericFuncDesc's generic function can vectorize to many different vectorized objects
  * depending on the parameter expression kinds (column, constant, etc) and data types.  Each
  * vectorized class implements the getDecription which indicates the particular expression kind
  * and data type specialization that class is designed for.  The Description is used by the
  * VectorizationContext class in matching the right vectorized class.
- *
+ * <p>
  * The constructor parameters need to be in the same order as the generic function because
  * the VectorizationContext class automates parameter generation and object construction.
- *
+ * <p>
  * Type information is remembered for the input parameters and the output type.
- *
+ * <p>
  * A vector expression has optional children vector expressions when 1 or more parameters need
  * to be calculated into vector scratch columns.  Columns and constants do not need children
  * expressions.
@@ -66,7 +68,7 @@ public abstract class VectorExpression implements Serializable {
 
   /**
    * Child expressions for parameters -- but only those that need to be computed.
-   *
+   * <p>
    * NOTE: Columns and constants are not included in the children.  That is: column numbers and
    * scalar values are passed via the constructor and remembered by the individual vector expression
    * classes. They are not represented in the children.
@@ -76,7 +78,7 @@ public abstract class VectorExpression implements Serializable {
   /**
    * ALL input parameter type information is here including those for (non-computed) columns and
    * scalar values.
-   *
+   * <p>
    * The vectorExpressionParameters() method is used to get the displayable string for the
    * parameters used by EXPLAIN, logging, etc.
    */
@@ -137,6 +139,14 @@ public abstract class VectorExpression implements Serializable {
     return childExpressions;
   }
 
+  protected Collection<VectorExpression> getChildExpressionsForTransientInit() {
+    if (getChildExpressions() != null) {
+      return Arrays.asList(getChildExpressions());
+    } else {
+      return Collections.emptyList();
+    }
+  }
+
   //------------------------------------------------------------------------------------------------
 
   public void setInputTypeInfos(TypeInfo ...inputTypeInfos) {
@@ -188,17 +198,12 @@ public abstract class VectorExpression implements Serializable {
 
     // Well, don't recurse but make sure all children are initialized.
     vecExpr.transientInit(conf);
-    List<VectorExpression> newChildren = new ArrayList<VectorExpression>();
-    VectorExpression[] children = vecExpr.getChildExpressions();
-    if (children != null) {
-      Collections.addAll(newChildren, children);
-    }
+
+    Deque<VectorExpression> newChildren = new ArrayDeque<>(vecExpr.getChildExpressionsForTransientInit());
+
     while (!newChildren.isEmpty()) {
-      VectorExpression childVecExpr = newChildren.remove(0);
-      children = childVecExpr.getChildExpressions();
-      if (children != null) {
-        Collections.addAll(newChildren, children);
-      }
+      VectorExpression childVecExpr = newChildren.removeFirst();
+      newChildren.addAll(childVecExpr.getChildExpressionsForTransientInit());
       childVecExpr.transientInit(conf);
     }
   }
@@ -246,8 +251,6 @@ public abstract class VectorExpression implements Serializable {
   }
   /**
    * This is the primary method to implement expression logic.
-   * @param batch
-   * @throws HiveException 
    */
   public abstract void evaluate(VectorizedRowBatch batch) throws HiveException;
 
