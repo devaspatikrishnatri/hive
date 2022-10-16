@@ -561,8 +561,6 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
               // Create an SSL socket and connect
               transport = SecurityUtils.getSSLSocket(store.getHost(), store.getPort(), clientSocketTimeout,
                   trustStorePath, trustStorePassword, trustStoreType, trustStoreAlgorithm );
-              // Needed for the backport of HIVE-26633 to 7.1.8.x since HIVE-21456 is not yet backported.
-              configureThriftMaxMessageSize(transport);
               LOG.info("Opened an SSL connection to metastore, current connections: " + connCount.incrementAndGet());
               if (LOG.isTraceEnabled()) {
                 LOG.trace("", new LogUtils.StackTraceLogger("METASTORE SSL CONNECTION TRACE - open - " +
@@ -604,8 +602,6 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
               }
               // Overlay the SASL transport on top of the base socket transport (SSL or non-SSL)
               transport = MetaStorePlainSaslHelper.getPlainTransport(userName, passwd, transport);
-              // Needed for the backport of HIVE-26633 to 7.1.8.x since HIVE-21456 is not yet backported.
-              configureThriftMaxMessageSize(transport);
             } catch (IOException sasle) {
               // IOException covers SaslException
               LOG.error("Couldn't create client transport", sasle);
