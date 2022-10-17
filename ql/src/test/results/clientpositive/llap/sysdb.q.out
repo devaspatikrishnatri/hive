@@ -491,12 +491,18 @@ compaction_queue	cq_worker_id
 compaction_queue	cq_worker_version
 compactions	c_catalog
 compactions	c_catalog
+compactions	c_cleaner_start
+compactions	c_cleaner_start
+compactions	c_commit_time
+compactions	c_commit_time
 compactions	c_database
 compactions	c_database
 compactions	c_duration
 compactions	c_duration
 compactions	c_enqueue_time
 compactions	c_enqueue_time
+compactions	c_error_message
+compactions	c_error_message
 #### A masked pattern was here ####
 compactions	c_highest_write_id
 compactions	c_highest_write_id
@@ -522,6 +528,10 @@ compactions	c_state
 compactions	c_state
 compactions	c_table
 compactions	c_table
+compactions	c_tblproperties
+compactions	c_tblproperties
+compactions	c_txn_id
+compactions	c_txn_id
 compactions	c_type
 compactions	c_type
 compactions	c_worker_host
