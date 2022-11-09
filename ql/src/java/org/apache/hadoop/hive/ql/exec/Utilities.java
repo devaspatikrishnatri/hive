@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -166,6 +167,7 @@ import org.apache.hadoop.hive.ql.plan.PartitionDesc;
 import org.apache.hadoop.hive.ql.plan.PlanUtils;
 import org.apache.hadoop.hive.ql.plan.ReduceWork;
 import org.apache.hadoop.hive.ql.plan.TableDesc;
+import org.apache.hadoop.hive.ql.plan.TableScanDesc;
 import org.apache.hadoop.hive.ql.plan.api.Adjacency;
 import org.apache.hadoop.hive.ql.plan.api.Graph;
 import org.apache.hadoop.hive.ql.session.SessionState;
@@ -4180,6 +4182,34 @@ public final class Utilities {
       conf.set(IOConstants.SCHEMA_EVOLUTION_COLUMNS_TYPES, tableScanOp.getSchemaEvolutionColumnsTypes());
     } else {
       LOG.info("schema.evolution.columns and schema.evolution.columns.types not available");
+    }
+  }
+
+  /**
+   * Sets partition column names to the configuration, if there is available info in the operator.
+   */
+  public static void setPartitionColumnNames(Configuration conf, TableScanOperator tableScanOp) {
+    TableScanDesc scanDesc = tableScanOp.getConf();
+    Table metadata = scanDesc.getTableMetadata();
+    if (metadata == null) {
+      return;
+    }
+    List<FieldSchema> partCols = metadata.getPartCols();
+    if (partCols != null && !partCols.isEmpty()) {
+      conf.set("partition.columns", MetaStoreUtils.getColumnNamesFromFieldSchema(partCols));
+    }
+  }
+
+  /**
+   * Returns a list with partition column names present in the configuration,
+   * or empty if there is no such information available.
+   */
+  public static List<String> getPartitionColumnNames(Configuration conf) {
+    String colNames = conf.get("partition.columns");
+    if (colNames != null) {
+      return splitColNames(new ArrayList<>(), colNames);
+    } else {
+      return Collections.emptyList();
     }
   }
 
