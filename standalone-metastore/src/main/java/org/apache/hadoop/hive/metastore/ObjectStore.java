@@ -27,11 +27,12 @@ import static org.apache.hadoop.hive.metastore.utils.StringUtils.normalizeIdenti
 import com.google.common.base.Joiner;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
@@ -40,7 +41,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,7 +59,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import javax.jdo.JDODataStoreException;
@@ -89,11 +88,6 @@ import org.apache.hadoop.hive.common.StatsSetupConst;
 import org.apache.hadoop.hive.common.TableName;
 import org.apache.hadoop.hive.common.ValidReaderWriteIdList;
 import org.apache.hadoop.hive.common.ValidWriteIdList;
-import org.apache.hadoop.hive.common.StatsSetupConst;
-import org.apache.hadoop.hive.common.ValidReaderWriteIdList;
-import org.apache.hadoop.hive.common.ValidWriteIdList;
-import org.apache.hadoop.hive.common.DatabaseName;
-import org.apache.hadoop.hive.common.TableName;
 import org.apache.hadoop.hive.metastore.MetaStoreDirectSql.SqlFilterForPushdown;
 import org.apache.hadoop.hive.metastore.api.AggrStats;
 import org.apache.hadoop.hive.metastore.api.AlreadyExistsException;
@@ -177,6 +171,7 @@ import org.apache.hadoop.hive.metastore.api.StoredProcedure;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.TableMeta;
 import org.apache.hadoop.hive.metastore.api.Type;
+import org.apache.hadoop.hive.metastore.api.UniqueConstraintsRequest;
 import org.apache.hadoop.hive.metastore.api.UnknownDBException;
 import org.apache.hadoop.hive.metastore.api.UnknownPartitionException;
 import org.apache.hadoop.hive.metastore.api.UnknownTableException;
@@ -247,6 +242,7 @@ import org.apache.hadoop.hive.metastore.parser.ExpressionTree;
 import org.apache.hadoop.hive.metastore.parser.ExpressionTree.FilterBuilder;
 import org.apache.hadoop.hive.metastore.partition.spec.PartitionSpecProxy;
 import org.apache.hadoop.hive.metastore.tools.SQLGenerator;
+import org.apache.hadoop.hive.metastore.tools.metatool.MetadataTableSummary;
 import org.apache.hadoop.hive.metastore.txn.TxnUtils;
 import org.apache.hadoop.hive.metastore.utils.FileUtils;
 import org.apache.hadoop.hive.metastore.utils.JavaUtils;
@@ -264,10 +260,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -558,6 +551,7 @@ public class ObjectStore implements RawStore, Configurable {
       }
     }
   }
+
   @InterfaceAudience.LimitedPrivate({"HCATALOG"})
   @InterfaceStability.Evolving
   public PersistenceManager getPersistenceManager() {
@@ -8849,6 +8843,136 @@ public class ObjectStore implements RawStore, Configurable {
     } finally {
       rollbackAndCleanup(committed, query);
     }
+  }
+
+  /** The following APIs
+   *
+   *  - getMetadataSummary
+   *
+   * is used by HiveMetaTool.
+   */
+
+  /**
+   * Using resultSet to read the HMS_SUMMARY table.
+   * @param
+   * @return MetadataSummary
+   * @throws SQLException
+   */
+  public List<MetadataTableSummary> getMetadataSummary(String catalogFilter, String dbFilter, String tableFilter) throws SQLException {
+    ArrayList<MetadataTableSummary> metadataTableSummaryList = new ArrayList<MetadataTableSummary>();
+
+    ResultSet rs = null;
+    Statement stmt = null;
+
+    List<String> querySet = sqlGenerator.getCreateQueriesForMetastoreSummary();
+    if (querySet == null) {
+      LOG.warn("Metadata summary has not been implemented for dbtype {}", sqlGenerator.getDbProduct().name());
+      return null;
+    }
+
+    try {
+      JDOConnection jdoConn = null;
+      jdoConn = pm.getDataStoreConnection();
+      stmt = ((Connection) jdoConn.getNativeConnection()).createStatement();
+      long startTime = System.currentTimeMillis();
+
+      for (String q: querySet) {
+        stmt.execute(q);
+      }
+      long endTime = System.currentTimeMillis();
+      LOG.info("Total query time for generating HMS Summary: {} (ms)", (((long)endTime) - ((long)startTime)));
+    } catch (SQLException e) {
+      LOG.error("Exception during computing HMS Summary", e);
+      throw e;
+    }
+
+    final String query = sqlGenerator.getSelectQueryForMetastoreSummary();
+    try {
+      String tblName, dbName, ctlgName, tblType, fileType, compressionType, partitionColumn;
+      int colCount, arrayColCount, structColCount, mapColCount;
+      Integer partitionCnt;
+      BigInteger totalSize, sizeNumRows, sizeNumFiles;
+      stmt.setFetchSize(0);
+      rs = stmt.executeQuery(query);
+      while (rs.next()) {
+        tblName = rs.getString("TBL_NAME");
+        dbName = rs.getString("NAME");
+        ctlgName = rs.getString("CTLG");
+        if(ctlgName == null) ctlgName = "null";
+        colCount = rs.getInt("TOTAL_COLUMN_COUNT");
+        arrayColCount = rs.getInt("ARRAY_COLUMN_COUNT");
+        structColCount = rs.getInt("STRUCT_COLUMN_COUNT");
+        mapColCount = rs.getInt("MAP_COLUMN_COUNT");
+        tblType = rs.getString("TBL_TYPE");
+        fileType = rs.getString("SLIB");
+        if (fileType != null) fileType = extractFileFormat(fileType);
+        compressionType = rs.getString("IS_COMPRESSED");
+        if (compressionType.equals("0") || compressionType.equals("f")) compressionType = "None";
+        partitionColumn = rs.getString("PARTITION_COLUMN");
+        int partitionColumnCount = (partitionColumn == null) ? 0 : (partitionColumn.split(",")).length;
+        partitionCnt = rs.getInt("PARTITION_CNT");
+
+        totalSize = BigInteger.valueOf(rs.getLong("TOTAL_SIZE"));
+        sizeNumRows = BigInteger.valueOf(rs.getLong("NUM_ROWS"));
+        sizeNumFiles = BigInteger.valueOf(rs.getLong("NUM_FILES"));
+
+        MetadataTableSummary summary = new MetadataTableSummary(ctlgName, dbName, tblName, colCount,
+            partitionColumnCount, partitionCnt, totalSize, sizeNumRows, sizeNumFiles, tblType,
+            fileType, compressionType, arrayColCount, structColCount, mapColCount);
+        metadataTableSummaryList.add(summary);
+      }
+    } catch (Exception e) {
+      String msg = "Runtime exception while running the query " + query;
+      LOG.error(msg, e);
+      throw e;
+    } finally {
+      if (rs != null) {
+        rs.close();
+      }
+      if (stmt != null) {
+        stmt.close();
+      }
+    }
+    return metadataTableSummaryList;
+  }
+
+  /**
+   * Helper method for getMetadataSummary. Extracting the format of the file from the long string.
+   * @param fileFormat - fileFormat. A long String which indicates the type of the file.
+   * @return String A short String which indicates the type of the file.
+   */
+  private static String extractFileFormat(String fileFormat) {
+    String lowerCaseFileFormat = null;
+    if (fileFormat == null) {
+      return "NULL";
+    }
+    lowerCaseFileFormat = fileFormat.toLowerCase();
+    if (lowerCaseFileFormat.contains("iceberg")) {
+      fileFormat = "iceberg";
+    } else if (lowerCaseFileFormat.contains("parquet")) {
+      fileFormat = "parquet";
+    } else if (lowerCaseFileFormat.contains("orc")) {
+      fileFormat = "orc";
+    } else if (lowerCaseFileFormat.contains("avro")) {
+      fileFormat = "avro";
+    } else if (lowerCaseFileFormat.contains("json")) {
+      fileFormat = "json";
+    } else if (lowerCaseFileFormat.contains("hbase")) {
+      fileFormat = "hbase";
+    } else if (lowerCaseFileFormat.contains("jdbc")) {
+      fileFormat = "jdbc";
+    } else if (lowerCaseFileFormat.contains("kudu")) {
+      fileFormat = "kudu";
+    } else if ((lowerCaseFileFormat.contains("text")) || (lowerCaseFileFormat.contains("lazysimple"))) {
+      fileFormat = "text";
+    } else if (lowerCaseFileFormat.contains("sequence")) {
+      fileFormat = "sequence";
+    } else if (lowerCaseFileFormat.contains("passthrough")) {
+      fileFormat = "passthrough";
+    } else if (lowerCaseFileFormat.contains("opencsv")) {
+      fileFormat = "openCSV";
+    }
+    return fileFormat;
   }
 
   private void writeMTableColumnStatistics(Table table, MTableColumnStatistics mStatsObj,
