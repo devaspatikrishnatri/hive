@@ -165,13 +165,13 @@ class GetTablesRequest
                 case 2:
                     if ($ftype == TType::LST) {
                         $this->tblNames = array();
-                        $_size868 = 0;
-                        $_etype871 = 0;
-                        $xfer += $input->readListBegin($_etype871, $_size868);
-                        for ($_i872 = 0; $_i872 < $_size868; ++$_i872) {
-                            $elem873 = null;
-                            $xfer += $input->readString($elem873);
-                            $this->tblNames []= $elem873;
+                        $_size877 = 0;
+                        $_etype880 = 0;
+                        $xfer += $input->readListBegin($_etype880, $_size877);
+                        for ($_i881 = 0; $_i881 < $_size877; ++$_i881) {
+                            $elem882 = null;
+                            $xfer += $input->readString($elem882);
+                            $this->tblNames []= $elem882;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -196,13 +196,13 @@ class GetTablesRequest
                 case 5:
                     if ($ftype == TType::LST) {
                         $this->processorCapabilities = array();
-                        $_size874 = 0;
-                        $_etype877 = 0;
-                        $xfer += $input->readListBegin($_etype877, $_size874);
-                        for ($_i878 = 0; $_i878 < $_size874; ++$_i878) {
-                            $elem879 = null;
-                            $xfer += $input->readString($elem879);
-                            $this->processorCapabilities []= $elem879;
+                        $_size883 = 0;
+                        $_etype886 = 0;
+                        $xfer += $input->readListBegin($_etype886, $_size883);
+                        for ($_i887 = 0; $_i887 < $_size883; ++$_i887) {
+                            $elem888 = null;
+                            $xfer += $input->readString($elem888);
+                            $this->processorCapabilities []= $elem888;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -256,8 +256,8 @@ class GetTablesRequest
             }
             $xfer += $output->writeFieldBegin('tblNames', TType::LST, 2);
             $output->writeListBegin(TType::STRING, count($this->tblNames));
-            foreach ($this->tblNames as $iter880) {
-                $xfer += $output->writeString($iter880);
+            foreach ($this->tblNames as $iter889) {
+                $xfer += $output->writeString($iter889);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();
@@ -281,8 +281,8 @@ class GetTablesRequest
             }
             $xfer += $output->writeFieldBegin('processorCapabilities', TType::LST, 5);
             $output->writeListBegin(TType::STRING, count($this->processorCapabilities));
-            foreach ($this->processorCapabilities as $iter881) {
-                $xfer += $output->writeString($iter881);
+            foreach ($this->processorCapabilities as $iter890) {
+                $xfer += $output->writeString($iter890);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

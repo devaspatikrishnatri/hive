@@ -15624,13 +15624,15 @@ class FireEventRequestData(object):
     Attributes:
      - insertData
      - insertDatas
+     - refreshEvent
 
     """
 
 
-    def __init__(self, insertData=None, insertDatas=None,):
+    def __init__(self, insertData=None, insertDatas=None, refreshEvent=None,):
         self.insertData = insertData
         self.insertDatas = insertDatas
+        self.refreshEvent = refreshEvent
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -15658,6 +15660,11 @@ class FireEventRequestData(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.BOOL:
+                    self.refreshEvent = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -15678,6 +15685,10 @@ class FireEventRequestData(object):
             for iter762 in self.insertDatas:
                 iter762.write(oprot)
             oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.refreshEvent is not None:
+            oprot.writeFieldBegin('refreshEvent', TType.BOOL, 3)
+            oprot.writeBool(self.refreshEvent)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -15706,17 +15717,19 @@ class FireEventRequest(object):
      - tableName
      - partitionVals
      - catName
+     - tblParams
 
     """
 
 
-    def __init__(self, successful=None, data=None, dbName=None, tableName=None, partitionVals=None, catName=None,):
+    def __init__(self, successful=None, data=None, dbName=None, tableName=None, partitionVals=None, catName=None, tblParams=None,):
         self.successful = successful
         self.data = data
         self.dbName = dbName
         self.tableName = tableName
         self.partitionVals = partitionVals
         self.catName = catName
+        self.tblParams = tblParams
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -15763,6 +15776,17 @@ class FireEventRequest(object):
                     self.catName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.MAP:
+                    self.tblParams = {}
+                    (_ktype770, _vtype771, _size769) = iprot.readMapBegin()
+                    for _i773 in range(_size769):
+                        _key774 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _val775 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.tblParams[_key774] = _val775
+                    iprot.readMapEnd()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -15792,13 +15816,21 @@ class FireEventRequest(object):
         if self.partitionVals is not None:
             oprot.writeFieldBegin('partitionVals', TType.LIST, 5)
             oprot.writeListBegin(TType.STRING, len(self.partitionVals))
-            for iter769 in self.partitionVals:
-                oprot.writeString(iter769.encode('utf-8') if sys.version_info[0] == 2 else iter769)
+            for iter776 in self.partitionVals:
+                oprot.writeString(iter776.encode('utf-8') if sys.version_info[0] == 2 else iter776)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.catName is not None:
             oprot.writeFieldBegin('catName', TType.STRING, 6)
             oprot.writeString(self.catName.encode('utf-8') if sys.version_info[0] == 2 else self.catName)
+            oprot.writeFieldEnd()
+        if self.tblParams is not None:
+            oprot.writeFieldBegin('tblParams', TType.MAP, 7)
+            oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.tblParams))
+            for kiter777, viter778 in self.tblParams.items():
+                oprot.writeString(kiter777.encode('utf-8') if sys.version_info[0] == 2 else kiter777)
+                oprot.writeString(viter778.encode('utf-8') if sys.version_info[0] == 2 else viter778)
+            oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -15845,10 +15877,10 @@ class FireEventResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.eventIds = []
-                    (_etype773, _size770) = iprot.readListBegin()
-                    for _i774 in range(_size770):
-                        _elem775 = iprot.readI64()
-                        self.eventIds.append(_elem775)
+                    (_etype782, _size779) = iprot.readListBegin()
+                    for _i783 in range(_size779):
+                        _elem784 = iprot.readI64()
+                        self.eventIds.append(_elem784)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -15865,8 +15897,8 @@ class FireEventResponse(object):
         if self.eventIds is not None:
             oprot.writeFieldBegin('eventIds', TType.LIST, 1)
             oprot.writeListBegin(TType.I64, len(self.eventIds))
-            for iter776 in self.eventIds:
-                oprot.writeI64(iter776)
+            for iter785 in self.eventIds:
+                oprot.writeI64(iter785)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -15946,10 +15978,10 @@ class WriteNotificationLogRequest(object):
             elif fid == 6:
                 if ftype == TType.LIST:
                     self.partitionVals = []
-                    (_etype780, _size777) = iprot.readListBegin()
-                    for _i781 in range(_size777):
-                        _elem782 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.partitionVals.append(_elem782)
+                    (_etype789, _size786) = iprot.readListBegin()
+                    for _i790 in range(_size786):
+                        _elem791 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partitionVals.append(_elem791)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -15986,8 +16018,8 @@ class WriteNotificationLogRequest(object):
         if self.partitionVals is not None:
             oprot.writeFieldBegin('partitionVals', TType.LIST, 6)
             oprot.writeListBegin(TType.STRING, len(self.partitionVals))
-            for iter783 in self.partitionVals:
-                oprot.writeString(iter783.encode('utf-8') if sys.version_info[0] == 2 else iter783)
+            for iter792 in self.partitionVals:
+                oprot.writeString(iter792.encode('utf-8') if sys.version_info[0] == 2 else iter792)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -16151,12 +16183,12 @@ class GetFileMetadataByExprResult(object):
             if fid == 1:
                 if ftype == TType.MAP:
                     self.metadata = {}
-                    (_ktype785, _vtype786, _size784) = iprot.readMapBegin()
-                    for _i788 in range(_size784):
-                        _key789 = iprot.readI64()
-                        _val790 = MetadataPpdResult()
-                        _val790.read(iprot)
-                        self.metadata[_key789] = _val790
+                    (_ktype794, _vtype795, _size793) = iprot.readMapBegin()
+                    for _i797 in range(_size793):
+                        _key798 = iprot.readI64()
+                        _val799 = MetadataPpdResult()
+                        _val799.read(iprot)
+                        self.metadata[_key798] = _val799
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -16178,9 +16210,9 @@ class GetFileMetadataByExprResult(object):
         if self.metadata is not None:
             oprot.writeFieldBegin('metadata', TType.MAP, 1)
             oprot.writeMapBegin(TType.I64, TType.STRUCT, len(self.metadata))
-            for kiter791, viter792 in self.metadata.items():
-                oprot.writeI64(kiter791)
-                viter792.write(oprot)
+            for kiter800, viter801 in self.metadata.items():
+                oprot.writeI64(kiter800)
+                viter801.write(oprot)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.isSupported is not None:
@@ -16238,10 +16270,10 @@ class GetFileMetadataByExprRequest(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.fileIds = []
-                    (_etype796, _size793) = iprot.readListBegin()
-                    for _i797 in range(_size793):
-                        _elem798 = iprot.readI64()
-                        self.fileIds.append(_elem798)
+                    (_etype805, _size802) = iprot.readListBegin()
+                    for _i806 in range(_size802):
+                        _elem807 = iprot.readI64()
+                        self.fileIds.append(_elem807)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -16273,8 +16305,8 @@ class GetFileMetadataByExprRequest(object):
         if self.fileIds is not None:
             oprot.writeFieldBegin('fileIds', TType.LIST, 1)
             oprot.writeListBegin(TType.I64, len(self.fileIds))
-            for iter799 in self.fileIds:
-                oprot.writeI64(iter799)
+            for iter808 in self.fileIds:
+                oprot.writeI64(iter808)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.expr is not None:
@@ -16336,11 +16368,11 @@ class GetFileMetadataResult(object):
             if fid == 1:
                 if ftype == TType.MAP:
                     self.metadata = {}
-                    (_ktype801, _vtype802, _size800) = iprot.readMapBegin()
-                    for _i804 in range(_size800):
-                        _key805 = iprot.readI64()
-                        _val806 = iprot.readBinary()
-                        self.metadata[_key805] = _val806
+                    (_ktype810, _vtype811, _size809) = iprot.readMapBegin()
+                    for _i813 in range(_size809):
+                        _key814 = iprot.readI64()
+                        _val815 = iprot.readBinary()
+                        self.metadata[_key814] = _val815
                     iprot.readMapEnd()
                 else:
                     iprot.skip(ftype)
@@ -16362,9 +16394,9 @@ class GetFileMetadataResult(object):
         if self.metadata is not None:
             oprot.writeFieldBegin('metadata', TType.MAP, 1)
             oprot.writeMapBegin(TType.I64, TType.STRING, len(self.metadata))
-            for kiter807, viter808 in self.metadata.items():
-                oprot.writeI64(kiter807)
-                oprot.writeBinary(viter808)
+            for kiter816, viter817 in self.metadata.items():
+                oprot.writeI64(kiter816)
+                oprot.writeBinary(viter817)
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         if self.isSupported is not None:
@@ -16416,10 +16448,10 @@ class GetFileMetadataRequest(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.fileIds = []
-                    (_etype812, _size809) = iprot.readListBegin()
-                    for _i813 in range(_size809):
-                        _elem814 = iprot.readI64()
-                        self.fileIds.append(_elem814)
+                    (_etype821, _size818) = iprot.readListBegin()
+                    for _i822 in range(_size818):
+                        _elem823 = iprot.readI64()
+                        self.fileIds.append(_elem823)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -16436,8 +16468,8 @@ class GetFileMetadataRequest(object):
         if self.fileIds is not None:
             oprot.writeFieldBegin('fileIds', TType.LIST, 1)
             oprot.writeListBegin(TType.I64, len(self.fileIds))
-            for iter815 in self.fileIds:
-                oprot.writeI64(iter815)
+            for iter824 in self.fileIds:
+                oprot.writeI64(iter824)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -16527,20 +16559,20 @@ class PutFileMetadataRequest(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.fileIds = []
-                    (_etype819, _size816) = iprot.readListBegin()
-                    for _i820 in range(_size816):
-                        _elem821 = iprot.readI64()
-                        self.fileIds.append(_elem821)
+                    (_etype828, _size825) = iprot.readListBegin()
+                    for _i829 in range(_size825):
+                        _elem830 = iprot.readI64()
+                        self.fileIds.append(_elem830)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.metadata = []
-                    (_etype825, _size822) = iprot.readListBegin()
-                    for _i826 in range(_size822):
-                        _elem827 = iprot.readBinary()
-                        self.metadata.append(_elem827)
+                    (_etype834, _size831) = iprot.readListBegin()
+                    for _i835 in range(_size831):
+                        _elem836 = iprot.readBinary()
+                        self.metadata.append(_elem836)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -16562,15 +16594,15 @@ class PutFileMetadataRequest(object):
         if self.fileIds is not None:
             oprot.writeFieldBegin('fileIds', TType.LIST, 1)
             oprot.writeListBegin(TType.I64, len(self.fileIds))
-            for iter828 in self.fileIds:
-                oprot.writeI64(iter828)
+            for iter837 in self.fileIds:
+                oprot.writeI64(iter837)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.metadata is not None:
             oprot.writeFieldBegin('metadata', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.metadata))
-            for iter829 in self.metadata:
-                oprot.writeBinary(iter829)
+            for iter838 in self.metadata:
+                oprot.writeBinary(iter838)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.type is not None:
@@ -16662,10 +16694,10 @@ class ClearFileMetadataRequest(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.fileIds = []
-                    (_etype833, _size830) = iprot.readListBegin()
-                    for _i834 in range(_size830):
-                        _elem835 = iprot.readI64()
-                        self.fileIds.append(_elem835)
+                    (_etype842, _size839) = iprot.readListBegin()
+                    for _i843 in range(_size839):
+                        _elem844 = iprot.readI64()
+                        self.fileIds.append(_elem844)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -16682,8 +16714,8 @@ class ClearFileMetadataRequest(object):
         if self.fileIds is not None:
             oprot.writeFieldBegin('fileIds', TType.LIST, 1)
             oprot.writeListBegin(TType.I64, len(self.fileIds))
-            for iter836 in self.fileIds:
-                oprot.writeI64(iter836)
+            for iter845 in self.fileIds:
+                oprot.writeI64(iter845)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -16882,11 +16914,11 @@ class GetAllFunctionsResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.functions = []
-                    (_etype840, _size837) = iprot.readListBegin()
-                    for _i841 in range(_size837):
-                        _elem842 = Function()
-                        _elem842.read(iprot)
-                        self.functions.append(_elem842)
+                    (_etype849, _size846) = iprot.readListBegin()
+                    for _i850 in range(_size846):
+                        _elem851 = Function()
+                        _elem851.read(iprot)
+                        self.functions.append(_elem851)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -16903,8 +16935,8 @@ class GetAllFunctionsResponse(object):
         if self.functions is not None:
             oprot.writeFieldBegin('functions', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.functions))
-            for iter843 in self.functions:
-                iter843.write(oprot)
+            for iter852 in self.functions:
+                iter852.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -16948,10 +16980,10 @@ class ClientCapabilities(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.values = []
-                    (_etype847, _size844) = iprot.readListBegin()
-                    for _i848 in range(_size844):
-                        _elem849 = iprot.readI32()
-                        self.values.append(_elem849)
+                    (_etype856, _size853) = iprot.readListBegin()
+                    for _i857 in range(_size853):
+                        _elem858 = iprot.readI32()
+                        self.values.append(_elem858)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -16968,8 +17000,8 @@ class ClientCapabilities(object):
         if self.values is not None:
             oprot.writeFieldBegin('values', TType.LIST, 1)
             oprot.writeListBegin(TType.I32, len(self.values))
-            for iter850 in self.values:
-                oprot.writeI32(iter850)
+            for iter859 in self.values:
+                oprot.writeI32(iter859)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -17019,10 +17051,10 @@ class GetProjectionsSpec(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.fieldList = []
-                    (_etype854, _size851) = iprot.readListBegin()
-                    for _i855 in range(_size851):
-                        _elem856 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.fieldList.append(_elem856)
+                    (_etype863, _size860) = iprot.readListBegin()
+                    for _i864 in range(_size860):
+                        _elem865 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.fieldList.append(_elem865)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17049,8 +17081,8 @@ class GetProjectionsSpec(object):
         if self.fieldList is not None:
             oprot.writeFieldBegin('fieldList', TType.LIST, 1)
             oprot.writeListBegin(TType.STRING, len(self.fieldList))
-            for iter857 in self.fieldList:
-                oprot.writeString(iter857.encode('utf-8') if sys.version_info[0] == 2 else iter857)
+            for iter866 in self.fieldList:
+                oprot.writeString(iter866.encode('utf-8') if sys.version_info[0] == 2 else iter866)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.includeParamKeyPattern is not None:
@@ -17151,10 +17183,10 @@ class GetTableRequest(object):
             elif fid == 8:
                 if ftype == TType.LIST:
                     self.processorCapabilities = []
-                    (_etype861, _size858) = iprot.readListBegin()
-                    for _i862 in range(_size858):
-                        _elem863 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.processorCapabilities.append(_elem863)
+                    (_etype870, _size867) = iprot.readListBegin()
+                    for _i871 in range(_size867):
+                        _elem872 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem872)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17210,8 +17242,8 @@ class GetTableRequest(object):
         if self.processorCapabilities is not None:
             oprot.writeFieldBegin('processorCapabilities', TType.LIST, 8)
             oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
-            for iter864 in self.processorCapabilities:
-                oprot.writeString(iter864.encode('utf-8') if sys.version_info[0] == 2 else iter864)
+            for iter873 in self.processorCapabilities:
+                oprot.writeString(iter873.encode('utf-8') if sys.version_info[0] == 2 else iter873)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorIdentifier is not None:
@@ -17361,10 +17393,10 @@ class GetTablesRequest(object):
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.tblNames = []
-                    (_etype868, _size865) = iprot.readListBegin()
-                    for _i869 in range(_size865):
-                        _elem870 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.tblNames.append(_elem870)
+                    (_etype877, _size874) = iprot.readListBegin()
+                    for _i878 in range(_size874):
+                        _elem879 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.tblNames.append(_elem879)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17382,10 +17414,10 @@ class GetTablesRequest(object):
             elif fid == 5:
                 if ftype == TType.LIST:
                     self.processorCapabilities = []
-                    (_etype874, _size871) = iprot.readListBegin()
-                    for _i875 in range(_size871):
-                        _elem876 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.processorCapabilities.append(_elem876)
+                    (_etype883, _size880) = iprot.readListBegin()
+                    for _i884 in range(_size880):
+                        _elem885 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem885)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17422,8 +17454,8 @@ class GetTablesRequest(object):
         if self.tblNames is not None:
             oprot.writeFieldBegin('tblNames', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.tblNames))
-            for iter877 in self.tblNames:
-                oprot.writeString(iter877.encode('utf-8') if sys.version_info[0] == 2 else iter877)
+            for iter886 in self.tblNames:
+                oprot.writeString(iter886.encode('utf-8') if sys.version_info[0] == 2 else iter886)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.capabilities is not None:
@@ -17437,8 +17469,8 @@ class GetTablesRequest(object):
         if self.processorCapabilities is not None:
             oprot.writeFieldBegin('processorCapabilities', TType.LIST, 5)
             oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
-            for iter878 in self.processorCapabilities:
-                oprot.writeString(iter878.encode('utf-8') if sys.version_info[0] == 2 else iter878)
+            for iter887 in self.processorCapabilities:
+                oprot.writeString(iter887.encode('utf-8') if sys.version_info[0] == 2 else iter887)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorIdentifier is not None:
@@ -17496,11 +17528,11 @@ class GetTablesResult(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.tables = []
-                    (_etype882, _size879) = iprot.readListBegin()
-                    for _i883 in range(_size879):
-                        _elem884 = Table()
-                        _elem884.read(iprot)
-                        self.tables.append(_elem884)
+                    (_etype891, _size888) = iprot.readListBegin()
+                    for _i892 in range(_size888):
+                        _elem893 = Table()
+                        _elem893.read(iprot)
+                        self.tables.append(_elem893)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17517,8 +17549,8 @@ class GetTablesResult(object):
         if self.tables is not None:
             oprot.writeFieldBegin('tables', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.tables))
-            for iter885 in self.tables:
-                iter885.write(oprot)
+            for iter894 in self.tables:
+                iter894.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -17601,10 +17633,10 @@ class GetTablesExtRequest(object):
             elif fid == 6:
                 if ftype == TType.LIST:
                     self.processorCapabilities = []
-                    (_etype889, _size886) = iprot.readListBegin()
-                    for _i890 in range(_size886):
-                        _elem891 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.processorCapabilities.append(_elem891)
+                    (_etype898, _size895) = iprot.readListBegin()
+                    for _i899 in range(_size895):
+                        _elem900 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem900)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17646,8 +17678,8 @@ class GetTablesExtRequest(object):
         if self.processorCapabilities is not None:
             oprot.writeFieldBegin('processorCapabilities', TType.LIST, 6)
             oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
-            for iter892 in self.processorCapabilities:
-                oprot.writeString(iter892.encode('utf-8') if sys.version_info[0] == 2 else iter892)
+            for iter901 in self.processorCapabilities:
+                oprot.writeString(iter901.encode('utf-8') if sys.version_info[0] == 2 else iter901)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorIdentifier is not None:
@@ -17719,20 +17751,20 @@ class ExtendedTableInfo(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.requiredReadCapabilities = []
-                    (_etype896, _size893) = iprot.readListBegin()
-                    for _i897 in range(_size893):
-                        _elem898 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.requiredReadCapabilities.append(_elem898)
+                    (_etype905, _size902) = iprot.readListBegin()
+                    for _i906 in range(_size902):
+                        _elem907 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.requiredReadCapabilities.append(_elem907)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.requiredWriteCapabilities = []
-                    (_etype902, _size899) = iprot.readListBegin()
-                    for _i903 in range(_size899):
-                        _elem904 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.requiredWriteCapabilities.append(_elem904)
+                    (_etype911, _size908) = iprot.readListBegin()
+                    for _i912 in range(_size908):
+                        _elem913 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.requiredWriteCapabilities.append(_elem913)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17757,15 +17789,15 @@ class ExtendedTableInfo(object):
         if self.requiredReadCapabilities is not None:
             oprot.writeFieldBegin('requiredReadCapabilities', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.requiredReadCapabilities))
-            for iter905 in self.requiredReadCapabilities:
-                oprot.writeString(iter905.encode('utf-8') if sys.version_info[0] == 2 else iter905)
+            for iter914 in self.requiredReadCapabilities:
+                oprot.writeString(iter914.encode('utf-8') if sys.version_info[0] == 2 else iter914)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.requiredWriteCapabilities is not None:
             oprot.writeFieldBegin('requiredWriteCapabilities', TType.LIST, 4)
             oprot.writeListBegin(TType.STRING, len(self.requiredWriteCapabilities))
-            for iter906 in self.requiredWriteCapabilities:
-                oprot.writeString(iter906.encode('utf-8') if sys.version_info[0] == 2 else iter906)
+            for iter915 in self.requiredWriteCapabilities:
+                oprot.writeString(iter915.encode('utf-8') if sys.version_info[0] == 2 else iter915)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -17827,10 +17859,10 @@ class GetDatabaseRequest(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.processorCapabilities = []
-                    (_etype910, _size907) = iprot.readListBegin()
-                    for _i911 in range(_size907):
-                        _elem912 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.processorCapabilities.append(_elem912)
+                    (_etype919, _size916) = iprot.readListBegin()
+                    for _i920 in range(_size916):
+                        _elem921 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem921)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -17860,8 +17892,8 @@ class GetDatabaseRequest(object):
         if self.processorCapabilities is not None:
             oprot.writeFieldBegin('processorCapabilities', TType.LIST, 3)
             oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
-            for iter913 in self.processorCapabilities:
-                oprot.writeString(iter913.encode('utf-8') if sys.version_info[0] == 2 else iter913)
+            for iter922 in self.processorCapabilities:
+                oprot.writeString(iter922.encode('utf-8') if sys.version_info[0] == 2 else iter922)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorIdentifier is not None:
@@ -18945,44 +18977,44 @@ class WMFullResourcePlan(object):
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.pools = []
-                    (_etype917, _size914) = iprot.readListBegin()
-                    for _i918 in range(_size914):
-                        _elem919 = WMPool()
-                        _elem919.read(iprot)
-                        self.pools.append(_elem919)
+                    (_etype926, _size923) = iprot.readListBegin()
+                    for _i927 in range(_size923):
+                        _elem928 = WMPool()
+                        _elem928.read(iprot)
+                        self.pools.append(_elem928)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.mappings = []
-                    (_etype923, _size920) = iprot.readListBegin()
-                    for _i924 in range(_size920):
-                        _elem925 = WMMapping()
-                        _elem925.read(iprot)
-                        self.mappings.append(_elem925)
+                    (_etype932, _size929) = iprot.readListBegin()
+                    for _i933 in range(_size929):
+                        _elem934 = WMMapping()
+                        _elem934.read(iprot)
+                        self.mappings.append(_elem934)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.triggers = []
-                    (_etype929, _size926) = iprot.readListBegin()
-                    for _i930 in range(_size926):
-                        _elem931 = WMTrigger()
-                        _elem931.read(iprot)
-                        self.triggers.append(_elem931)
+                    (_etype938, _size935) = iprot.readListBegin()
+                    for _i939 in range(_size935):
+                        _elem940 = WMTrigger()
+                        _elem940.read(iprot)
+                        self.triggers.append(_elem940)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
                 if ftype == TType.LIST:
                     self.poolTriggers = []
-                    (_etype935, _size932) = iprot.readListBegin()
-                    for _i936 in range(_size932):
-                        _elem937 = WMPoolTrigger()
-                        _elem937.read(iprot)
-                        self.poolTriggers.append(_elem937)
+                    (_etype944, _size941) = iprot.readListBegin()
+                    for _i945 in range(_size941):
+                        _elem946 = WMPoolTrigger()
+                        _elem946.read(iprot)
+                        self.poolTriggers.append(_elem946)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -19003,29 +19035,29 @@ class WMFullResourcePlan(object):
         if self.pools is not None:
             oprot.writeFieldBegin('pools', TType.LIST, 2)
             oprot.writeListBegin(TType.STRUCT, len(self.pools))
-            for iter938 in self.pools:
-                iter938.write(oprot)
+            for iter947 in self.pools:
+                iter947.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.mappings is not None:
             oprot.writeFieldBegin('mappings', TType.LIST, 3)
             oprot.writeListBegin(TType.STRUCT, len(self.mappings))
-            for iter939 in self.mappings:
-                iter939.write(oprot)
+            for iter948 in self.mappings:
+                iter948.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.triggers is not None:
             oprot.writeFieldBegin('triggers', TType.LIST, 4)
             oprot.writeListBegin(TType.STRUCT, len(self.triggers))
-            for iter940 in self.triggers:
-                iter940.write(oprot)
+            for iter949 in self.triggers:
+                iter949.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.poolTriggers is not None:
             oprot.writeFieldBegin('poolTriggers', TType.LIST, 5)
             oprot.writeListBegin(TType.STRUCT, len(self.poolTriggers))
-            for iter941 in self.poolTriggers:
-                iter941.write(oprot)
+            for iter950 in self.poolTriggers:
+                iter950.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -19435,11 +19467,11 @@ class WMGetAllResourcePlanResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.resourcePlans = []
-                    (_etype945, _size942) = iprot.readListBegin()
-                    for _i946 in range(_size942):
-                        _elem947 = WMResourcePlan()
-                        _elem947.read(iprot)
-                        self.resourcePlans.append(_elem947)
+                    (_etype954, _size951) = iprot.readListBegin()
+                    for _i955 in range(_size951):
+                        _elem956 = WMResourcePlan()
+                        _elem956.read(iprot)
+                        self.resourcePlans.append(_elem956)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -19456,8 +19488,8 @@ class WMGetAllResourcePlanResponse(object):
         if self.resourcePlans is not None:
             oprot.writeFieldBegin('resourcePlans', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.resourcePlans))
-            for iter948 in self.resourcePlans:
-                iter948.write(oprot)
+            for iter957 in self.resourcePlans:
+                iter957.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -19720,20 +19752,20 @@ class WMValidateResourcePlanResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.errors = []
-                    (_etype952, _size949) = iprot.readListBegin()
-                    for _i953 in range(_size949):
-                        _elem954 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.errors.append(_elem954)
+                    (_etype961, _size958) = iprot.readListBegin()
+                    for _i962 in range(_size958):
+                        _elem963 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.errors.append(_elem963)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.LIST:
                     self.warnings = []
-                    (_etype958, _size955) = iprot.readListBegin()
-                    for _i959 in range(_size955):
-                        _elem960 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.warnings.append(_elem960)
+                    (_etype967, _size964) = iprot.readListBegin()
+                    for _i968 in range(_size964):
+                        _elem969 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.warnings.append(_elem969)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -19750,15 +19782,15 @@ class WMValidateResourcePlanResponse(object):
         if self.errors is not None:
             oprot.writeFieldBegin('errors', TType.LIST, 1)
             oprot.writeListBegin(TType.STRING, len(self.errors))
-            for iter961 in self.errors:
-                oprot.writeString(iter961.encode('utf-8') if sys.version_info[0] == 2 else iter961)
+            for iter970 in self.errors:
+                oprot.writeString(iter970.encode('utf-8') if sys.version_info[0] == 2 else iter970)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.warnings is not None:
             oprot.writeFieldBegin('warnings', TType.LIST, 2)
             oprot.writeListBegin(TType.STRING, len(self.warnings))
-            for iter962 in self.warnings:
-                oprot.writeString(iter962.encode('utf-8') if sys.version_info[0] == 2 else iter962)
+            for iter971 in self.warnings:
+                oprot.writeString(iter971.encode('utf-8') if sys.version_info[0] == 2 else iter971)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -20260,11 +20292,11 @@ class WMGetTriggersForResourePlanResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.triggers = []
-                    (_etype966, _size963) = iprot.readListBegin()
-                    for _i967 in range(_size963):
-                        _elem968 = WMTrigger()
-                        _elem968.read(iprot)
-                        self.triggers.append(_elem968)
+                    (_etype975, _size972) = iprot.readListBegin()
+                    for _i976 in range(_size972):
+                        _elem977 = WMTrigger()
+                        _elem977.read(iprot)
+                        self.triggers.append(_elem977)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -20281,8 +20313,8 @@ class WMGetTriggersForResourePlanResponse(object):
         if self.triggers is not None:
             oprot.writeFieldBegin('triggers', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.triggers))
-            for iter969 in self.triggers:
-                iter969.write(oprot)
+            for iter978 in self.triggers:
+                iter978.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -21306,11 +21338,11 @@ class SchemaVersion(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.cols = []
-                    (_etype973, _size970) = iprot.readListBegin()
-                    for _i974 in range(_size970):
-                        _elem975 = FieldSchema()
-                        _elem975.read(iprot)
-                        self.cols.append(_elem975)
+                    (_etype982, _size979) = iprot.readListBegin()
+                    for _i983 in range(_size979):
+                        _elem984 = FieldSchema()
+                        _elem984.read(iprot)
+                        self.cols.append(_elem984)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -21370,8 +21402,8 @@ class SchemaVersion(object):
         if self.cols is not None:
             oprot.writeFieldBegin('cols', TType.LIST, 4)
             oprot.writeListBegin(TType.STRUCT, len(self.cols))
-            for iter976 in self.cols:
-                iter976.write(oprot)
+            for iter985 in self.cols:
+                iter985.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.state is not None:
@@ -21587,11 +21619,11 @@ class FindSchemasByColsResp(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.schemaVersions = []
-                    (_etype980, _size977) = iprot.readListBegin()
-                    for _i981 in range(_size977):
-                        _elem982 = SchemaVersionDescriptor()
-                        _elem982.read(iprot)
-                        self.schemaVersions.append(_elem982)
+                    (_etype989, _size986) = iprot.readListBegin()
+                    for _i990 in range(_size986):
+                        _elem991 = SchemaVersionDescriptor()
+                        _elem991.read(iprot)
+                        self.schemaVersions.append(_elem991)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -21608,8 +21640,8 @@ class FindSchemasByColsResp(object):
         if self.schemaVersions is not None:
             oprot.writeFieldBegin('schemaVersions', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.schemaVersions))
-            for iter983 in self.schemaVersions:
-                iter983.write(oprot)
+            for iter992 in self.schemaVersions:
+                iter992.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -22033,76 +22065,76 @@ class CreateTableRequest(object):
             elif fid == 3:
                 if ftype == TType.LIST:
                     self.primaryKeys = []
-                    (_etype987, _size984) = iprot.readListBegin()
-                    for _i988 in range(_size984):
-                        _elem989 = SQLPrimaryKey()
-                        _elem989.read(iprot)
-                        self.primaryKeys.append(_elem989)
+                    (_etype996, _size993) = iprot.readListBegin()
+                    for _i997 in range(_size993):
+                        _elem998 = SQLPrimaryKey()
+                        _elem998.read(iprot)
+                        self.primaryKeys.append(_elem998)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.foreignKeys = []
-                    (_etype993, _size990) = iprot.readListBegin()
-                    for _i994 in range(_size990):
-                        _elem995 = SQLForeignKey()
-                        _elem995.read(iprot)
-                        self.foreignKeys.append(_elem995)
+                    (_etype1002, _size999) = iprot.readListBegin()
+                    for _i1003 in range(_size999):
+                        _elem1004 = SQLForeignKey()
+                        _elem1004.read(iprot)
+                        self.foreignKeys.append(_elem1004)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
                 if ftype == TType.LIST:
                     self.uniqueConstraints = []
-                    (_etype999, _size996) = iprot.readListBegin()
-                    for _i1000 in range(_size996):
-                        _elem1001 = SQLUniqueConstraint()
-                        _elem1001.read(iprot)
-                        self.uniqueConstraints.append(_elem1001)
+                    (_etype1008, _size1005) = iprot.readListBegin()
+                    for _i1009 in range(_size1005):
+                        _elem1010 = SQLUniqueConstraint()
+                        _elem1010.read(iprot)
+                        self.uniqueConstraints.append(_elem1010)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 6:
                 if ftype == TType.LIST:
                     self.notNullConstraints = []
-                    (_etype1005, _size1002) = iprot.readListBegin()
-                    for _i1006 in range(_size1002):
-                        _elem1007 = SQLNotNullConstraint()
-                        _elem1007.read(iprot)
-                        self.notNullConstraints.append(_elem1007)
+                    (_etype1014, _size1011) = iprot.readListBegin()
+                    for _i1015 in range(_size1011):
+                        _elem1016 = SQLNotNullConstraint()
+                        _elem1016.read(iprot)
+                        self.notNullConstraints.append(_elem1016)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 7:
                 if ftype == TType.LIST:
                     self.defaultConstraints = []
-                    (_etype1011, _size1008) = iprot.readListBegin()
-                    for _i1012 in range(_size1008):
-                        _elem1013 = SQLDefaultConstraint()
-                        _elem1013.read(iprot)
-                        self.defaultConstraints.append(_elem1013)
+                    (_etype1020, _size1017) = iprot.readListBegin()
+                    for _i1021 in range(_size1017):
+                        _elem1022 = SQLDefaultConstraint()
+                        _elem1022.read(iprot)
+                        self.defaultConstraints.append(_elem1022)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 8:
                 if ftype == TType.LIST:
                     self.checkConstraints = []
-                    (_etype1017, _size1014) = iprot.readListBegin()
-                    for _i1018 in range(_size1014):
-                        _elem1019 = SQLCheckConstraint()
-                        _elem1019.read(iprot)
-                        self.checkConstraints.append(_elem1019)
+                    (_etype1026, _size1023) = iprot.readListBegin()
+                    for _i1027 in range(_size1023):
+                        _elem1028 = SQLCheckConstraint()
+                        _elem1028.read(iprot)
+                        self.checkConstraints.append(_elem1028)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             elif fid == 9:
                 if ftype == TType.LIST:
                     self.processorCapabilities = []
-                    (_etype1023, _size1020) = iprot.readListBegin()
-                    for _i1024 in range(_size1020):
-                        _elem1025 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.processorCapabilities.append(_elem1025)
+                    (_etype1032, _size1029) = iprot.readListBegin()
+                    for _i1033 in range(_size1029):
+                        _elem1034 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem1034)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -22132,50 +22164,50 @@ class CreateTableRequest(object):
         if self.primaryKeys is not None:
             oprot.writeFieldBegin('primaryKeys', TType.LIST, 3)
             oprot.writeListBegin(TType.STRUCT, len(self.primaryKeys))
-            for iter1026 in self.primaryKeys:
-                iter1026.write(oprot)
+            for iter1035 in self.primaryKeys:
+                iter1035.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.foreignKeys is not None:
             oprot.writeFieldBegin('foreignKeys', TType.LIST, 4)
             oprot.writeListBegin(TType.STRUCT, len(self.foreignKeys))
-            for iter1027 in self.foreignKeys:
-                iter1027.write(oprot)
+            for iter1036 in self.foreignKeys:
+                iter1036.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.uniqueConstraints is not None:
             oprot.writeFieldBegin('uniqueConstraints', TType.LIST, 5)
             oprot.writeListBegin(TType.STRUCT, len(self.uniqueConstraints))
-            for iter1028 in self.uniqueConstraints:
-                iter1028.write(oprot)
+            for iter1037 in self.uniqueConstraints:
+                iter1037.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.notNullConstraints is not None:
             oprot.writeFieldBegin('notNullConstraints', TType.LIST, 6)
             oprot.writeListBegin(TType.STRUCT, len(self.notNullConstraints))
-            for iter1029 in self.notNullConstraints:
-                iter1029.write(oprot)
+            for iter1038 in self.notNullConstraints:
+                iter1038.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.defaultConstraints is not None:
             oprot.writeFieldBegin('defaultConstraints', TType.LIST, 7)
             oprot.writeListBegin(TType.STRUCT, len(self.defaultConstraints))
-            for iter1030 in self.defaultConstraints:
-                iter1030.write(oprot)
+            for iter1039 in self.defaultConstraints:
+                iter1039.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.checkConstraints is not None:
             oprot.writeFieldBegin('checkConstraints', TType.LIST, 8)
             oprot.writeListBegin(TType.STRUCT, len(self.checkConstraints))
-            for iter1031 in self.checkConstraints:
-                iter1031.write(oprot)
+            for iter1040 in self.checkConstraints:
+                iter1040.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorCapabilities is not None:
             oprot.writeFieldBegin('processorCapabilities', TType.LIST, 9)
             oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
-            for iter1032 in self.processorCapabilities:
-                oprot.writeString(iter1032.encode('utf-8') if sys.version_info[0] == 2 else iter1032)
+            for iter1041 in self.processorCapabilities:
+                oprot.writeString(iter1041.encode('utf-8') if sys.version_info[0] == 2 else iter1041)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorIdentifier is not None:
@@ -22762,11 +22794,11 @@ class AlterPartitionsRequest(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.partitions = []
-                    (_etype1036, _size1033) = iprot.readListBegin()
-                    for _i1037 in range(_size1033):
-                        _elem1038 = Partition()
-                        _elem1038.read(iprot)
-                        self.partitions.append(_elem1038)
+                    (_etype1045, _size1042) = iprot.readListBegin()
+                    for _i1046 in range(_size1042):
+                        _elem1047 = Partition()
+                        _elem1047.read(iprot)
+                        self.partitions.append(_elem1047)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -22794,11 +22826,11 @@ class AlterPartitionsRequest(object):
             elif fid == 9:
                 if ftype == TType.LIST:
                     self.partitionColSchema = []
-                    (_etype1042, _size1039) = iprot.readListBegin()
-                    for _i1043 in range(_size1039):
-                        _elem1044 = FieldSchema()
-                        _elem1044.read(iprot)
-                        self.partitionColSchema.append(_elem1044)
+                    (_etype1051, _size1048) = iprot.readListBegin()
+                    for _i1052 in range(_size1048):
+                        _elem1053 = FieldSchema()
+                        _elem1053.read(iprot)
+                        self.partitionColSchema.append(_elem1053)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -22827,8 +22859,8 @@ class AlterPartitionsRequest(object):
         if self.partitions is not None:
             oprot.writeFieldBegin('partitions', TType.LIST, 4)
             oprot.writeListBegin(TType.STRUCT, len(self.partitions))
-            for iter1045 in self.partitions:
-                iter1045.write(oprot)
+            for iter1054 in self.partitions:
+                iter1054.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.environmentContext is not None:
@@ -22850,8 +22882,8 @@ class AlterPartitionsRequest(object):
         if self.partitionColSchema is not None:
             oprot.writeFieldBegin('partitionColSchema', TType.LIST, 9)
             oprot.writeListBegin(TType.STRUCT, len(self.partitionColSchema))
-            for iter1046 in self.partitionColSchema:
-                iter1046.write(oprot)
+            for iter1055 in self.partitionColSchema:
+                iter1055.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -22966,10 +22998,10 @@ class RenamePartitionRequest(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.partVals = []
-                    (_etype1050, _size1047) = iprot.readListBegin()
-                    for _i1051 in range(_size1047):
-                        _elem1052 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.partVals.append(_elem1052)
+                    (_etype1059, _size1056) = iprot.readListBegin()
+                    for _i1060 in range(_size1056):
+                        _elem1061 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partVals.append(_elem1061)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23009,8 +23041,8 @@ class RenamePartitionRequest(object):
         if self.partVals is not None:
             oprot.writeFieldBegin('partVals', TType.LIST, 4)
             oprot.writeListBegin(TType.STRING, len(self.partVals))
-            for iter1053 in self.partVals:
-                oprot.writeString(iter1053.encode('utf-8') if sys.version_info[0] == 2 else iter1053)
+            for iter1062 in self.partVals:
+                oprot.writeString(iter1062.encode('utf-8') if sys.version_info[0] == 2 else iter1062)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.newPart is not None:
@@ -23163,10 +23195,10 @@ class AlterTableRequest(object):
             elif fid == 8:
                 if ftype == TType.LIST:
                     self.processorCapabilities = []
-                    (_etype1057, _size1054) = iprot.readListBegin()
-                    for _i1058 in range(_size1054):
-                        _elem1059 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.processorCapabilities.append(_elem1059)
+                    (_etype1066, _size1063) = iprot.readListBegin()
+                    for _i1067 in range(_size1063):
+                        _elem1068 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem1068)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23216,8 +23248,8 @@ class AlterTableRequest(object):
         if self.processorCapabilities is not None:
             oprot.writeFieldBegin('processorCapabilities', TType.LIST, 8)
             oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
-            for iter1060 in self.processorCapabilities:
-                oprot.writeString(iter1060.encode('utf-8') if sys.version_info[0] == 2 else iter1060)
+            for iter1069 in self.processorCapabilities:
+                oprot.writeString(iter1069.encode('utf-8') if sys.version_info[0] == 2 else iter1069)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorIdentifier is not None:
@@ -23318,10 +23350,10 @@ class GetPartitionsFilterSpec(object):
             elif fid == 8:
                 if ftype == TType.LIST:
                     self.filters = []
-                    (_etype1064, _size1061) = iprot.readListBegin()
-                    for _i1065 in range(_size1061):
-                        _elem1066 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.filters.append(_elem1066)
+                    (_etype1073, _size1070) = iprot.readListBegin()
+                    for _i1074 in range(_size1070):
+                        _elem1075 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.filters.append(_elem1075)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23342,8 +23374,8 @@ class GetPartitionsFilterSpec(object):
         if self.filters is not None:
             oprot.writeFieldBegin('filters', TType.LIST, 8)
             oprot.writeListBegin(TType.STRING, len(self.filters))
-            for iter1067 in self.filters:
-                oprot.writeString(iter1067.encode('utf-8') if sys.version_info[0] == 2 else iter1067)
+            for iter1076 in self.filters:
+                oprot.writeString(iter1076.encode('utf-8') if sys.version_info[0] == 2 else iter1076)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -23387,11 +23419,11 @@ class GetPartitionsResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.partitionSpec = []
-                    (_etype1071, _size1068) = iprot.readListBegin()
-                    for _i1072 in range(_size1068):
-                        _elem1073 = PartitionSpec()
-                        _elem1073.read(iprot)
-                        self.partitionSpec.append(_elem1073)
+                    (_etype1080, _size1077) = iprot.readListBegin()
+                    for _i1081 in range(_size1077):
+                        _elem1082 = PartitionSpec()
+                        _elem1082.read(iprot)
+                        self.partitionSpec.append(_elem1082)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23408,8 +23440,8 @@ class GetPartitionsResponse(object):
         if self.partitionSpec is not None:
             oprot.writeFieldBegin('partitionSpec', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.partitionSpec))
-            for iter1074 in self.partitionSpec:
-                iter1074.write(oprot)
+            for iter1083 in self.partitionSpec:
+                iter1083.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -23498,10 +23530,10 @@ class GetPartitionsRequest(object):
             elif fid == 6:
                 if ftype == TType.LIST:
                     self.groupNames = []
-                    (_etype1078, _size1075) = iprot.readListBegin()
-                    for _i1079 in range(_size1075):
-                        _elem1080 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.groupNames.append(_elem1080)
+                    (_etype1087, _size1084) = iprot.readListBegin()
+                    for _i1088 in range(_size1084):
+                        _elem1089 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.groupNames.append(_elem1089)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23520,10 +23552,10 @@ class GetPartitionsRequest(object):
             elif fid == 9:
                 if ftype == TType.LIST:
                     self.processorCapabilities = []
-                    (_etype1084, _size1081) = iprot.readListBegin()
-                    for _i1085 in range(_size1081):
-                        _elem1086 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.processorCapabilities.append(_elem1086)
+                    (_etype1093, _size1090) = iprot.readListBegin()
+                    for _i1094 in range(_size1090):
+                        _elem1095 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.processorCapabilities.append(_elem1095)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23570,8 +23602,8 @@ class GetPartitionsRequest(object):
         if self.groupNames is not None:
             oprot.writeFieldBegin('groupNames', TType.LIST, 6)
             oprot.writeListBegin(TType.STRING, len(self.groupNames))
-            for iter1087 in self.groupNames:
-                oprot.writeString(iter1087.encode('utf-8') if sys.version_info[0] == 2 else iter1087)
+            for iter1096 in self.groupNames:
+                oprot.writeString(iter1096.encode('utf-8') if sys.version_info[0] == 2 else iter1096)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.projectionSpec is not None:
@@ -23585,8 +23617,8 @@ class GetPartitionsRequest(object):
         if self.processorCapabilities is not None:
             oprot.writeFieldBegin('processorCapabilities', TType.LIST, 9)
             oprot.writeListBegin(TType.STRING, len(self.processorCapabilities))
-            for iter1088 in self.processorCapabilities:
-                oprot.writeString(iter1088.encode('utf-8') if sys.version_info[0] == 2 else iter1088)
+            for iter1097 in self.processorCapabilities:
+                oprot.writeString(iter1097.encode('utf-8') if sys.version_info[0] == 2 else iter1097)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.processorIdentifier is not None:
@@ -23755,11 +23787,11 @@ class GetFieldsResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.fields = []
-                    (_etype1092, _size1089) = iprot.readListBegin()
-                    for _i1093 in range(_size1089):
-                        _elem1094 = FieldSchema()
-                        _elem1094.read(iprot)
-                        self.fields.append(_elem1094)
+                    (_etype1101, _size1098) = iprot.readListBegin()
+                    for _i1102 in range(_size1098):
+                        _elem1103 = FieldSchema()
+                        _elem1103.read(iprot)
+                        self.fields.append(_elem1103)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23776,8 +23808,8 @@ class GetFieldsResponse(object):
         if self.fields is not None:
             oprot.writeFieldBegin('fields', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.fields))
-            for iter1095 in self.fields:
-                iter1095.write(oprot)
+            for iter1104 in self.fields:
+                iter1104.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -23940,11 +23972,11 @@ class GetSchemaResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.fields = []
-                    (_etype1099, _size1096) = iprot.readListBegin()
-                    for _i1100 in range(_size1096):
-                        _elem1101 = FieldSchema()
-                        _elem1101.read(iprot)
-                        self.fields.append(_elem1101)
+                    (_etype1108, _size1105) = iprot.readListBegin()
+                    for _i1109 in range(_size1105):
+                        _elem1110 = FieldSchema()
+                        _elem1110.read(iprot)
+                        self.fields.append(_elem1110)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -23961,8 +23993,8 @@ class GetSchemaResponse(object):
         if self.fields is not None:
             oprot.writeFieldBegin('fields', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.fields))
-            for iter1102 in self.fields:
-                iter1102.write(oprot)
+            for iter1111 in self.fields:
+                iter1111.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -24033,10 +24065,10 @@ class GetPartitionRequest(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.partVals = []
-                    (_etype1106, _size1103) = iprot.readListBegin()
-                    for _i1107 in range(_size1103):
-                        _elem1108 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.partVals.append(_elem1108)
+                    (_etype1115, _size1112) = iprot.readListBegin()
+                    for _i1116 in range(_size1112):
+                        _elem1117 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partVals.append(_elem1117)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -24075,8 +24107,8 @@ class GetPartitionRequest(object):
         if self.partVals is not None:
             oprot.writeFieldBegin('partVals', TType.LIST, 4)
             oprot.writeListBegin(TType.STRING, len(self.partVals))
-            for iter1109 in self.partVals:
-                oprot.writeString(iter1109.encode('utf-8') if sys.version_info[0] == 2 else iter1109)
+            for iter1118 in self.partVals:
+                oprot.writeString(iter1118.encode('utf-8') if sys.version_info[0] == 2 else iter1118)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.validWriteIdList is not None:
@@ -24433,11 +24465,11 @@ class PartitionsResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.partitions = []
-                    (_etype1113, _size1110) = iprot.readListBegin()
-                    for _i1114 in range(_size1110):
-                        _elem1115 = Partition()
-                        _elem1115.read(iprot)
-                        self.partitions.append(_elem1115)
+                    (_etype1122, _size1119) = iprot.readListBegin()
+                    for _i1123 in range(_size1119):
+                        _elem1124 = Partition()
+                        _elem1124.read(iprot)
+                        self.partitions.append(_elem1124)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -24454,8 +24486,8 @@ class PartitionsResponse(object):
         if self.partitions is not None:
             oprot.writeFieldBegin('partitions', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.partitions))
-            for iter1116 in self.partitions:
-                iter1116.write(oprot)
+            for iter1125 in self.partitions:
+                iter1125.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -24528,10 +24560,10 @@ class GetPartitionNamesPsRequest(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.partValues = []
-                    (_etype1120, _size1117) = iprot.readListBegin()
-                    for _i1121 in range(_size1117):
-                        _elem1122 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.partValues.append(_elem1122)
+                    (_etype1129, _size1126) = iprot.readListBegin()
+                    for _i1130 in range(_size1126):
+                        _elem1131 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partValues.append(_elem1131)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -24575,8 +24607,8 @@ class GetPartitionNamesPsRequest(object):
         if self.partValues is not None:
             oprot.writeFieldBegin('partValues', TType.LIST, 4)
             oprot.writeListBegin(TType.STRING, len(self.partValues))
-            for iter1123 in self.partValues:
-                oprot.writeString(iter1123.encode('utf-8') if sys.version_info[0] == 2 else iter1123)
+            for iter1132 in self.partValues:
+                oprot.writeString(iter1132.encode('utf-8') if sys.version_info[0] == 2 else iter1132)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.maxParts is not None:
@@ -24636,10 +24668,10 @@ class GetPartitionNamesPsResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.names = []
-                    (_etype1127, _size1124) = iprot.readListBegin()
-                    for _i1128 in range(_size1124):
-                        _elem1129 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.names.append(_elem1129)
+                    (_etype1136, _size1133) = iprot.readListBegin()
+                    for _i1137 in range(_size1133):
+                        _elem1138 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.names.append(_elem1138)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -24656,8 +24688,8 @@ class GetPartitionNamesPsResponse(object):
         if self.names is not None:
             oprot.writeFieldBegin('names', TType.LIST, 1)
             oprot.writeListBegin(TType.STRING, len(self.names))
-            for iter1130 in self.names:
-                oprot.writeString(iter1130.encode('utf-8') if sys.version_info[0] == 2 else iter1130)
+            for iter1139 in self.names:
+                oprot.writeString(iter1139.encode('utf-8') if sys.version_info[0] == 2 else iter1139)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -24736,10 +24768,10 @@ class GetPartitionsPsWithAuthRequest(object):
             elif fid == 4:
                 if ftype == TType.LIST:
                     self.partVals = []
-                    (_etype1134, _size1131) = iprot.readListBegin()
-                    for _i1135 in range(_size1131):
-                        _elem1136 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.partVals.append(_elem1136)
+                    (_etype1143, _size1140) = iprot.readListBegin()
+                    for _i1144 in range(_size1140):
+                        _elem1145 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.partVals.append(_elem1145)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -24756,10 +24788,10 @@ class GetPartitionsPsWithAuthRequest(object):
             elif fid == 7:
                 if ftype == TType.LIST:
                     self.groupNames = []
-                    (_etype1140, _size1137) = iprot.readListBegin()
-                    for _i1141 in range(_size1137):
-                        _elem1142 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        self.groupNames.append(_elem1142)
+                    (_etype1149, _size1146) = iprot.readListBegin()
+                    for _i1150 in range(_size1146):
+                        _elem1151 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        self.groupNames.append(_elem1151)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -24803,8 +24835,8 @@ class GetPartitionsPsWithAuthRequest(object):
         if self.partVals is not None:
             oprot.writeFieldBegin('partVals', TType.LIST, 4)
             oprot.writeListBegin(TType.STRING, len(self.partVals))
-            for iter1143 in self.partVals:
-                oprot.writeString(iter1143.encode('utf-8') if sys.version_info[0] == 2 else iter1143)
+            for iter1152 in self.partVals:
+                oprot.writeString(iter1152.encode('utf-8') if sys.version_info[0] == 2 else iter1152)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.maxParts is not None:
@@ -24818,8 +24850,8 @@ class GetPartitionsPsWithAuthRequest(object):
         if self.groupNames is not None:
             oprot.writeFieldBegin('groupNames', TType.LIST, 7)
             oprot.writeListBegin(TType.STRING, len(self.groupNames))
-            for iter1144 in self.groupNames:
-                oprot.writeString(iter1144.encode('utf-8') if sys.version_info[0] == 2 else iter1144)
+            for iter1153 in self.groupNames:
+                oprot.writeString(iter1153.encode('utf-8') if sys.version_info[0] == 2 else iter1153)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.validWriteIdList is not None:
@@ -24879,11 +24911,11 @@ class GetPartitionsPsWithAuthResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.partitions = []
-                    (_etype1148, _size1145) = iprot.readListBegin()
-                    for _i1149 in range(_size1145):
-                        _elem1150 = Partition()
-                        _elem1150.read(iprot)
-                        self.partitions.append(_elem1150)
+                    (_etype1157, _size1154) = iprot.readListBegin()
+                    for _i1158 in range(_size1154):
+                        _elem1159 = Partition()
+                        _elem1159.read(iprot)
+                        self.partitions.append(_elem1159)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -24900,8 +24932,8 @@ class GetPartitionsPsWithAuthResponse(object):
         if self.partitions is not None:
             oprot.writeFieldBegin('partitions', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.partitions))
-            for iter1151 in self.partitions:
-                iter1151.write(oprot)
+            for iter1160 in self.partitions:
+                iter1160.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -25065,11 +25097,11 @@ class ReplicationMetricList(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.replicationMetricList = []
-                    (_etype1155, _size1152) = iprot.readListBegin()
-                    for _i1156 in range(_size1152):
-                        _elem1157 = ReplicationMetrics()
-                        _elem1157.read(iprot)
-                        self.replicationMetricList.append(_elem1157)
+                    (_etype1164, _size1161) = iprot.readListBegin()
+                    for _i1165 in range(_size1161):
+                        _elem1166 = ReplicationMetrics()
+                        _elem1166.read(iprot)
+                        self.replicationMetricList.append(_elem1166)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -25086,8 +25118,8 @@ class ReplicationMetricList(object):
         if self.replicationMetricList is not None:
             oprot.writeFieldBegin('replicationMetricList', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.replicationMetricList))
-            for iter1158 in self.replicationMetricList:
-                iter1158.write(oprot)
+            for iter1167 in self.replicationMetricList:
+                iter1167.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -25212,10 +25244,10 @@ class GetOpenTxnsRequest(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.excludeTxnTypes = []
-                    (_etype1162, _size1159) = iprot.readListBegin()
-                    for _i1163 in range(_size1159):
-                        _elem1164 = iprot.readI32()
-                        self.excludeTxnTypes.append(_elem1164)
+                    (_etype1171, _size1168) = iprot.readListBegin()
+                    for _i1172 in range(_size1168):
+                        _elem1173 = iprot.readI32()
+                        self.excludeTxnTypes.append(_elem1173)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -25232,8 +25264,8 @@ class GetOpenTxnsRequest(object):
         if self.excludeTxnTypes is not None:
             oprot.writeFieldBegin('excludeTxnTypes', TType.LIST, 1)
             oprot.writeListBegin(TType.I32, len(self.excludeTxnTypes))
-            for iter1165 in self.excludeTxnTypes:
-                oprot.writeI32(iter1165)
+            for iter1174 in self.excludeTxnTypes:
+                oprot.writeI32(iter1174)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -28377,6 +28409,7 @@ FireEventRequestData.thrift_spec = (
     None,  # 0
     (1, TType.STRUCT, 'insertData', [InsertEventRequestData, None], None, ),  # 1
     (2, TType.LIST, 'insertDatas', (TType.STRUCT, [InsertEventRequestData, None], False), None, ),  # 2
+    (3, TType.BOOL, 'refreshEvent', None, None, ),  # 3
 )
 all_structs.append(FireEventRequest)
 FireEventRequest.thrift_spec = (
@@ -28387,6 +28420,7 @@ FireEventRequest.thrift_spec = (
     (4, TType.STRING, 'tableName', 'UTF8', None, ),  # 4
     (5, TType.LIST, 'partitionVals', (TType.STRING, 'UTF8', False), None, ),  # 5
     (6, TType.STRING, 'catName', 'UTF8', None, ),  # 6
+    (7, TType.MAP, 'tblParams', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 7
 )
 all_structs.append(FireEventResponse)
 FireEventResponse.thrift_spec = (

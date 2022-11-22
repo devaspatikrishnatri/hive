@@ -95,14 +95,14 @@ class ThriftHiveMetastore_get_schema_all_versions_result
                 case 0:
                     if ($ftype == TType::LST) {
                         $this->success = array();
-                        $_size1685 = 0;
-                        $_etype1688 = 0;
-                        $xfer += $input->readListBegin($_etype1688, $_size1685);
-                        for ($_i1689 = 0; $_i1689 < $_size1685; ++$_i1689) {
-                            $elem1690 = null;
-                            $elem1690 = new \metastore\SchemaVersion();
-                            $xfer += $elem1690->read($input);
-                            $this->success []= $elem1690;
+                        $_size1694 = 0;
+                        $_etype1697 = 0;
+                        $xfer += $input->readListBegin($_etype1697, $_size1694);
+                        for ($_i1698 = 0; $_i1698 < $_size1694; ++$_i1698) {
+                            $elem1699 = null;
+                            $elem1699 = new \metastore\SchemaVersion();
+                            $xfer += $elem1699->read($input);
+                            $this->success []= $elem1699;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -145,8 +145,8 @@ class ThriftHiveMetastore_get_schema_all_versions_result
             }
             $xfer += $output->writeFieldBegin('success', TType::LST, 0);
             $output->writeListBegin(TType::STRUCT, count($this->success));
-            foreach ($this->success as $iter1691) {
-                $xfer += $iter1691->write($output);
+            foreach ($this->success as $iter1700) {
+                $xfer += $iter1700->write($output);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

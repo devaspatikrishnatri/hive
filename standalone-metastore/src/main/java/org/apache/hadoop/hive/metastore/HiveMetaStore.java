@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,6 +63,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
@@ -76,6 +78,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 
+import java.util.concurrent.SynchronousQueue;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -94,69 +97,7 @@ import org.apache.hadoop.hive.metastore.events.AddForeignKeyEvent;
 import org.apache.hadoop.hive.metastore.events.AcidWriteEvent;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf.ConfVars;
-import org.apache.hadoop.hive.metastore.events.AbortTxnEvent;
-import org.apache.hadoop.hive.metastore.events.AddNotNullConstraintEvent;
-import org.apache.hadoop.hive.metastore.events.AddPartitionEvent;
-import org.apache.hadoop.hive.metastore.events.AddPrimaryKeyEvent;
-import org.apache.hadoop.hive.metastore.events.AddUniqueConstraintEvent;
-import org.apache.hadoop.hive.metastore.events.AllocWriteIdEvent;
-import org.apache.hadoop.hive.metastore.events.AlterCatalogEvent;
-import org.apache.hadoop.hive.metastore.events.AlterDatabaseEvent;
-import org.apache.hadoop.hive.metastore.events.AlterISchemaEvent;
-import org.apache.hadoop.hive.metastore.events.AlterPartitionEvent;
-import org.apache.hadoop.hive.metastore.events.AlterSchemaVersionEvent;
-import org.apache.hadoop.hive.metastore.events.AlterTableEvent;
-import org.apache.hadoop.hive.metastore.events.CommitTxnEvent;
-import org.apache.hadoop.hive.metastore.events.ConfigChangeEvent;
-import org.apache.hadoop.hive.metastore.events.CreateCatalogEvent;
-import org.apache.hadoop.hive.metastore.events.CreateDatabaseEvent;
-import org.apache.hadoop.hive.metastore.events.CreateFunctionEvent;
-import org.apache.hadoop.hive.metastore.events.CreateISchemaEvent;
-import org.apache.hadoop.hive.metastore.events.AddSchemaVersionEvent;
-import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
-import org.apache.hadoop.hive.metastore.events.DropCatalogEvent;
-import org.apache.hadoop.hive.metastore.events.DropConstraintEvent;
-import org.apache.hadoop.hive.metastore.events.DropDatabaseEvent;
-import org.apache.hadoop.hive.metastore.events.DropFunctionEvent;
-import org.apache.hadoop.hive.metastore.events.DropISchemaEvent;
-import org.apache.hadoop.hive.metastore.events.DropPartitionEvent;
-import org.apache.hadoop.hive.metastore.events.DropSchemaVersionEvent;
-import org.apache.hadoop.hive.metastore.events.DropTableEvent;
-import org.apache.hadoop.hive.metastore.events.InsertEvent;
-import org.apache.hadoop.hive.metastore.events.LoadPartitionDoneEvent;
-import org.apache.hadoop.hive.metastore.events.OpenTxnEvent;
-import org.apache.hadoop.hive.metastore.events.UpdateTableColumnStatEvent;
-import org.apache.hadoop.hive.metastore.events.PreAddPartitionEvent;
-import org.apache.hadoop.hive.metastore.events.PreAlterCatalogEvent;
-import org.apache.hadoop.hive.metastore.events.PreAlterDatabaseEvent;
-import org.apache.hadoop.hive.metastore.events.PreAlterISchemaEvent;
-import org.apache.hadoop.hive.metastore.events.PreAlterPartitionEvent;
-import org.apache.hadoop.hive.metastore.events.PreAlterSchemaVersionEvent;
-import org.apache.hadoop.hive.metastore.events.PreAlterTableEvent;
-import org.apache.hadoop.hive.metastore.events.PreAuthorizationCallEvent;
-import org.apache.hadoop.hive.metastore.events.PreCreateCatalogEvent;
-import org.apache.hadoop.hive.metastore.events.PreCreateDatabaseEvent;
-import org.apache.hadoop.hive.metastore.events.PreCreateISchemaEvent;
-import org.apache.hadoop.hive.metastore.events.PreCreateFunctionEvent;
-import org.apache.hadoop.hive.metastore.events.PreAddSchemaVersionEvent;
-import org.apache.hadoop.hive.metastore.events.PreCreateTableEvent;
-import org.apache.hadoop.hive.metastore.events.PreDropCatalogEvent;
-import org.apache.hadoop.hive.metastore.events.PreDropDatabaseEvent;
-import org.apache.hadoop.hive.metastore.events.PreDropISchemaEvent;
-import org.apache.hadoop.hive.metastore.events.PreDropFunctionEvent;
-import org.apache.hadoop.hive.metastore.events.PreDropPartitionEvent;
-import org.apache.hadoop.hive.metastore.events.PreDropSchemaVersionEvent;
-import org.apache.hadoop.hive.metastore.events.PreDropTableEvent;
-import org.apache.hadoop.hive.metastore.events.PreEventContext;
-import org.apache.hadoop.hive.metastore.events.PreLoadPartitionDoneEvent;
-import org.apache.hadoop.hive.metastore.events.PreReadCatalogEvent;
-import org.apache.hadoop.hive.metastore.events.PreReadDatabaseEvent;
-import org.apache.hadoop.hive.metastore.events.PreReadISchemaEvent;
-import org.apache.hadoop.hive.metastore.events.PreReadTableEvent;
-import org.apache.hadoop.hive.metastore.events.PreReadhSchemaVersionEvent;
-import org.apache.hadoop.hive.metastore.events.DeletePartitionColumnStatEvent;
-import org.apache.hadoop.hive.metastore.events.DeleteTableColumnStatEvent;
-import org.apache.hadoop.hive.metastore.events.UpdatePartitionColumnStatEvent;
+import org.apache.hadoop.hive.metastore.events.*;
 import org.apache.hadoop.hive.metastore.leader.CMClearer;
 import org.apache.hadoop.hive.metastore.leader.CompactorTasks;
 import org.apache.hadoop.hive.metastore.leader.HouseKeepingTasks;
@@ -198,10 +139,22 @@ import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.ServerContext;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TServerEventHandler;
+import org.apache.thrift.server.TServlet;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportFactory;
+
+import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.ExecutorThreadPool;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,6 +165,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.util.concurrent.Striped;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import java.util.concurrent.ThreadPoolExecutor;
+
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
 
 /**
  * TODO:pc remove application logic to a separate interface.
@@ -9182,60 +9140,89 @@ public class HiveMetaStore extends ThriftHiveMetastore {
     @Override
     public FireEventResponse fire_listener_event(FireEventRequest rqst) throws TException {
       switch (rqst.getData().getSetField()) {
-      case INSERT_DATA:
-      case INSERT_DATAS:
-        String catName =
-            rqst.isSetCatName() ? rqst.getCatName() : getDefaultCatalog(conf);
-        String dbName = rqst.getDbName();
-        String tblName = rqst.getTableName();
-        boolean isSuccessful = rqst.isSuccessful();
-        List<InsertEvent> events = new ArrayList<>();
-        if (rqst.getData().isSetInsertData()) {
-          events.add(new InsertEvent(catName, dbName, tblName,
-              rqst.getPartitionVals(),
-              rqst.getData().getInsertData(), isSuccessful, this));
-        } else {
-          // this is a bulk fire insert event operation
-          // we use the partition values field from the InsertEventRequestData object
-          // instead of the FireEventRequest object
-          for (InsertEventRequestData insertData : rqst.getData().getInsertDatas()) {
-            if (!insertData.isSetPartitionVal()) {
-              throw new MetaException(
-                  "Partition values must be set when firing multiple insert events");
-            }
+        case INSERT_DATA:
+        case INSERT_DATAS:
+          String catName =
+              rqst.isSetCatName() ? rqst.getCatName() : getDefaultCatalog(conf);
+          String dbName = rqst.getDbName();
+          String tblName = rqst.getTableName();
+          boolean isSuccessful = rqst.isSuccessful();
+          List<InsertEvent> events = new ArrayList<>();
+          if (rqst.getData().isSetInsertData()) {
             events.add(new InsertEvent(catName, dbName, tblName,
-                insertData.getPartitionVal(),
-                insertData, isSuccessful, this));
-          }
-        }
-        FireEventResponse response = new FireEventResponse();
-        for (InsertEvent event : events) {
-          /*
-           * The transactional listener response will be set already on the event, so there is not need
-           * to pass the response to the non-transactional listener.
-           */
-          MetaStoreListenerNotifier
-              .notifyEvent(transactionalListeners, EventType.INSERT, event);
-          MetaStoreListenerNotifier.notifyEvent(listeners, EventType.INSERT, event);
-          if (event.getParameters() != null && event.getParameters()
-              .containsKey(
-                  MetaStoreEventListenerConstants.DB_NOTIFICATION_EVENT_ID_KEY_NAME)) {
-            response.addToEventIds(Long.valueOf(event.getParameters()
-                .get(MetaStoreEventListenerConstants.DB_NOTIFICATION_EVENT_ID_KEY_NAME)));
+                rqst.getPartitionVals(),
+                rqst.getData().getInsertData(), isSuccessful, this));
           } else {
-            String msg = "Insert event id not generated for ";
+            // this is a bulk fire insert event operation
+            // we use the partition values field from the InsertEventRequestData object
+            // instead of the FireEventRequest object
+            for (InsertEventRequestData insertData : rqst.getData().getInsertDatas()) {
+              if (!insertData.isSetPartitionVal()) {
+                throw new MetaException(
+                    "Partition values must be set when firing multiple insert events");
+              }
+              events.add(new InsertEvent(catName, dbName, tblName,
+                  insertData.getPartitionVal(),
+                  insertData, isSuccessful, this));
+            }
+          }
+          FireEventResponse response = new FireEventResponse();
+          for (InsertEvent event : events) {
+            /*
+             * The transactional listener response will be set already on the event, so there is not need
+             * to pass the response to the non-transactional listener.
+             */
+            MetaStoreListenerNotifier
+                .notifyEvent(transactionalListeners, EventType.INSERT, event);
+            MetaStoreListenerNotifier.notifyEvent(listeners, EventType.INSERT, event);
+            if (event.getParameters() != null && event.getParameters()
+                .containsKey(
+                    MetaStoreEventListenerConstants.DB_NOTIFICATION_EVENT_ID_KEY_NAME)) {
+              response.addToEventIds(Long.valueOf(event.getParameters()
+                  .get(MetaStoreEventListenerConstants.DB_NOTIFICATION_EVENT_ID_KEY_NAME)));
+            } else {
+              String msg = "Insert event id not generated for ";
+              if (event.getPartitionObj() != null) {
+                msg += "partition " + Arrays
+                    .toString(event.getPartitionObj().getValues().toArray()) + " of ";
+              }
+              msg +=
+                  " of table " + event.getTableObj().getDbName() + "." + event.getTableObj()
+                      .getTableName();
+              LOG.warn(msg);
+            }
+          }
+          return response;
+        case REFRESH_EVENT:
+          response = new FireEventResponse();
+          catName = rqst.isSetCatName() ? rqst.getCatName() : getDefaultCatalog(conf);
+          dbName = rqst.getDbName();
+          tblName = rqst.getTableName();
+          List<String> partitionVals = rqst.getPartitionVals();
+          Map<String, String> tableParams = rqst.getTblParams();
+          ReloadEvent event = new ReloadEvent(catName, dbName, tblName, partitionVals, rqst.isSuccessful(),
+                  rqst.getData().getRefreshEvent(), tableParams, this);
+          MetaStoreListenerNotifier
+                  .notifyEvent(transactionalListeners, EventType.RELOAD, event);
+          MetaStoreListenerNotifier.notifyEvent(listeners, EventType.RELOAD, event);
+          if (event.getParameters() != null && event.getParameters()
+                  .containsKey(
+                          MetaStoreEventListenerConstants.DB_NOTIFICATION_EVENT_ID_KEY_NAME)) {
+            response.addToEventIds(Long.valueOf(event.getParameters()
+                    .get(MetaStoreEventListenerConstants.DB_NOTIFICATION_EVENT_ID_KEY_NAME)));
+          } else {
+            String msg = "Reload event id not generated for ";
             if (event.getPartitionObj() != null) {
               msg += "partition " + Arrays
-                  .toString(event.getPartitionObj().getValues().toArray()) + " of ";
+                      .toString(event.getPartitionObj().getValues().toArray()) + " of ";
             }
             msg +=
-                " of table " + event.getTableObj().getDbName() + "." + event.getTableObj()
-                    .getTableName();
+                    " of table " + event.getTableObj().getDbName() + "." + event.getTableObj()
+                            .getTableName();
             LOG.warn(msg);
           }
-        }
-        return response;
-      default:
+          return response;
+        default:
         throw new TException("Event type " + rqst.getData().getSetField().toString()
             + " not currently supported.");
       }
