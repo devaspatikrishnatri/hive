@@ -41,7 +41,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
-@org.junit.Ignore("unstable test")
 public class TestRemoteHiveMetaStoreKerberos extends TestRemoteHiveMetaStore {
   private static MiniHiveKdc miniKDC;
 

@@ -650,6 +650,9 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
             }
           }
 
+          // Needed for the backport of HIVE-26633 to 7.1.8.x since HIVE-21456 is not yet backported.
+          configureThriftMaxMessageSize(transport);
+
           final TProtocol protocol;
           if (useCompactProtocol) {
             protocol = new TCompactProtocol(transport);
