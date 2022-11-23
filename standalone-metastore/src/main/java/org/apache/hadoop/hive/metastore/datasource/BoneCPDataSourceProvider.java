@@ -36,6 +36,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.metastore.DatabaseProduct;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.metrics.Metrics;
+import org.apache.hadoop.hive.metastore.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,14 +56,14 @@ public class BoneCPDataSourceProvider implements DataSourceProvider {
 
   @Override
   public DataSource create(Configuration hdpConfig) throws SQLException {
-    LOG.debug("Creating BoneCP connection pool for the MetaStore");
+    String poolName = DataSourceProvider.getDataSourceName(hdpConfig);
+    int maxPoolSize = MetastoreConf.getIntVar(hdpConfig,
+        MetastoreConf.ConfVars.CONNECTION_POOLING_MAX_CONNECTIONS);
+    LOG.info("Creating BoneCP connection pool for the MetaStore, maxPoolSize: {}, name: {}", maxPoolSize, poolName);
 
     String driverUrl = DataSourceProvider.getMetastoreJdbcDriverUrl(hdpConfig);
     String user = DataSourceProvider.getMetastoreJdbcUser(hdpConfig);
     String passwd = DataSourceProvider.getMetastoreJdbcPasswd(hdpConfig);
-
-    int maxPoolSize = MetastoreConf.getIntVar(hdpConfig,
-        MetastoreConf.ConfVars.CONNECTION_POOLING_MAX_CONNECTIONS);
 
     Properties properties = DataSourceProvider.getPrefixedProperties(hdpConfig, BONECP);
     long connectionTimeout = hdpConfig.getLong(CONNECTION_TIMEOUT_PROPERTY, 30000L);
@@ -83,6 +84,9 @@ public class BoneCPDataSourceProvider implements DataSourceProvider {
     config.setConnectionTimeoutInMs(connectionTimeout);
     config.setMaxConnectionsPerPartition(maxPoolSize);
     config.setPartitionCount(Integer.parseInt(partitionCount));
+    if (!StringUtils.isEmpty(poolName)) {
+      config.setPoolName(poolName);
+    }
 
     Properties connProperties = new Properties();
 
