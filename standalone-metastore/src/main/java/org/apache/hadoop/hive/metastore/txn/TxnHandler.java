@@ -337,7 +337,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       if (connPool == null) {
         Connection dbConn = null;
         // Set up the JDBC connection pool
-        try {
+        try (DataSourceProvider.DataSourceNameConfigurator configurator =
+                 new DataSourceProvider.DataSourceNameConfigurator(conf, "txnhandler")) {
           int maxPoolSize = MetastoreConf.getIntVar(conf, ConfVars.CONNECTION_POOLING_MAX_CONNECTIONS);
           long getConnectionTimeoutMs = 30000;
           connPool = setupJdbcConnectionPool(conf, maxPoolSize, getConnectionTimeoutMs);
@@ -348,6 +349,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
            connection from connPool first, then connPoolMutex.  All others, go in the opposite
            order (not very elegant...).  So number of connection requests for connPoolMutex cannot
            exceed (size of connPool + MUTEX_KEY.values().length - 1).*/
+          configurator.resetName("mutex");
           connPoolMutex = setupJdbcConnectionPool(conf, maxPoolSize + MUTEX_KEY.values().length, getConnectionTimeoutMs);
           dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
           determineDatabaseProduct(dbConn);
