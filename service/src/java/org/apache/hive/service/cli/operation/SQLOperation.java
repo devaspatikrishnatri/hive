@@ -82,6 +82,8 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import static org.apache.hadoop.hive.shims.HadoopShims.USER_ID;
+
 /**
  * SQLOperation.
  *
@@ -328,7 +330,8 @@ public class SQLOperation extends ExecuteStatementOperation {
           if (!embedded) {
             LogUtils.registerLoggingContext(queryState.getConf());
           }
-          ShimLoader.getHadoopShims().setHadoopQueryContext(queryState.getQueryId());
+          ShimLoader.getHadoopShims()
+              .setHadoopQueryContext(String.format(USER_ID, queryState.getQueryId(), parentSessionState.getUserName()));
           try {
             if (asyncPrepare) {
               prepare(queryState);

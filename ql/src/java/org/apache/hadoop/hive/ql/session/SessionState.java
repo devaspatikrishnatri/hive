@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.hive.ql.session;
 import static org.apache.hadoop.hive.metastore.Warehouse.DEFAULT_DATABASE_NAME;
+import static org.apache.hadoop.hive.shims.HadoopShims.USER_ID;
 
 import java.io.Closeable;
 import java.io.File;
@@ -456,7 +457,7 @@ public class SessionState {
         HiveConf.getVar(conf, ConfVars.DOWNLOADED_RESOURCES_DIR));
     killQuery = new NullKillQuery();
 
-    ShimLoader.getHadoopShims().setHadoopSessionContext(getSessionId());
+    ShimLoader.getHadoopShims().setHadoopSessionContext(String.format(USER_ID, getSessionId(), userName));
   }
 
   public Map<String, String> getHiveVariables() {
