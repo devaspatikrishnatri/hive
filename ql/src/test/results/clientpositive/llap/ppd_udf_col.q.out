@@ -56,18 +56,9 @@ STAGE DEPENDENCIES:
 STAGE PLANS:
   Stage: Stage-0
     Fetch Operator
-      limit: 20
+      limit: 0
       Processor Tree:
-        TableScan
-          alias: src
-          Filter Operator
-            predicate: false (type: boolean)
-            Select Operator
-              expressions: key (type: string), rand() (type: double)
-              outputColumnNames: _col0, _col1
-              Limit
-                Number of rows: 20
-                ListSink
+        ListSink
 
 PREHOOK: query: EXPLAIN
 SELECT key,randum123, h4
@@ -89,16 +80,9 @@ STAGE DEPENDENCIES:
 STAGE PLANS:
   Stage: Stage-0
     Fetch Operator
-      limit: -1
+      limit: 0
       Processor Tree:
-        TableScan
-          alias: src
-          Filter Operator
-            predicate: false (type: boolean)
-            Select Operator
-              expressions: key (type: string), rand() (type: double), '4' (type: string)
-              outputColumnNames: _col0, _col1, _col2
-              ListSink
+        ListSink
 
 PREHOOK: query: EXPLAIN
 SELECT key,randum123, v10
@@ -190,18 +174,9 @@ STAGE DEPENDENCIES:
 STAGE PLANS:
   Stage: Stage-0
     Fetch Operator
-      limit: 20
+      limit: 0
       Processor Tree:
-        TableScan
-          alias: src
-          Filter Operator
-            predicate: false (type: boolean)
-            Select Operator
-              expressions: key (type: string), rand() (type: double)
-              outputColumnNames: _col0, _col1
-              Limit
-                Number of rows: 20
-                ListSink
+        ListSink
 
 PREHOOK: query: EXPLAIN
 SELECT key,randum123, h4
@@ -223,16 +198,9 @@ STAGE DEPENDENCIES:
 STAGE PLANS:
   Stage: Stage-0
     Fetch Operator
-      limit: -1
+      limit: 0
       Processor Tree:
-        TableScan
-          alias: src
-          Filter Operator
-            predicate: false (type: boolean)
-            Select Operator
-              expressions: key (type: string), rand() (type: double), '4' (type: string)
-              outputColumnNames: _col0, _col1, _col2
-              ListSink
+        ListSink
 
 PREHOOK: query: EXPLAIN
 SELECT key,randum123, v10

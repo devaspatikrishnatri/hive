@@ -194,14 +194,7 @@ STAGE DEPENDENCIES:
 STAGE PLANS:
   Stage: Stage-0
     Fetch Operator
-      limit: -1
+      limit: 0
       Processor Tree:
-        TableScan
-          alias: src
-          Filter Operator
-            predicate: false (type: boolean)
-            Select Operator
-              expressions: key (type: string)
-              outputColumnNames: _col0
-              ListSink
+        ListSink
 

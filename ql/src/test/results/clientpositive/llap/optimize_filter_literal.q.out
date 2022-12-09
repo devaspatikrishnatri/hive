@@ -136,7 +136,6 @@ POSTHOOK: Input: default@tab_n14@ds=2008-04-08
 POSTHOOK: Output: default@tab_n14
 POSTHOOK: Output: default@tab_n14@ds=2008-04-08
 #### A masked pattern was here ####
-Warning: Shuffle Join MERGEJOIN[23][tables = [$hdt$_0, $hdt$_1]] in Stage 'Reducer 2' is a cross product
 PREHOOK: query: select * from
 (select * from tab_n14 where tab_n14.key = 0)a
 full outer join
