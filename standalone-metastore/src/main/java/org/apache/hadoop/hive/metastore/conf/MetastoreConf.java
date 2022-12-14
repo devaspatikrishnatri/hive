@@ -500,6 +500,14 @@ public class MetastoreConf {
         "match that configuration. Otherwise it should be same as the hostname returned by " +
         "InetAddress#getLocalHost#getHostName(). Given the uncertainty in the later " +
         "it is desirable to configure metastore.thrift.bind.host on the intended leader HMS."),
+    METASTORE_HOUSEKEEPING_LEADER_ELECTION("metastore.housekeeping.leader.election",
+        "metastore.housekeeping.leader.election",
+        "host", new StringSetValidator("host", "lock"),
+        "If sets to host, HMS will choose the leader by the configured metastore.housekeeping.leader.hostname.\n" +
+        "When configured to lock, HMS will use hive locks to elect the leader."),
+    METASTORE_HOUSEKEEPING_LEADER_AUDITTABLE("metastore.housekeeping.leader.auditTable",
+        "metastore.housekeeping.leader.auditTable", "",
+        "Audit the Metastore leader changes to the target table when configured."),
     METASTORE_HOUSEKEEPING_THREADS_ON("metastore.housekeeping.threads.on",
         "hive.metastore.housekeeping.threads.on", false,
         "Whether to run the tasks under metastore.task.threads.remote on this metastore instance or not.\n" +
@@ -1377,6 +1385,11 @@ public class MetastoreConf {
             "class is used to store and retrieve transactions and locks"),
     TXN_TIMEOUT("metastore.txn.timeout", "hive.txn.timeout", 300, TimeUnit.SECONDS,
         "time after which transactions are declared aborted if the client has not sent a heartbeat."),
+    LOCK_NUMRETRIES("metastore.lock.numretries", "hive.lock.numretries", 100,
+        "The number of times you want to try to get all the locks"),
+    LOCK_SLEEP_BETWEEN_RETRIES("metastore.lock.sleep.between.retries", "hive.lock.sleep.between.retries", 60, TimeUnit.SECONDS,
+        new TimeValidator(TimeUnit.SECONDS, 0L, false, Long.MAX_VALUE, false),
+        "The maximum sleep time between various retries"),
     URI_RESOLVER("metastore.uri.resolver", "hive.metastore.uri.resolver", "",
             "If set, fully qualified class name of resolver for hive metastore uri's"),
     USERS_IN_ADMIN_ROLE("metastore.users.in.admin.role", "hive.users.in.admin.role", "", false,

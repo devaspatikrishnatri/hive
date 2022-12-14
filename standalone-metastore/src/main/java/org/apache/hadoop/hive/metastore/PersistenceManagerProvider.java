@@ -131,6 +131,83 @@ public class PersistenceManagerProvider {
     }
     return isRetriableException(e.getCause());
   }
+
+  /**
+   * When closing PersistenceManagerFactory, the connection factory should be closed as well,
+   * otherwise the underlying dangling connections would be accumulated resulting to connection leaks.
+   * See TestDataSourceProviderFactory#testClosePersistenceManagerProvider for details.
+   * @param pmf the PersistenceManagerFactory tended to be closed
+   */
+  @VisibleForTesting
+  public static void closePmfInternal(PersistenceManagerFactory pmf) {
+    if (pmf != null) {
+      LOG.debug("Closing PersistenceManagerFactory");
+      pmf.close();
+      // close the underlying connection pool to avoid leaks
+      if (pmf.getConnectionFactory() instanceof AutoCloseable) {
+        try (AutoCloseable closeable = (AutoCloseable) pmf.getConnectionFactory()) {
+        } catch (Exception e) {
+          LOG.warn("Failed to close connection factory of PersistenceManagerFactory: " + pmf, e);
+        }
+      }
+      if (pmf.getConnectionFactory2() instanceof AutoCloseable) {
+        try (AutoCloseable closeable = (AutoCloseable) pmf.getConnectionFactory2()) {
+        } catch (Exception e) {
+          LOG.warn("Failed to close connection factory2 of PersistenceManagerFactory: " + pmf, e);
+        }
+      }
+      LOG.debug("PersistenceManagerFactory closed");
+    }
+  }
+
+  // Output the changed properties
+  private static void logPropChanges(Properties newProps) {
+    if (prop == null) {
+      LOG.info("Current pmf properties are uninitialized");
+      return;
+    }
+    LOG.info("Updating the pmf due to property change");
+    if (LOG.isDebugEnabled() && !newProps.equals(prop)) {
+      for (String key : prop.stringPropertyNames()) {
+        if (!key.equals(newProps.get(key))) {
+          if (LOG.isDebugEnabled() && MetastoreConf.isPrintable(key)) {
+            // The jdbc connection url can contain sensitive information like username and password
+            // which should be masked out before logging.
+            String oldVal = prop.getProperty(key);
+            String newVal = newProps.getProperty(key);
+            if (key.equals(ConfVars.CONNECT_URL_KEY.getVarname())) {
+              oldVal = MetaStoreUtils.anonymizeConnectionURL(oldVal);
+              newVal = MetaStoreUtils.anonymizeConnectionURL(newVal);
+            }
+            LOG.debug("Found {} to be different. Old val : {} : New Val : {}", key,
+                oldVal, newVal);
+          } else {
+            LOG.debug("Found masked property {} to be different", key);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Close the corresponding PersistenceManagerFactory
+   */
+  public static void closePmfIfNeeded() {
+    pmfWriteLock.lock();
+    try {
+      PersistenceManagerFactory factory = pmf;
+      if (factory != null) {
+        clearOutPmfClassLoaderCache();
+        if (!forTwoMetastoreTesting) {
+          closePmfInternal(factory);
+        }
+        pmf = null;
+      }
+    } finally {
+      pmfWriteLock.unlock();
+    }
+  }
+
   /**
    * This method updates the PersistenceManagerFactory and its properties if the given
    * configuration is different from its current set of properties. Most common case is that
@@ -165,42 +242,8 @@ public class PersistenceManagerProvider {
           // check if we need to update pmf again here in case some other thread already did it
           // for us after releasing readlock and before acquiring write lock above
           if (prop == null || pmf == null || !propsFromConf.equals(prop)) {
-            // OK, now we really need to re-initialize pmf and pmf properties
-            if (LOG.isInfoEnabled()) {
-              LOG.info("Updating the pmf due to property change");
-              if (prop == null) {
-                LOG.info("Current pmf properties are uninitialized");
-              } else {
-                for (String key : prop.stringPropertyNames()) {
-                  if (!key.equals(propsFromConf.get(key))) {
-                     if (LOG.isDebugEnabled() && MetastoreConf.isPrintable(key)) {
-                       // The jdbc connection url can contain sensitive information like username and password
-                       // which should be masked out before logging.
-                       String oldVal = prop.getProperty(key);
-                       String newVal = propsFromConf.getProperty(key);
-                       if (key.equals(ConfVars.CONNECT_URL_KEY.getVarname())) {
-                         oldVal = MetaStoreUtils.anonymizeConnectionURL(oldVal);
-                         newVal = MetaStoreUtils.anonymizeConnectionURL(newVal);
-                       }
-                       LOG.debug("Found {} to be different. Old val : {} : New Val : {}", key,
-                           oldVal, newVal);
-                     } else {
-                      LOG.debug("Found masked property {} to be different", key);
-                    }
-                  }
-                }
-              }
-            }
-            if (pmf != null) {
-              clearOutPmfClassLoaderCache();
-              if (!forTwoMetastoreTesting) {
-                // close the underlying connection pool to avoid leaks
-                LOG.debug("Closing PersistenceManagerFactory");
-                pmf.close();
-                LOG.debug("PersistenceManagerFactory closed");
-              }
-              pmf = null;
-            }
+            logPropChanges(propsFromConf);
+            closePmfIfNeeded();
             // update the pmf properties object then initialize pmf using them
             prop = propsFromConf;
             retryLimit = MetastoreConf.getIntVar(conf, ConfVars.HMS_HANDLER_ATTEMPTS);
