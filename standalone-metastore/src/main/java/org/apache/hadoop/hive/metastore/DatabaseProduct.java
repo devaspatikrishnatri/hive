@@ -50,6 +50,10 @@ public enum DatabaseProduct {
     }
   }
 
+  public final boolean isORACLE() {
+    return this == ORACLE;
+  }
+
   public static boolean isDeadlock(DatabaseProduct dbProduct, SQLException e) {
     return e instanceof SQLTransactionRollbackException
         || ((dbProduct == MYSQL || dbProduct == POSTGRES || dbProduct == SQLSERVER)
@@ -71,5 +75,13 @@ public enum DatabaseProduct {
    */
   public static boolean hasJoinOperationOrderBug(DatabaseProduct dbType) {
     return dbType == DERBY || dbType == ORACLE || dbType == POSTGRES;
+  }
+
+  protected String toTimestamp(String tableValue) {
+    if (isORACLE()) {
+      return "TO_TIMESTAMP(" + tableValue + ", 'YYYY-MM-DD HH:mm:ss')";
+    } else {
+      return "cast(" + tableValue + " as TIMESTAMP)";
+    }
   }
 }
