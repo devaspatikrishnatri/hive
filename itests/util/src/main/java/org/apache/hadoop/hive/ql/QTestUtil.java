@@ -673,7 +673,7 @@ public class QTestUtil {
     }
   }
 
-  private void postInit() throws Exception {
+  public void postInit() throws Exception {
     miniClusters.postInit(conf);
 
     testWarehouse = conf.getVar(HiveConf.ConfVars.METASTOREWAREHOUSE);
