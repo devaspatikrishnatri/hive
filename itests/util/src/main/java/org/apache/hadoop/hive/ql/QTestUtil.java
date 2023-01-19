@@ -35,6 +35,8 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -214,6 +216,7 @@ public class QTestUtil {
 
     QueryState queryState = new QueryState.Builder().withHiveConf(new HiveConf(IDriver.class)).build();
     conf = queryState.getConf();
+    setCustomConfs(conf, testArgs.getCustomConfs());
     qSkipSet = new HashSet<String>();
     qJavaVersionSpecificOutput = new HashSet<String>();
 
@@ -247,6 +250,10 @@ public class QTestUtil {
     postInit();
     savedConf = new HiveConf(conf);
 
+  }
+
+  private void setCustomConfs(HiveConf conf, Map<ConfVars,String> customConfigValueMap) {
+    customConfigValueMap.entrySet().forEach(item-> conf.set(item.getKey().varname, item.getValue()));
   }
 
   private void logClassPath() {

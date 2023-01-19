@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.QTestSystemProperties;
 import org.apache.hadoop.hive.ql.QTestMiniClusters.FsType;
 import org.apache.hadoop.hive.ql.QTestMiniClusters.MiniClusterType;
@@ -73,6 +75,7 @@ public abstract class AbstractCliConfig {
   // moved...this may change
   private Set<String> includeQueryFileNames;
   private Class<? extends CliAdapter> cliAdapter;
+  private Map<HiveConf.ConfVars, String> customConfigValueMap;
 
   public AbstractCliConfig(Class<? extends CliAdapter> adapter) {
     cliAdapter = adapter;
@@ -426,4 +429,11 @@ public abstract class AbstractCliConfig {
     return new File(new File(HIVE_ROOT), dir).getAbsolutePath();
   }
 
+  protected void setCustomConfigValueMap(Map<HiveConf.ConfVars, String> customConfigValueMap) {
+    this.customConfigValueMap = customConfigValueMap;
+  }
+  
+  public Map<HiveConf.ConfVars, String> getCustomConfigValueMap() {
+    return this.customConfigValueMap;
+  }
 }

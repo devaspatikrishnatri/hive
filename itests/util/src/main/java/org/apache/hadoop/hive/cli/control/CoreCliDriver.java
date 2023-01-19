@@ -75,6 +75,7 @@ public class CoreCliDriver extends CliAdapter {
                 .withCleanupScript(cleanupScript)
                 .withLlapIo(true)
                 .withFsType(cliConfig.getFsType())
+                .withCustomConfigValueMap(cliConfig.getCustomConfigValueMap())
                 .build());
         }
       }.invoke("QtestUtil instance created", LOG, true);
