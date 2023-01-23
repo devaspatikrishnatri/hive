@@ -108,8 +108,8 @@ public class TestBeelineArgParsing {
     return Arrays.asList(new Object[][] {
         { "jdbc:postgresql://host:5432/testdb", "org.postgresql.Driver",
             System.getProperty("maven.local.repository") + File.separator + "org" + File.separator + "postgresql"
-                + File.separator + "postgresql" + File.separator + "42.4.1" + File.separator
-                + "postgresql-42.4.1.jar", true },
+                + File.separator + "postgresql" + File.separator + "42.5.1" + File.separator
+                + "postgresql-42.5.1.jar", true },
         { "jdbc:dummy://host:5432/testdb", dummyDriverClazzName, pathToDummyDriver, false } });
   }
 
