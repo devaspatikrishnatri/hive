@@ -25,12 +25,14 @@ import static org.apache.hadoop.hive.metastore.MetastoreDirectSqlUtils.extractSq
 import static org.apache.hadoop.hive.metastore.MetastoreDirectSqlUtils.extractSqlString;
 import static org.apache.hadoop.hive.metastore.MetastoreDirectSqlUtils.throwMetaOrRuntimeException;
 import static org.apache.hadoop.hive.metastore.ColumnType.BIGINT_TYPE_NAME;
+import static org.apache.hadoop.hive.metastore.ColumnType.CHAR_TYPE_NAME;
 import static org.apache.hadoop.hive.metastore.ColumnType.DATE_TYPE_NAME;
 import static org.apache.hadoop.hive.metastore.ColumnType.INT_TYPE_NAME;
 import static org.apache.hadoop.hive.metastore.ColumnType.SMALLINT_TYPE_NAME;
 import static org.apache.hadoop.hive.metastore.ColumnType.STRING_TYPE_NAME;
 import static org.apache.hadoop.hive.metastore.ColumnType.TIMESTAMP_TYPE_NAME;
 import static org.apache.hadoop.hive.metastore.ColumnType.TINYINT_TYPE_NAME;
+import static org.apache.hadoop.hive.metastore.ColumnType.VARCHAR_TYPE_NAME;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -1127,7 +1129,7 @@ class MetaStoreDirectSql {
 
     private static enum FilterType {
       Integral(ImmutableSet.of(TINYINT_TYPE_NAME, SMALLINT_TYPE_NAME, INT_TYPE_NAME, BIGINT_TYPE_NAME), Long.class),
-      String(ImmutableSet.of(STRING_TYPE_NAME), String.class),
+      String(ImmutableSet.of(STRING_TYPE_NAME, CHAR_TYPE_NAME, VARCHAR_TYPE_NAME), String.class),
       Date(ImmutableSet.of(DATE_TYPE_NAME), java.sql.Date.class),
       Timestamp(ImmutableSet.of(TIMESTAMP_TYPE_NAME), java.sql.Timestamp.class),
 
