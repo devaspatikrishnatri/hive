@@ -157,13 +157,13 @@ class AddDynamicPartitions
                 case 5:
                     if ($ftype == TType::LST) {
                         $this->partitionnames = array();
-                        $_size696 = 0;
-                        $_etype699 = 0;
-                        $xfer += $input->readListBegin($_etype699, $_size696);
-                        for ($_i700 = 0; $_i700 < $_size696; ++$_i700) {
-                            $elem701 = null;
-                            $xfer += $input->readString($elem701);
-                            $this->partitionnames []= $elem701;
+                        $_size710 = 0;
+                        $_etype713 = 0;
+                        $xfer += $input->readListBegin($_etype713, $_size710);
+                        for ($_i714 = 0; $_i714 < $_size710; ++$_i714) {
+                            $elem715 = null;
+                            $xfer += $input->readString($elem715);
+                            $this->partitionnames []= $elem715;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -217,8 +217,8 @@ class AddDynamicPartitions
             }
             $xfer += $output->writeFieldBegin('partitionnames', TType::LST, 5);
             $output->writeListBegin(TType::STRING, count($this->partitionnames));
-            foreach ($this->partitionnames as $iter702) {
-                $xfer += $output->writeString($iter702);
+            foreach ($this->partitionnames as $iter716) {
+                $xfer += $output->writeString($iter716);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

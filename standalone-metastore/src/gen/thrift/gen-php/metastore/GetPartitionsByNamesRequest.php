@@ -69,6 +69,11 @@ class GetPartitionsByNamesRequest
             'isRequired' => false,
             'type' => TType::STRING,
         ),
+        9 => array(
+            'var' => 'skipColumnSchemaForPartition',
+            'isRequired' => false,
+            'type' => TType::BOOL,
+        ),
     );
 
     /**
@@ -103,6 +108,10 @@ class GetPartitionsByNamesRequest
      * @var string
      */
     public $validWriteIdList = null;
+    /**
+     * @var bool
+     */
+    public $skipColumnSchemaForPartition = null;
 
     public function __construct($vals = null)
     {
@@ -130,6 +139,9 @@ class GetPartitionsByNamesRequest
             }
             if (isset($vals['validWriteIdList'])) {
                 $this->validWriteIdList = $vals['validWriteIdList'];
+            }
+            if (isset($vals['skipColumnSchemaForPartition'])) {
+                $this->skipColumnSchemaForPartition = $vals['skipColumnSchemaForPartition'];
             }
         }
     }
@@ -170,13 +182,13 @@ class GetPartitionsByNamesRequest
                 case 3:
                     if ($ftype == TType::LST) {
                         $this->names = array();
-                        $_size510 = 0;
-                        $_etype513 = 0;
-                        $xfer += $input->readListBegin($_etype513, $_size510);
-                        for ($_i514 = 0; $_i514 < $_size510; ++$_i514) {
-                            $elem515 = null;
-                            $xfer += $input->readString($elem515);
-                            $this->names []= $elem515;
+                        $_size524 = 0;
+                        $_etype527 = 0;
+                        $xfer += $input->readListBegin($_etype527, $_size524);
+                        for ($_i528 = 0; $_i528 < $_size524; ++$_i528) {
+                            $elem529 = null;
+                            $xfer += $input->readString($elem529);
+                            $this->names []= $elem529;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -193,13 +205,13 @@ class GetPartitionsByNamesRequest
                 case 5:
                     if ($ftype == TType::LST) {
                         $this->processorCapabilities = array();
-                        $_size516 = 0;
-                        $_etype519 = 0;
-                        $xfer += $input->readListBegin($_etype519, $_size516);
-                        for ($_i520 = 0; $_i520 < $_size516; ++$_i520) {
-                            $elem521 = null;
-                            $xfer += $input->readString($elem521);
-                            $this->processorCapabilities []= $elem521;
+                        $_size530 = 0;
+                        $_etype533 = 0;
+                        $xfer += $input->readListBegin($_etype533, $_size530);
+                        for ($_i534 = 0; $_i534 < $_size530; ++$_i534) {
+                            $elem535 = null;
+                            $xfer += $input->readString($elem535);
+                            $this->processorCapabilities []= $elem535;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -223,6 +235,13 @@ class GetPartitionsByNamesRequest
                 case 8:
                     if ($ftype == TType::STRING) {
                         $xfer += $input->readString($this->validWriteIdList);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 9:
+                    if ($ftype == TType::BOOL) {
+                        $xfer += $input->readBool($this->skipColumnSchemaForPartition);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -257,8 +276,8 @@ class GetPartitionsByNamesRequest
             }
             $xfer += $output->writeFieldBegin('names', TType::LST, 3);
             $output->writeListBegin(TType::STRING, count($this->names));
-            foreach ($this->names as $iter522) {
-                $xfer += $output->writeString($iter522);
+            foreach ($this->names as $iter536) {
+                $xfer += $output->writeString($iter536);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();
@@ -274,8 +293,8 @@ class GetPartitionsByNamesRequest
             }
             $xfer += $output->writeFieldBegin('processorCapabilities', TType::LST, 5);
             $output->writeListBegin(TType::STRING, count($this->processorCapabilities));
-            foreach ($this->processorCapabilities as $iter523) {
-                $xfer += $output->writeString($iter523);
+            foreach ($this->processorCapabilities as $iter537) {
+                $xfer += $output->writeString($iter537);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();
@@ -293,6 +312,11 @@ class GetPartitionsByNamesRequest
         if ($this->validWriteIdList !== null) {
             $xfer += $output->writeFieldBegin('validWriteIdList', TType::STRING, 8);
             $xfer += $output->writeString($this->validWriteIdList);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->skipColumnSchemaForPartition !== null) {
+            $xfer += $output->writeFieldBegin('skipColumnSchemaForPartition', TType::BOOL, 9);
+            $xfer += $output->writeBool($this->skipColumnSchemaForPartition);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

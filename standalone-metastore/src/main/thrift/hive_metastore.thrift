@@ -29,7 +29,7 @@ namespace php metastore
 namespace cpp Apache.Hadoop.Hive
 
 const string DDL_TIME = "transient_lastDdlTime"
-const string HMS_API = "1.2.24"
+const string HMS_API = "1.2.25"
 const byte ACCESSTYPE_NONE       = 1;
 const byte ACCESSTYPE_READONLY   = 2;
 const byte ACCESSTYPE_WRITEONLY  = 4;
@@ -757,7 +757,8 @@ struct PartitionsByExprRequest {
   6: optional string catName
   7: optional string order
   8: optional string validWriteIdList,
-  9: optional i64 id=-1 // table id
+  9: optional i64 id=-1, // table id
+  10: optional bool skipColumnSchemaForPartition
 }
 
 struct TableStatsResult {
@@ -793,7 +794,8 @@ struct PartitionsStatsRequest {
 // Return type for add_partitions_req
 struct AddPartitionsResult {
   1: optional list<Partition> partitions,
-  2: optional bool isStatsCompliant
+  2: optional bool isStatsCompliant,
+  3: optional list<FieldSchema> partitionColSchema
 }
 
 // Request type for add_partitions_req
@@ -804,7 +806,9 @@ struct AddPartitionsRequest {
   4: required bool ifNotExists,
   5: optional bool needResult=true,
   6: optional string catName,
-  7: optional string validWriteIdList
+  7: optional string validWriteIdList,
+  8: optional bool skipColumnSchemaForPartition,
+  9: optional list<FieldSchema> partitionColSchema
 }
 
 // Return type for drop_partitions_req
@@ -833,7 +837,8 @@ struct DropPartitionsRequest {
   6: optional bool ignoreProtection,
   7: optional EnvironmentContext environmentContext,
   8: optional bool needResult=true,
-  9: optional string catName
+  9: optional string catName,
+  10: optional bool skipColumnSchemaForPartition
 }
 
 struct PartitionValuesRequest {
@@ -865,7 +870,8 @@ struct GetPartitionsByNamesRequest {
   5: optional list<string> processorCapabilities,
   6: optional string processorIdentifier,
   7: optional string engine,
-  8: optional string validWriteIdList
+  8: optional string validWriteIdList,
+  9: optional bool skipColumnSchemaForPartition
 }
 
 struct GetPartitionsByNamesResult {
@@ -1885,7 +1891,9 @@ struct AlterPartitionsRequest {
   4: required list<Partition> partitions,
   5: optional EnvironmentContext environmentContext,
   6: optional i64 writeId=-1,
-  7: optional string validWriteIdList
+  7: optional string validWriteIdList,
+  8: optional bool skipColumnSchemaForPartition,
+  9: optional list<FieldSchema> partitionColSchema
 }
 
 struct AlterPartitionsResponse {
@@ -1993,7 +2001,17 @@ struct PartitionsRequest { // Not using Get prefix as that name is already used 
    3: required string tblName,
    4: optional i16 maxParts=-1,
    5: optional string validWriteIdList,
-   6: optional i64 id=-1 // table id
+   6: optional i64 id=-1, // table id
+   7: optional bool skipColumnSchemaForPartition
+}
+
+struct GetPartitionsByFilterRequest {
+   1: optional string catName,
+   2: string dbName,
+   3: string tblName,
+   4: string filter,
+   5: optional i16 maxParts=-1,
+   6: optional bool skipColumnSchemaForPartition
 }
 
 struct PartitionsResponse { // Not using Get prefix as that name is already used for a different method
@@ -2023,7 +2041,8 @@ struct GetPartitionsPsWithAuthRequest {
    6: optional string userName,
    7: optional list<string> groupNames,
    8: optional string validWriteIdList,
-   9: optional i64 id=-1 // table id
+   9: optional i64 id=-1, // table id
+   10: optional bool skipColumnSchemaForPartition
 }
 
 struct GetPartitionsPsWithAuthResponse {
@@ -2443,6 +2462,9 @@ service ThriftHiveMetastore extends fb303.FacebookService
   list<Partition> get_partitions_by_filter(1:string db_name 2:string tbl_name
     3:string filter, 4:i16 max_parts=-1)
                        throws(1:MetaException o1, 2:NoSuchObjectException o2)
+
+  list<Partition> get_partitions_by_filter_req(1:GetPartitionsByFilterRequest req)
+        throws(1:MetaException o1, 2:NoSuchObjectException o2)
 
   // List partitions as PartitionSpec instances.
   list<PartitionSpec> get_part_specs_by_filter(1:string db_name 2:string tbl_name

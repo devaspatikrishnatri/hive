@@ -220,13 +220,13 @@ class GetTableRequest
                 case 8:
                     if ($ftype == TType::LST) {
                         $this->processorCapabilities = array();
-                        $_size847 = 0;
-                        $_etype850 = 0;
-                        $xfer += $input->readListBegin($_etype850, $_size847);
-                        for ($_i851 = 0; $_i851 < $_size847; ++$_i851) {
-                            $elem852 = null;
-                            $xfer += $input->readString($elem852);
-                            $this->processorCapabilities []= $elem852;
+                        $_size861 = 0;
+                        $_etype864 = 0;
+                        $xfer += $input->readListBegin($_etype864, $_size861);
+                        for ($_i865 = 0; $_i865 < $_size861; ++$_i865) {
+                            $elem866 = null;
+                            $xfer += $input->readString($elem866);
+                            $this->processorCapabilities []= $elem866;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -307,8 +307,8 @@ class GetTableRequest
             }
             $xfer += $output->writeFieldBegin('processorCapabilities', TType::LST, 8);
             $output->writeListBegin(TType::STRING, count($this->processorCapabilities));
-            foreach ($this->processorCapabilities as $iter853) {
-                $xfer += $output->writeString($iter853);
+            foreach ($this->processorCapabilities as $iter867) {
+                $xfer += $output->writeString($iter867);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

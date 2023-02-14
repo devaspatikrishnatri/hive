@@ -938,18 +938,10 @@ STAGE PLANS:
         TableScan
           alias: alterdynamic_part_table_temp
           filterExpr: ((partcol1 = 1) and (partcol2 = '1')) (type: boolean)
-<<<<<<< HEAD:ql/src/test/results/clientpositive/llap/temp_table_alter_partition_coltype.q.out
-=======
-          Statistics: Num rows: 1 Data size: 2 Basic stats: COMPLETE Column stats: NONE
->>>>>>> 30c05ce92d (CDPD-22846: Backport FENG HMS changes to cdpd-master from FENG branch):ql/src/test/results/clientpositive/temp_table_alter_partition_coltype.q.out
           GatherStats: false
           Select Operator
             expressions: intcol (type: string)
             outputColumnNames: _col0
-<<<<<<< HEAD:ql/src/test/results/clientpositive/llap/temp_table_alter_partition_coltype.q.out
-=======
-            Statistics: Num rows: 1 Data size: 2 Basic stats: COMPLETE Column stats: NONE
->>>>>>> 30c05ce92d (CDPD-22846: Backport FENG HMS changes to cdpd-master from FENG branch):ql/src/test/results/clientpositive/temp_table_alter_partition_coltype.q.out
             ListSink
 
 PREHOOK: query: explain extended select intcol from pt.alterdynamic_part_table_temp where (partcol1='2' and partcol2='1')or (partcol1='1' and partcol2='__HIVE_DEFAULT_PARTITION__')

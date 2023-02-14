@@ -92,13 +92,13 @@ class GetValidWriteIdsRequest
                 case 1:
                     if ($ftype == TType::LST) {
                         $this->fullTableNames = array();
-                        $_size594 = 0;
-                        $_etype597 = 0;
-                        $xfer += $input->readListBegin($_etype597, $_size594);
-                        for ($_i598 = 0; $_i598 < $_size594; ++$_i598) {
-                            $elem599 = null;
-                            $xfer += $input->readString($elem599);
-                            $this->fullTableNames []= $elem599;
+                        $_size608 = 0;
+                        $_etype611 = 0;
+                        $xfer += $input->readListBegin($_etype611, $_size608);
+                        for ($_i612 = 0; $_i612 < $_size608; ++$_i612) {
+                            $elem613 = null;
+                            $xfer += $input->readString($elem613);
+                            $this->fullTableNames []= $elem613;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -139,8 +139,8 @@ class GetValidWriteIdsRequest
             }
             $xfer += $output->writeFieldBegin('fullTableNames', TType::LST, 1);
             $output->writeListBegin(TType::STRING, count($this->fullTableNames));
-            foreach ($this->fullTableNames as $iter600) {
-                $xfer += $output->writeString($iter600);
+            foreach ($this->fullTableNames as $iter614) {
+                $xfer += $output->writeString($iter614);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

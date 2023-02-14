@@ -92,13 +92,13 @@ class GetProjectionsSpec
                 case 1:
                     if ($ftype == TType::LST) {
                         $this->fieldList = array();
-                        $_size840 = 0;
-                        $_etype843 = 0;
-                        $xfer += $input->readListBegin($_etype843, $_size840);
-                        for ($_i844 = 0; $_i844 < $_size840; ++$_i844) {
-                            $elem845 = null;
-                            $xfer += $input->readString($elem845);
-                            $this->fieldList []= $elem845;
+                        $_size854 = 0;
+                        $_etype857 = 0;
+                        $xfer += $input->readListBegin($_etype857, $_size854);
+                        for ($_i858 = 0; $_i858 < $_size854; ++$_i858) {
+                            $elem859 = null;
+                            $xfer += $input->readString($elem859);
+                            $this->fieldList []= $elem859;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -139,8 +139,8 @@ class GetProjectionsSpec
             }
             $xfer += $output->writeFieldBegin('fieldList', TType::LST, 1);
             $output->writeListBegin(TType::STRING, count($this->fieldList));
-            foreach ($this->fieldList as $iter846) {
-                $xfer += $output->writeString($iter846);
+            foreach ($this->fieldList as $iter860) {
+                $xfer += $output->writeString($iter860);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

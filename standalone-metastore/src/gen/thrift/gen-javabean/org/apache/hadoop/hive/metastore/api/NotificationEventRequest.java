@@ -496,13 +496,13 @@ package org.apache.hadoop.hive.metastore.api;
           case 3: // EVENT_TYPE_SKIP_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list796 = iprot.readListBegin();
-                struct.eventTypeSkipList = new java.util.ArrayList<java.lang.String>(_list796.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem797;
-                for (int _i798 = 0; _i798 < _list796.size; ++_i798)
+                org.apache.thrift.protocol.TList _list812 = iprot.readListBegin();
+                struct.eventTypeSkipList = new java.util.ArrayList<java.lang.String>(_list812.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem813;
+                for (int _i814 = 0; _i814 < _list812.size; ++_i814)
                 {
-                  _elem797 = iprot.readString();
-                  struct.eventTypeSkipList.add(_elem797);
+                  _elem813 = iprot.readString();
+                  struct.eventTypeSkipList.add(_elem813);
                 }
                 iprot.readListEnd();
               }
@@ -537,9 +537,9 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldBegin(EVENT_TYPE_SKIP_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.eventTypeSkipList.size()));
-            for (java.lang.String _iter799 : struct.eventTypeSkipList)
+            for (java.lang.String _iter815 : struct.eventTypeSkipList)
             {
-              oprot.writeString(_iter799);
+              oprot.writeString(_iter815);
             }
             oprot.writeListEnd();
           }
@@ -578,9 +578,9 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetEventTypeSkipList()) {
         {
           oprot.writeI32(struct.eventTypeSkipList.size());
-          for (java.lang.String _iter800 : struct.eventTypeSkipList)
+          for (java.lang.String _iter816 : struct.eventTypeSkipList)
           {
-            oprot.writeString(_iter800);
+            oprot.writeString(_iter816);
           }
         }
       }
@@ -598,13 +598,13 @@ package org.apache.hadoop.hive.metastore.api;
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list801 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.eventTypeSkipList = new java.util.ArrayList<java.lang.String>(_list801.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem802;
-          for (int _i803 = 0; _i803 < _list801.size; ++_i803)
+          org.apache.thrift.protocol.TList _list817 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.eventTypeSkipList = new java.util.ArrayList<java.lang.String>(_list817.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem818;
+          for (int _i819 = 0; _i819 < _list817.size; ++_i819)
           {
-            _elem802 = iprot.readString();
-            struct.eventTypeSkipList.add(_elem802);
+            _elem818 = iprot.readString();
+            struct.eventTypeSkipList.add(_elem818);
           }
         }
         struct.setEventTypeSkipListIsSet(true);

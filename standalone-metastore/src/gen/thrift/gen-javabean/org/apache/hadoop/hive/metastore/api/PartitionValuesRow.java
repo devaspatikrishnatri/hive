@@ -326,13 +326,13 @@ package org.apache.hadoop.hive.metastore.api;
           case 1: // ROW
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list562 = iprot.readListBegin();
-                struct.row = new java.util.ArrayList<java.lang.String>(_list562.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem563;
-                for (int _i564 = 0; _i564 < _list562.size; ++_i564)
+                org.apache.thrift.protocol.TList _list578 = iprot.readListBegin();
+                struct.row = new java.util.ArrayList<java.lang.String>(_list578.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem579;
+                for (int _i580 = 0; _i580 < _list578.size; ++_i580)
                 {
-                  _elem563 = iprot.readString();
-                  struct.row.add(_elem563);
+                  _elem579 = iprot.readString();
+                  struct.row.add(_elem579);
                 }
                 iprot.readListEnd();
               }
@@ -358,9 +358,9 @@ package org.apache.hadoop.hive.metastore.api;
         oprot.writeFieldBegin(ROW_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.row.size()));
-          for (java.lang.String _iter565 : struct.row)
+          for (java.lang.String _iter581 : struct.row)
           {
-            oprot.writeString(_iter565);
+            oprot.writeString(_iter581);
           }
           oprot.writeListEnd();
         }
@@ -385,9 +385,9 @@ package org.apache.hadoop.hive.metastore.api;
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       {
         oprot.writeI32(struct.row.size());
-        for (java.lang.String _iter566 : struct.row)
+        for (java.lang.String _iter582 : struct.row)
         {
-          oprot.writeString(_iter566);
+          oprot.writeString(_iter582);
         }
       }
     }
@@ -396,13 +396,13 @@ package org.apache.hadoop.hive.metastore.api;
     public void read(org.apache.thrift.protocol.TProtocol prot, PartitionValuesRow struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       {
-        org.apache.thrift.protocol.TList _list567 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-        struct.row = new java.util.ArrayList<java.lang.String>(_list567.size);
-        @org.apache.thrift.annotation.Nullable java.lang.String _elem568;
-        for (int _i569 = 0; _i569 < _list567.size; ++_i569)
+        org.apache.thrift.protocol.TList _list583 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+        struct.row = new java.util.ArrayList<java.lang.String>(_list583.size);
+        @org.apache.thrift.annotation.Nullable java.lang.String _elem584;
+        for (int _i585 = 0; _i585 < _list583.size; ++_i585)
         {
-          _elem568 = iprot.readString();
-          struct.row.add(_elem568);
+          _elem584 = iprot.readString();
+          struct.row.add(_elem584);
         }
       }
       struct.setRowIsSet(true);

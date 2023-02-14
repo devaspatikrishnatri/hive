@@ -950,15 +950,15 @@ package org.apache.hadoop.hive.metastore.api;
           case 6: // PROPERTIES
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map754 = iprot.readMapBegin();
-                struct.properties = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map754.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _key755;
-                @org.apache.thrift.annotation.Nullable java.lang.String _val756;
-                for (int _i757 = 0; _i757 < _map754.size; ++_i757)
+                org.apache.thrift.protocol.TMap _map770 = iprot.readMapBegin();
+                struct.properties = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map770.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _key771;
+                @org.apache.thrift.annotation.Nullable java.lang.String _val772;
+                for (int _i773 = 0; _i773 < _map770.size; ++_i773)
                 {
-                  _key755 = iprot.readString();
-                  _val756 = iprot.readString();
-                  struct.properties.put(_key755, _val756);
+                  _key771 = iprot.readString();
+                  _val772 = iprot.readString();
+                  struct.properties.put(_key771, _val772);
                 }
                 iprot.readMapEnd();
               }
@@ -1030,10 +1030,10 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldBegin(PROPERTIES_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.properties.size()));
-            for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter758 : struct.properties.entrySet())
+            for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter774 : struct.properties.entrySet())
             {
-              oprot.writeString(_iter758.getKey());
-              oprot.writeString(_iter758.getValue());
+              oprot.writeString(_iter774.getKey());
+              oprot.writeString(_iter774.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -1100,10 +1100,10 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetProperties()) {
         {
           oprot.writeI32(struct.properties.size());
-          for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter759 : struct.properties.entrySet())
+          for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter775 : struct.properties.entrySet())
           {
-            oprot.writeString(_iter759.getKey());
-            oprot.writeString(_iter759.getValue());
+            oprot.writeString(_iter775.getKey());
+            oprot.writeString(_iter775.getValue());
           }
         }
       }
@@ -1135,15 +1135,15 @@ package org.apache.hadoop.hive.metastore.api;
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TMap _map760 = iprot.readMapBegin(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING); 
-          struct.properties = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map760.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _key761;
-          @org.apache.thrift.annotation.Nullable java.lang.String _val762;
-          for (int _i763 = 0; _i763 < _map760.size; ++_i763)
+          org.apache.thrift.protocol.TMap _map776 = iprot.readMapBegin(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING); 
+          struct.properties = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map776.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _key777;
+          @org.apache.thrift.annotation.Nullable java.lang.String _val778;
+          for (int _i779 = 0; _i779 < _map776.size; ++_i779)
           {
-            _key761 = iprot.readString();
-            _val762 = iprot.readString();
-            struct.properties.put(_key761, _val762);
+            _key777 = iprot.readString();
+            _val778 = iprot.readString();
+            struct.properties.put(_key777, _val778);
           }
         }
         struct.setPropertiesIsSet(true);

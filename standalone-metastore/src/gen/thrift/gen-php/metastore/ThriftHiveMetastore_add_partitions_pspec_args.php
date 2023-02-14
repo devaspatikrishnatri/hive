@@ -69,14 +69,14 @@ class ThriftHiveMetastore_add_partitions_pspec_args
                 case 1:
                     if ($ftype == TType::LST) {
                         $this->new_parts = array();
-                        $_size1332 = 0;
-                        $_etype1335 = 0;
-                        $xfer += $input->readListBegin($_etype1335, $_size1332);
-                        for ($_i1336 = 0; $_i1336 < $_size1332; ++$_i1336) {
-                            $elem1337 = null;
-                            $elem1337 = new \metastore\PartitionSpec();
-                            $xfer += $elem1337->read($input);
-                            $this->new_parts []= $elem1337;
+                        $_size1353 = 0;
+                        $_etype1356 = 0;
+                        $xfer += $input->readListBegin($_etype1356, $_size1353);
+                        for ($_i1357 = 0; $_i1357 < $_size1353; ++$_i1357) {
+                            $elem1358 = null;
+                            $elem1358 = new \metastore\PartitionSpec();
+                            $xfer += $elem1358->read($input);
+                            $this->new_parts []= $elem1358;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -103,8 +103,8 @@ class ThriftHiveMetastore_add_partitions_pspec_args
             }
             $xfer += $output->writeFieldBegin('new_parts', TType::LST, 1);
             $output->writeListBegin(TType::STRUCT, count($this->new_parts));
-            foreach ($this->new_parts as $iter1338) {
-                $xfer += $iter1338->write($output);
+            foreach ($this->new_parts as $iter1359) {
+                $xfer += $iter1359->write($output);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

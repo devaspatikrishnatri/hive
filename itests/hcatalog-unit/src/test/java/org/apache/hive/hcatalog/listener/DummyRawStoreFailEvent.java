@@ -331,6 +331,12 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
   }
 
   @Override
+  public List<Partition> getPartitions(String catName, String dbName, String tableName, int max, boolean skipColSchemaForPartitions)
+          throws MetaException, NoSuchObjectException {
+    return objectStore.getPartitions(catName, dbName, tableName, max, skipColSchemaForPartitions);
+  }
+
+  @Override
   public Map<String, String> getPartitionLocations(String catName, String dbName, String tblName,
       String baseLocationToNotShow, int max) {
     return objectStore.getPartitionLocations(catName, dbName, tblName, baseLocationToNotShow, max);
@@ -473,10 +479,16 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
 
   @Override
   public List<Partition> getPartitionsByNames(String catName, String dbName, String tblName,
-      List<String> partNames)
-      throws MetaException, NoSuchObjectException {
+      List<String> partNames) throws MetaException, NoSuchObjectException {
+    return objectStore.getPartitionsByNames(catName, dbName, tblName, partNames);
+  }
+
+  @Override
+  public List<Partition> getPartitionsByNames(String catName, String dbName, String tblName,
+      List<String> partNames, boolean skipColSchemaForPartitions)
+          throws MetaException, NoSuchObjectException {
     return objectStore.getPartitionsByNames(
-        catName, dbName, tblName, partNames);
+        catName, dbName, tblName, partNames, skipColSchemaForPartitions);
   }
 
   @Override
@@ -484,6 +496,13 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
       String defaultPartitionName, short maxParts, List<Partition> result) throws TException {
     return objectStore.getPartitionsByExpr(catName,
         dbName, tblName, expr, defaultPartitionName, maxParts, result);
+  }
+
+  @Override
+  public boolean getPartitionsByExpr(String catName, String dbName, String tblName, byte[] expr,
+                                     String defaultPartitionName, short maxParts, List<Partition> result, boolean skipColSchemaForPartitions) throws TException {
+    return objectStore.getPartitionsByExpr(catName,
+            dbName, tblName, expr, defaultPartitionName, maxParts, result, skipColSchemaForPartitions);
   }
 
   @Override
@@ -669,6 +688,14 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
   }
 
   @Override
+  public List<Partition> getPartitionsWithAuth(String catName, String dbName, String tblName,
+          short maxParts, String userName, List<String> groupNames, boolean skipColSchemaForPartitions)
+          throws MetaException, NoSuchObjectException, InvalidObjectException {
+    return objectStore.getPartitionsWithAuth(catName, dbName, tblName, maxParts, userName,
+            groupNames, skipColSchemaForPartitions);
+  }
+
+  @Override
   public List<String> listPartitionNamesPs(String catName, String dbName, String tblName,
       List<String> partVals, short maxParts)
       throws MetaException, NoSuchObjectException {
@@ -682,6 +709,14 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
       throws MetaException, InvalidObjectException, NoSuchObjectException {
     return objectStore.listPartitionsPsWithAuth(catName, dbName, tblName, partVals, maxParts,
         userName, groupNames);
+  }
+
+  @Override
+  public List<Partition> listPartitionsPsWithAuth(String catName, String dbName, String tblName,
+      List<String> partVals, short maxParts, String userName, List<String> groupNames,
+      boolean skipColSchemaForPartitions) throws MetaException, InvalidObjectException, NoSuchObjectException {
+    return objectStore.listPartitionsPsWithAuth(catName, dbName, tblName, partVals, maxParts,
+            userName, groupNames, skipColSchemaForPartitions);
   }
 
   @Override
@@ -1421,6 +1456,12 @@ public class DummyRawStoreFailEvent implements RawStore, Configurable {
 
   public void deleteAllPartitionColumnStatistics(TableName tn,String s) {
     objectStore.deleteAllPartitionColumnStatistics(tn,s);
+  }
+
+  @Override
+  public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
+                                               String filter, short maxParts, boolean skipColSchemaForPartitions) throws MetaException, NoSuchObjectException {
+    return objectStore.getPartitionsByFilter(catName, dbName, tblName, filter, maxParts, skipColSchemaForPartitions);
   }
 
   @Override
