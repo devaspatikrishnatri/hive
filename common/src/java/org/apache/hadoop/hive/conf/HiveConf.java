@@ -3745,7 +3745,9 @@ public class HiveConf extends Configuration {
     HIVE_SERVER2_USE_PER_QUERY_LLAP_TOTAL_AVAILABLE_SLOTS("hive.server2.use.per.query.llap.total.available.slots",
       -1, "When set to non-zero positive value, hive split generator will this value for total\n" +
       "available LLAP slots instead of discovering it from ZK registry"),
-
+    HIVE_MAPRED_JOB_FOLLOW_TEZ_QUEUE("hive.mapred.job.follow.tez.queue", false,
+        "Whether the MR jobs initiated by a query should be enforced to run in the queue denoted by "
+            + "'tez.queue.name', e.g. DistCp jobs."),
 
     // Operation log configuration
     HIVE_SERVER2_LOGGING_OPERATION_ENABLED("hive.server2.logging.operation.enabled", true,
