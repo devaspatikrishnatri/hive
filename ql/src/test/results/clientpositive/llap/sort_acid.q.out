@@ -209,7 +209,7 @@ POSTHOOK: Input: default@othertlb
 POSTHOOK: Output: default@acidtlb
 CBO PLAN:
 HiveSortExchange(distribution=[any], collation=[[0]])
-  HiveProject(ROW__ID=[$1])
+  HiveProject(row__id=[$1])
     HiveSemiJoin(condition=[=($0, $2)], joinType=[inner])
       HiveProject(a=[$0], ROW__ID=[$4])
         HiveFilter(condition=[IS NOT NULL($0)])
