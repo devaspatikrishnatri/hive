@@ -278,6 +278,10 @@ public class HiveMetaStore extends ThriftHiveMetastore {
     private StorageSchemaReader storageSchemaReader;
     private IMetaStoreMetadataTransformer transformer;
 
+    // Variables for metrics
+    // Package visible so that HMSMetricsListener can see them.
+    static AtomicInteger databaseCount, tableCount, partCount;
+
     private Warehouse wh; // hdfs warehouse
     private static Striped<Lock> tablelocks;
     private static final ThreadLocal<RawStore> threadLocalMS =
@@ -537,7 +541,6 @@ public class HiveMetaStore extends ThriftHiveMetastore {
 
     @Override
     public void init() throws MetaException {
-      Metrics.initialize(conf);
       initListeners = MetaStoreUtils.getMetaStoreListeners(
           MetaStoreInitListener.class, conf, MetastoreConf.getVar(conf, ConfVars.INIT_HOOKS));
       for (MetaStoreInitListener singleInitListener: initListeners) {
@@ -556,8 +559,18 @@ public class HiveMetaStore extends ThriftHiveMetastore {
           createDefaultRoles();
           addAdminUsers();
           currentUrl = MetaStoreInit.getConnectionURL(conf);
-          updateMetrics();
         }
+      }
+
+      //Start Metrics
+      if (MetastoreConf.getBoolVar(conf, ConfVars.METRICS_ENABLED)) {
+        LOG.info("Begin calculating metadata count metrics.");
+        Metrics.initialize(conf);
+        databaseCount = Metrics.getOrCreateGauge(MetricsConstants.TOTAL_DATABASES);
+        tableCount = Metrics.getOrCreateGauge(MetricsConstants.TOTAL_TABLES);
+        partCount = Metrics.getOrCreateGauge(MetricsConstants.TOTAL_PARTITIONS);
+        updateMetrics();
+
       }
 
       preListeners = MetaStoreUtils.getMetaStoreListeners(MetaStorePreEventListener.class,
@@ -9309,11 +9322,10 @@ public class HiveMetaStore extends ThriftHiveMetastore {
 
     @VisibleForTesting
     void updateMetrics() throws MetaException {
-      if (Metrics.getRegistry() != null) {
-        LOG.info("Begin calculating metadata count metrics.");
-        Metrics.getOrCreateGauge(MetricsConstants.TOTAL_TABLES).set(getMS().getTableCount());
-        Metrics.getOrCreateGauge(MetricsConstants.TOTAL_PARTITIONS).set(getMS().getPartitionCount());
-        Metrics.getOrCreateGauge(MetricsConstants.TOTAL_DATABASES).set(getMS().getDatabaseCount());
+      if (databaseCount != null) {
+        tableCount.set(getMS().getTableCount());
+        partCount.set(getMS().getPartitionCount());
+        databaseCount.set(getMS().getDatabaseCount());
       }
     }
 

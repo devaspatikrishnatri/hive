@@ -21,7 +21,6 @@ import com.jolbox.bonecp.BoneCPDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.metastore.PersistenceManagerProvider;
 import org.apache.hadoop.hive.metastore.annotation.MetastoreUnitTest;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf.ConfVars;
@@ -30,9 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import javax.jdo.PersistenceManagerFactory;
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 @Category(MetastoreUnitTest.class)
@@ -180,40 +177,5 @@ public class TestDataSourceProviderFactory {
 
     DataSource ds = dsp.create(conf);
     Assert.assertTrue(ds instanceof PoolingDataSource);
-  }
-
-  @Test
-  public void testClosePersistenceManagerProvider() throws Exception {
-    // PoolingDataSource created by DbCPDataSourceProvider does not implement AutoClosable
-    String[] dataSourceType = {HikariCPDataSourceProvider.HIKARI, BoneCPDataSourceProvider.BONECP};
-    for (String type : dataSourceType) {
-      boolean isHikari = HikariCPDataSourceProvider.HIKARI.equals(type);
-      MetastoreConf.setVar(conf, ConfVars.CONNECTION_POOLING_TYPE, type);
-      PersistenceManagerProvider.updatePmfProperties(conf);
-      PersistenceManagerFactory factory =
-          PersistenceManagerProvider.getPersistenceManager().getPersistenceManagerFactory();
-      DataSource connFactory = (DataSource) factory.getConnectionFactory();
-      factory.close();
-      // Closing PersistenceManagerFactory does not shut down the connection factory
-      // For DBCP, connFactory.getConnection() will return a connection successfully when the pool is not shutdown
-      if (isHikari) {
-        Assert.assertFalse(((HikariDataSource)connFactory).isClosed());
-      }
-      // Underlying connection is still able to run query
-      try (Connection conn = connFactory.getConnection()) {
-        Assert.assertFalse(conn.isClosed());
-      }
-      // Close the underlying connection pools
-      PersistenceManagerProvider.closePmfInternal(factory);
-      if (isHikari) {
-        Assert.assertTrue(((HikariDataSource)connFactory).isClosed());
-      }
-      try {
-        connFactory.getConnection();
-        Assert.fail("Should fail as the DataSource is shutdown");
-      } catch (Exception e) {
-        Assert.assertTrue(e instanceof SQLException);
-      }
-    }
   }
 }

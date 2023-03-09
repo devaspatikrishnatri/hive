@@ -131,35 +131,6 @@ public class PersistenceManagerProvider {
     }
     return isRetriableException(e.getCause());
   }
-
-  /**
-   * When closing PersistenceManagerFactory, the connection factory should be closed as well,
-   * otherwise the underlying dangling connections would be accumulated resulting to connection leaks.
-   * See TestDataSourceProviderFactory#testClosePersistenceManagerProvider for details.
-   * @param pmf the PersistenceManagerFactory tended to be closed
-   */
-  @VisibleForTesting
-  public static void closePmfInternal(PersistenceManagerFactory pmf) {
-    if (pmf != null) {
-      LOG.debug("Closing PersistenceManagerFactory");
-      pmf.close();
-      // close the underlying connection pool to avoid leaks
-      if (pmf.getConnectionFactory() instanceof AutoCloseable) {
-        try (AutoCloseable closeable = (AutoCloseable) pmf.getConnectionFactory()) {
-        } catch (Exception e) {
-          LOG.warn("Failed to close connection factory of PersistenceManagerFactory: " + pmf, e);
-        }
-      }
-      if (pmf.getConnectionFactory2() instanceof AutoCloseable) {
-        try (AutoCloseable closeable = (AutoCloseable) pmf.getConnectionFactory2()) {
-        } catch (Exception e) {
-          LOG.warn("Failed to close connection factory2 of PersistenceManagerFactory: " + pmf, e);
-        }
-      }
-      LOG.debug("PersistenceManagerFactory closed");
-    }
-  }
-
   /**
    * This method updates the PersistenceManagerFactory and its properties if the given
    * configuration is different from its current set of properties. Most common case is that
@@ -223,7 +194,10 @@ public class PersistenceManagerProvider {
             if (pmf != null) {
               clearOutPmfClassLoaderCache();
               if (!forTwoMetastoreTesting) {
-                closePmfInternal(pmf);
+                // close the underlying connection pool to avoid leaks
+                LOG.debug("Closing PersistenceManagerFactory");
+                pmf.close();
+                LOG.debug("PersistenceManagerFactory closed");
               }
               pmf = null;
             }
@@ -250,13 +224,14 @@ public class PersistenceManagerProvider {
   }
 
   private static void initPMF(Configuration conf) {
-    DataSourceProvider dsp = DataSourceProviderFactory.tryGetDataSourceProviderOrNull(conf);
+    DataSourceProvider dsp = DataSourceProviderFactory.hasProviderSpecificConfigurations(conf)
+      ? DataSourceProviderFactory.tryGetDataSourceProviderOrNull(conf)
+      : null;
 
     if (dsp == null) {
       pmf = JDOHelper.getPersistenceManagerFactory(prop);
     } else {
-      try (DataSourceProvider.DataSourceNameConfigurator configurator =
-               new DataSourceProvider.DataSourceNameConfigurator(conf, "objectstore")) {
+      try {
         DataSource ds = dsp.create(conf);
         // The secondary connection factory is used for schema generation, and for value generation operations.
         // We should use a different pool for the secondary connection factory to avoid resource starvation.
