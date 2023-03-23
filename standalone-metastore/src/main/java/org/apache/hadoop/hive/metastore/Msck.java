@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -127,9 +128,10 @@ public class Msck {
     boolean success = false;
     long txnId = -1;
     int ret = 0;
-    long partitionExpirySeconds = msckInfo.getPartitionExpirySeconds();
+    long partitionExpirySeconds = -1;
     try {
       Table table = getMsc().getTable(msckInfo.getCatalogName(), msckInfo.getDbName(), msckInfo.getTableName());
+      partitionExpirySeconds = PartitionManagementTask.getRetentionPeriodInSeconds(table);
       qualifiedTableName = Warehouse.getCatalogQualifiedTableName(table);
       HiveMetaStoreChecker checker = new HiveMetaStoreChecker(getMsc(), getConf(), partitionExpirySeconds);
       // checkMetastore call will fill in result with partitions that are present in filesystem
@@ -412,9 +414,9 @@ public class Msck {
     }.run();
   }
 
-  public static String makePartExpr(Map<String, String> spec)
+  private static String makePartExpr(Map<String, String> spec)
     throws MetaException {
-    StringBuilder suffixBuf = new StringBuilder();
+    StringBuilder suffixBuf = new StringBuilder("(");
     int i = 0;
     for (Map.Entry<String, String> e : spec.entrySet()) {
       if (e.getValue() == null || e.getValue().length() == 0) {
@@ -428,6 +430,7 @@ public class Msck {
       suffixBuf.append("'").append(Warehouse.escapePathName(e.getValue())).append("'");
       i++;
     }
+    suffixBuf.append(")");
     return suffixBuf.toString();
   }
 
@@ -446,7 +449,8 @@ public class Msck {
     if (expiredPartitions != null && !expiredPartitions.isEmpty()) {
       batchWork.addAll(expiredPartitions);
     }
-    PartitionDropOptions dropOptions = new PartitionDropOptions().deleteData(deleteData).ifExists(true);
+    PartitionDropOptions dropOptions = new PartitionDropOptions().deleteData(deleteData)
+        .ifExists(true).returnResults(false);
     new RetryUtilities.ExponentiallyDecayingBatchWork<Void>(batchSize, decayingFactor, maxRetries) {
       @Override
       public Void execute(int size) throws MetastoreException {
@@ -499,7 +503,7 @@ public class Msck {
       }
 
       private List<Pair<Integer, byte[]>> getPartitionExpr(final List<String> parts) throws MetaException {
-        List<Pair<Integer, byte[]>> expr = new ArrayList<>(parts.size());
+        StringBuilder exprBuilder = new StringBuilder();
         for (int i = 0; i < parts.size(); i++) {
           String partName = parts.get(i);
           Map<String, String> partSpec = Warehouse.makeSpecFromName(partName);
@@ -507,9 +511,13 @@ public class Msck {
           if (LOG.isDebugEnabled()) {
             LOG.debug("Generated partExpr: {} for partName: {}", partExpr, partName);
           }
-          expr.add(Pair.of(i, partExpr.getBytes(StandardCharsets.UTF_8)));
+          if (i > 0) {
+            exprBuilder.append(" OR ");
+          }
+          exprBuilder.append(partExpr);
         }
-        return expr;
+        return Lists.newArrayList(Pair.of(parts.size(),
+            exprBuilder.toString().getBytes(StandardCharsets.UTF_8)));
       }
     }.run();
   }

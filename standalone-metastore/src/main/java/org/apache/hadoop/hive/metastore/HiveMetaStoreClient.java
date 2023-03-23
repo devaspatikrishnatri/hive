@@ -4210,12 +4210,17 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
    */
   public static class GetPartitionProjectionsSpecBuilder {
 
-    private List<String> partitionList = null;
+    private List<String> fieldList = new ArrayList<>();
     private String includePartitionPattern = null;
     private String excludePartitionPattern = null;
 
-    public void setPartitionList(List<String> partitionList) {
-      this.partitionList = partitionList;
+    public GetPartitionProjectionsSpecBuilder addProjectField(String field) {
+      fieldList.add(field);
+      return this;
+    }
+
+    public void setPartitionList(List<String> fieldList) {
+      this.fieldList = fieldList;
     }
 
     public void setIncludePartitionPattern(String includePartitionPattern) {
@@ -4227,7 +4232,7 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     }
 
     public GetProjectionsSpec build() {
-      return new GetProjectionsSpec(partitionList, includePartitionPattern, excludePartitionPattern);
+      return new GetProjectionsSpec(fieldList, includePartitionPattern, excludePartitionPattern);
     }
   }
 
