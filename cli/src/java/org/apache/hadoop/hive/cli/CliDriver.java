@@ -253,6 +253,9 @@ public class CliDriver {
           out.println(cmd);
         }
 
+        // Set HDFS CallerContext to queryId and reset back to sessionId after the query is done
+        ShimLoader.getHadoopShims()
+            .setHadoopQueryContext(String.format(USER_ID, qp.getQueryState().getQueryId(), ss.getUserName()));
         try {
           // Set HDFS CallerContext to queryId and reset back to sessionId after the query is done
           ShimLoader.getHadoopShims()
@@ -298,7 +301,7 @@ public class CliDriver {
           throw new CommandProcessorException(1);
         } finally {
           qp.close();
-        ShimLoader.getHadoopShims()
+          ShimLoader.getHadoopShims()
               .setHadoopSessionContext(String.format(USER_ID, ss.getSessionId(), ss.getUserName()));
 
           if (out instanceof FetchConverter) {

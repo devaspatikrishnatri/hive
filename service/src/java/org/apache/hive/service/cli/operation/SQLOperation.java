@@ -323,11 +323,10 @@ public class SQLOperation extends ExecuteStatementOperation {
           // TODO: can this result in cross-thread reuse of session state?
           SessionState.setCurrentSessionState(parentSessionState);
           PerfLogger.setPerfLogger(parentPerfLogger);
-          if (!embedded) {
-            LogUtils.registerLoggingContext(queryState.getConf());
-          }
+          LogUtils.registerLoggingContext(queryState.getConf());
           ShimLoader.getHadoopShims()
-              .setHadoopQueryContext(String.format(USER_ID, queryState.getQueryId(), parentSessionState.getUserName()));
+            .setHadoopQueryContext(String.format(USER_ID, queryState.getQueryId(), parentSessionState.getUserName()));
+
           try {
             if (asyncPrepare) {
               prepare(queryState);
