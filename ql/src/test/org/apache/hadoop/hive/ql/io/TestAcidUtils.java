@@ -19,7 +19,9 @@ package org.apache.hadoop.hive.ql.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.ValidCompactorWriteIdList;
 import org.apache.hadoop.hive.common.ValidReadTxnList;
@@ -43,7 +46,9 @@ import org.apache.hadoop.hive.ql.io.orc.TestInputOutputFormat.MockFileSystem;
 import org.apache.hadoop.hive.ql.io.orc.TestInputOutputFormat.MockPath;
 import org.apache.hadoop.hive.ql.io.orc.TestOrcRawRecordMerger;
 import org.apache.hadoop.hive.shims.HadoopShims.HdfsFileStatusWithId;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class TestAcidUtils {
 
@@ -687,5 +692,40 @@ public class TestAcidUtils {
    */
   @Test
   public void testGetLogicalLength() throws Exception {
+  }
+
+  @Test
+  public void testShouldGetHDFSSnapShots() throws Exception {
+    MockFileSystem fs = new MockFileSystem(new HiveConf(),
+        new MockFile("mock:/tbl/part1/.hive-staging_dir/-ext-10002", 500, new byte[0]),
+        new MockFile("mock:/tbl/part2/.hive-staging_dir", 500, new byte[0]),
+        new MockFile("mock:/tbl/part1/_tmp_space.db", 500, new byte[0]),
+        new MockFile("mock:/tbl/part1/delta_1_1/bucket-0000-0000", 500, new byte[0]));
+    Path path = new MockPath(fs, "/tbl");
+
+    Map<Path, AcidUtils.HdfsDirSnapshot> hdfsDirSnapshots = AcidUtils.getHdfsDirSnapshots(fs, path);
+    assertEquals(1, hdfsDirSnapshots.size());
+    assertEquals("mock:/tbl/part1/delta_1_1", hdfsDirSnapshots.keySet().stream().findFirst().get().toString());
+  }
+
+  @Test
+  public void testShouldNotThrowFNFEWhenHiveStagingDirectoryIsRemovedWhileFetchingHDFSSnapshots() throws Exception {
+    MockFileSystem fs = new MockFileSystem(new HiveConf(),
+        new MockFile("mock:/tbl/part1/.hive-staging_dir/-ext-10002", 500, new byte[0]),
+        new MockFile("mock:/tbl/part2/.hive-staging_dir", 500, new byte[0]),
+        new MockFile("mock:/tbl/part1/_tmp_space.db", 500, new byte[0]),
+        new MockFile("mock:/tbl/part1/delta_1_1/bucket-0000-0000", 500, new byte[0]));
+    Path path = new MockPath(fs, "/tbl");
+    Path stageDir = new MockPath(fs, "mock:/tbl/part1/.hive-staging_dir");
+    FileSystem mockFs = spy(fs);
+    Mockito.doThrow(new FileNotFoundException("")).when(mockFs).listLocatedStatus(stageDir);
+    try {
+      Map<Path, AcidUtils.HdfsDirSnapshot> hdfsDirSnapshots = AcidUtils.getHdfsDirSnapshots(mockFs, path);
+      assertEquals(1, hdfsDirSnapshots.size());
+      assertEquals("mock:/tbl/part1/delta_1_1", hdfsDirSnapshots.keySet().stream().findFirst().get().toString());
+    }
+    catch (FileNotFoundException fnf) {
+      Assert.fail("Should not throw FileNotFoundException when a directory is removed while fetching HDFSSnapshots");
+    }
   }
 }

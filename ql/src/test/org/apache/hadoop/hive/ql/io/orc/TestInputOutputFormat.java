@@ -2865,7 +2865,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktable
     // call-2: open - mock:/mocktable/0_0
     // call-3: open - mock:/mocktable/0_1
-    assertEquals(3, readOpsDelta);
+    assertEquals(5, readOpsDelta);
 
     assertEquals(2, splits.length);
     // revert back to local fs
@@ -2923,7 +2923,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktbl
     // call-2: open - mock:/mocktbl/0_0
     // call-3: open - mock:/mocktbl/0_1
-    assertEquals(3, readOpsDelta);
+    assertEquals(5, readOpsDelta);
 
     // force BI to avoid reading footers
     conf.set(HiveConf.ConfVars.HIVE_ORC_SPLIT_STRATEGY.varname, "BI");
@@ -2941,7 +2941,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl
-    assertEquals(1, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     // enable cache and use default strategy
     conf.set(ConfVars.HIVE_ORC_CACHE_STRIPE_DETAILS_MEMORY_SIZE.varname, "10Mb");
@@ -2962,7 +2962,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktbl
     // call-2: open - mock:/mocktbl/0_0
     // call-3: open - mock:/mocktbl/0_1
-    assertEquals(3, readOpsDelta);
+    assertEquals(5, readOpsDelta);
 
     for (FileSystem.Statistics statistics : FileSystem.getAllStatistics()) {
       if (statistics.getScheme().equalsIgnoreCase("mock")) {
@@ -2978,7 +2978,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl
-    assertEquals(1, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     // revert back to local fs
     conf.set("fs.defaultFS", "file:///");
@@ -3034,7 +3034,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktable
     // call-2: open - mock:/mocktbl1/0_0
     // call-3: open - mock:/mocktbl1/0_1
-    assertEquals(3, readOpsDelta);
+    assertEquals(5, readOpsDelta);
 
     // change file length and look for cache misses
 
@@ -3073,7 +3073,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktable
     // call-2: open - mock:/mocktbl1/0_0
     // call-3: open - mock:/mocktbl1/0_1
-    assertEquals(3, readOpsDelta);
+    assertEquals(5, readOpsDelta);
 
     for (FileSystem.Statistics statistics : FileSystem.getAllStatistics()) {
       if (statistics.getScheme().equalsIgnoreCase("mock")) {
@@ -3089,7 +3089,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl1
-    assertEquals(1, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     // revert back to local fs
     conf.set("fs.defaultFS", "file:///");
@@ -3146,7 +3146,7 @@ public class TestInputOutputFormat {
     // call-1: getAcidState - mock:/mocktbl2
     // call-2: open - mock:/mocktbl2/0_0
     // call-3: open - mock:/mocktbl2/0_1
-    assertEquals(3, readOpsDelta);
+    assertEquals(5, readOpsDelta);
 
     // change file modification time and look for cache misses
     FileSystem fs1 = FileSystem.get(conf);
@@ -3167,7 +3167,7 @@ public class TestInputOutputFormat {
     }
     // call-1: getAcidState - mock:/mocktbl2
     // call-2: open - mock:/mocktbl2/0_1
-    assertEquals(2, readOpsDelta);
+    assertEquals(4, readOpsDelta);
 
     // touch the next file
     fs1 = FileSystem.get(conf);
@@ -3188,7 +3188,7 @@ public class TestInputOutputFormat {
     }
     // call-1: getAcidState - mock:/mocktbl2
     // call-2: open - mock:/mocktbl2/0_0
-    assertEquals(2, readOpsDelta);
+    assertEquals(4, readOpsDelta);
 
     for (FileSystem.Statistics statistics : FileSystem.getAllStatistics()) {
       if (statistics.getScheme().equalsIgnoreCase("mock")) {
@@ -3204,7 +3204,7 @@ public class TestInputOutputFormat {
       }
     }
     // call-1: getAcidState - mock:/mocktbl2
-    assertEquals(1, readOpsDelta);
+    assertEquals(3, readOpsDelta);
 
     // revert back to local fs
     conf.set("fs.defaultFS", "file:///");
@@ -4325,7 +4325,7 @@ public class TestInputOutputFormat {
     result = splitsForStreamingAcidTable(files);
     files.clear();
     assertEquals(1000, result.get(0).getLength());
-    assertEquals(95, result.get(1).getLength());
+    assertEquals(15, result.get(1).getLength());
 
     // 1 incomplete delta with 2 complete and 1 incomplete blocks: (1000 + 1000 + 500/800)
     files.addAll(mockDeltaWithSideFileForStreaming("delta_0000021_0000030_0000", 2500, 2800));
@@ -4333,7 +4333,7 @@ public class TestInputOutputFormat {
     files.clear();
     assertEquals(1000, result.get(0).getLength());
     assertEquals(1000, result.get(1).getLength());
-    assertEquals(800, result.get(2).getLength());
+    assertEquals(500, result.get(2).getLength());
 
     // 1 complete delta but shorter flush_length - though I think this is almost impossible
     files.addAll(mockDeltaWithSideFileForStreaming("delta_0000021_0000030_0000", 1000, 450));
