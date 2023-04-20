@@ -7888,7 +7888,12 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       boolean isDfsDir = (destType == QBMetaData.DEST_DFS_FILE);
 
       try {
-        destinationTable = tblDesc != null ? tblDesc.toTable(conf) : viewDesc != null ? viewDesc.toTable(conf) : null;
+        if (tblDesc != null) {
+          Table t = tblDesc.toTable(conf);
+          destinationTable = tblDesc.isMaterialization() ? t : db.getTranslateTableDryrun(t.getTTable());
+        } else {
+          destinationTable = viewDesc != null ? viewDesc.toTable(conf) : null;
+        }
       } catch (HiveException e) {
         throw new SemanticException(e);
       }

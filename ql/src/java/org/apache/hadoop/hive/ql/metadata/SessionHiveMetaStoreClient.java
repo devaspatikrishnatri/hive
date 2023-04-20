@@ -1866,4 +1866,15 @@ public class SessionHiveMetaStoreClient extends HiveMetaStoreClient implements I
     }
     return false;
   }
+
+  @Override
+  public org.apache.hadoop.hive.metastore.api.Table getTranslateTableDryrun(
+      org.apache.hadoop.hive.metastore.api.Table tbl) throws AlreadyExistsException,
+      InvalidObjectException, MetaException, NoSuchObjectException, TException {
+    if (tbl.isTemporary()) {
+      org.apache.hadoop.hive.metastore.api.Table table = getTempTable(tbl.getDbName(), tbl.getTableName());
+      return table != null ? deepCopy(table) : tbl;
+    }
+    return super.getTranslateTableDryrun(tbl);
+  }
 }
