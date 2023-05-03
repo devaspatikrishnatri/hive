@@ -167,7 +167,7 @@
     <javax-servlet.version>3.1.0</javax-servlet.version>
     <javolution.version>5.5.1</javolution.version>
     <jettison.version>1.5.3</jettison.version>
-    <jetty.version>9.4.43.v20210629</jetty.version>
+    <jetty.version>9.4.48.v20220622</jetty.version>
     <jersey.version>1.19</jersey.version>
     <!-- Glassfish jersey is included for Spark client test only -->
     <glassfish.jersey.version>2.32</glassfish.jersey.version>
@@ -176,7 +176,7 @@
     <joda.version>2.9.9</joda.version>
     <jodd.version>6.0.0</jodd.version>
     <json.version>1.8</json.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.13.2</junit.version>
     <kafka.version>2.4.1.7.1.5.0-257</kafka.version>
     <kryo.version>3.0.3</kryo.version>
     <kudu.version>1.15.0.7.1.9.0-SNAPSHOT</kudu.version>
