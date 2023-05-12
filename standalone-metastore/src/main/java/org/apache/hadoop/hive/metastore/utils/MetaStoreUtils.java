@@ -18,6 +18,7 @@
 package org.apache.hadoop.hive.metastore.utils;
 
 import java.beans.PropertyDescriptor;
+
 import org.apache.hadoop.hive.common.TableName;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.hadoop.hive.metastore.api.GetPartitionsRequest;
@@ -917,6 +918,42 @@ public class MetaStoreUtils {
     params.remove(StatsSetupConst.NUM_ERASURE_CODED_FILES);
   }
 
+  public static void updateTableStatsForCreateTable(Warehouse wh, Database db, Table tbl,
+      EnvironmentContext envContext, Configuration conf, Path tblPath, boolean newDir)
+      throws MetaException {
+    // If the created table is a view, skip generating the stats
+    if (MetaStoreUtils.isView(tbl)) {
+      return;
+    }
+    assert tblPath != null;
+    if (tbl.isSetParameters()) {
+      String val = tbl.getParameters().remove(StatsSetupConst.STATS_FOR_CREATE_TABLE);
+      if (!StringUtils.isEmpty(val)) {
+        StatsSetupConst.ColumnStatsSetup statsSetup = StatsSetupConst.ColumnStatsSetup.parseStatsSetup(val);
+        if (statsSetup.enabled) {
+          // For an Iceberg table, a new snapshot is generated, so any leftover files would be ignored.
+          // Set the column stats true in order to make it merge-able
+          try {
+            if (newDir || statsSetup.isIcebergTable ||
+                wh.isEmptyDir(tblPath, FileUtils.HIDDEN_FILES_PATH_FILTER)) {
+              List<String> columns = statsSetup.columnNames;
+              if (columns == null || columns.isEmpty()) {
+                columns = getColumnNames(tbl.getSd().getCols());
+              }
+              StatsSetupConst.setStatsStateForCreateTable(tbl.getParameters(), columns, StatsSetupConst.TRUE);
+            }
+          } catch (IOException e) {
+            LOG.error("Error while checking the table directory: " + tblPath + " is empty or not", e);
+            throw newMetaException(e);
+          }
+        }
+      }
+    }
+
+    if (MetastoreConf.getBoolVar(conf, MetastoreConf.ConfVars.STATS_AUTO_GATHER)) {
+      updateTableStatsSlow(db, tbl, wh, newDir, false, envContext);
+    }
+  }
 
   public static boolean areSameColumns(List<FieldSchema> oldCols, List<FieldSchema> newCols) {
     return ListUtils.isEqualList(oldCols, newCols);

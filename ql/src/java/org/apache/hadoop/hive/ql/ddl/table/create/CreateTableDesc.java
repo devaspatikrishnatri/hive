@@ -909,14 +909,16 @@ public class CreateTableDesc implements DDLDesc, Serializable {
     // When replicating the statistics for a table will be obtained from the source. Do not
     // reset it on replica.
     if (replicationSpec == null || !replicationSpec.isInReplicationScope()) {
-      if (!this.isCTAS && (tbl.getPath() == null || (tbl.isEmpty() && !isExternal()))) {
-        if (!tbl.isPartitioned() && conf.getBoolVar(HiveConf.ConfVars.HIVESTATSAUTOGATHER)) {
-          StatsSetupConst.setStatsStateForCreateTable(tbl.getTTable().getParameters(),
-                  MetaStoreUtils.getColumnNames(tbl.getCols()), StatsSetupConst.TRUE);
-        }
-      } else {
-        StatsSetupConst.setStatsStateForCreateTable(tbl.getTTable().getParameters(), null,
-                StatsSetupConst.FALSE);
+      // Remove COLUMN_STATS_ACCURATE=true from table's parameter, let the HMS determine if
+      // there is need to add column stats dependent on the table's location.
+      StatsSetupConst.setStatsStateForCreateTable(tbl.getTTable().getParameters(), null,
+          StatsSetupConst.FALSE);
+      if (!this.isCTAS && !tbl.isPartitioned() && !tbl.isTemporary() && !tbl.isView() &&
+          conf.getBoolVar(HiveConf.ConfVars.HIVESTATSAUTOGATHER)) {
+        String statsSetup = StatsSetupConst.ColumnStatsSetup.getStatsSetupAsString(true,
+            false, // isIcebergTable always be false as hasn't supported Iceberg table yet in this branch
+            MetaStoreUtils.getColumnNames(tbl.getCols()));
+        tbl.getParameters().put(StatsSetupConst.STATS_FOR_CREATE_TABLE, statsSetup);
       }
     }
     if (ownerName != null) {
