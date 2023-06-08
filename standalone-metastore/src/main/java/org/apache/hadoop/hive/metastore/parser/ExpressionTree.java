@@ -249,6 +249,15 @@ public class ExpressionTree {
         filterBuffer.append (") ");
       }
     }
+
+    @Override
+    public String toString() {
+      return "TreeNode{" +
+          "lhs=" + lhs +
+          ", andOr='" + andOr + '\'' +
+          ", rhs=" + rhs +
+          '}';
+    }
   }
 
   /**
@@ -464,6 +473,16 @@ public class ExpressionTree {
       }
 
       return isStringValue ? (String)val : Long.toString((Long)val);
+    }
+
+    @Override
+    public String toString() {
+      return "LeafNode{" +
+          "keyName='" + keyName + '\'' +
+          ", operator='" + operator + '\'' +
+          ", value=" + value +
+          (isReverseOrder ? ", isReverseOrder=true" : "") +
+          '}';
     }
   }
 
