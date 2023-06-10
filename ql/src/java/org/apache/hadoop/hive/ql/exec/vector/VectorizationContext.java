@@ -3181,8 +3181,12 @@ public class VectorizationContext {
             returnType, DataTypePhysicalVariation.NONE);
       }
     } else if (isStringFamily(inputType)) {
+      DataTypePhysicalVariation dataTypePhysicalVariation =
+          tryDecimal64Cast && ((DecimalTypeInfo) returnType).precision() <= 18 ?
+              DataTypePhysicalVariation.DECIMAL_64 : 
+              DataTypePhysicalVariation.NONE;
       return createVectorExpression(CastStringToDecimal.class, childExpr, VectorExpressionDescriptor.Mode.PROJECTION,
-          returnType, DataTypePhysicalVariation.NONE);
+          returnType, dataTypePhysicalVariation);
     } else if (inputType.equals("timestamp")) {
       return createVectorExpression(CastTimestampToDecimal.class, childExpr, VectorExpressionDescriptor.Mode.PROJECTION,
           returnType, DataTypePhysicalVariation.NONE);
