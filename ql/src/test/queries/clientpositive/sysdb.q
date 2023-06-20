@@ -122,8 +122,6 @@ explain select max(num_distincts) from sys.tab_col_stats;
 
 select max(num_distincts) from sys.tab_col_stats;
 
-select * from compactions;
-
 use INFORMATION_SCHEMA;
 
 select count(*) from SCHEMATA;
