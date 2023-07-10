@@ -7142,6 +7142,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       return ret;
     }
 
+    @Override
     public List<Partition> get_partitions_by_filter_req(GetPartitionsByFilterRequest req) throws TException {
       return get_partitions_by_filter_internal(req.getCatName(), req.getDbName(), req.getTblName(), req.getFilter(),
               req.getMaxParts(), req.isSkipColumnSchemaForPartition());
