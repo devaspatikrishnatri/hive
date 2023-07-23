@@ -230,6 +230,7 @@
     <dependency>
       <groupId>org.apache.avro</groupId>
       <artifactId>avro-mapred</artifactId>
+      <classifier>hadoop2</classifier>
       <version>${avro.version}</version>
       <exclusions>
         <exclusion>
@@ -773,20 +774,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro-mapred</artifactId>
-      <version>${avro.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_${spark.scala.version}</artifactId>
       <version>${spark.version}</version>
       <optional>true</optional>
       <exclusions>
-        <exclusion>
-          <groupId>org.apache.avro</groupId>
-          <artifactId>avro-mapred</artifactId>
-        </exclusion>
        <exclusion>
          <groupId>com.esotericsoftware.kryo</groupId>
          <artifactId>kryo</artifactId>

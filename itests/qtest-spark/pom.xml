@@ -48,24 +48,11 @@
     <!-- dependencies are always listed in sorted order by groupId, artifectId -->
     <!-- test intra-project spark -->
     <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro-mapred</artifactId>
-      <version>${avro.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_${spark.scala.version}</artifactId>
       <version>${spark.version}</version>
       <scope>test</scope>
         <exclusions>
-          <exclusion>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-mapred</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-mapred</artifactId>
-          </exclusion>
              <exclusion>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
