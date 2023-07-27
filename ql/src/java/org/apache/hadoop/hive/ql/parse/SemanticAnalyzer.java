@@ -6919,7 +6919,6 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     boolean enforceBucketing = false;
     List<ExprNodeDesc> partnCols = new ArrayList<>();
     List<ExprNodeDesc> sortCols = new ArrayList<>();
-    List<Integer> sortOrders = new ArrayList<>();
     boolean multiFileSpray = false;
     int numFiles = 1;
     int totalFiles = 1;
@@ -6942,6 +6941,8 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     } else {
       if(updating(dest) || deleting(dest)) {
         partnCols = getPartitionColsFromBucketColsForUpdateDelete(input, true);
+        sortCols = getPartitionColsFromBucketColsForUpdateDelete(input, false);
+        createSortOrderForUpdateDelete(sortCols, order, nullOrder);
         enforceBucketing = true;
       }
     }
