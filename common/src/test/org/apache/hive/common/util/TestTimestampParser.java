@@ -22,6 +22,9 @@ import org.apache.hadoop.hive.common.type.Timestamp;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 /**
  * Test suite for parsing timestamps.
  */
@@ -104,6 +107,9 @@ public class TestTimestampParser {
     Assert.assertEquals(Timestamp.valueOf("1970-01-01 00:00:00"),
         tsp.parseTimestamp("1970-01-01T00:00:00"));
 
+    Assert.assertEquals(new Timestamp(LocalDateTime.of(LocalDate.of(345,9,25), LocalTime.MIDNIGHT)),
+        tsp.parseTimestamp("345-9-25-23:59:59"));
+
     /** Default timestamp format still works? */
 
     Assert.assertEquals(Timestamp.valueOf("1945-12-31 23:59:59.1234"),
@@ -111,16 +117,6 @@ public class TestTimestampParser {
 
     Assert.assertEquals(Timestamp.valueOf("1945-12-31 23:59:59.12345"),
         tsp.parseTimestamp("1945-12-31T23:59:59.12345"));
-  }
-
-  @Test
-  public void testPatternInvalid1() {
-    final String[] patterns = {"yyyy-MM-dd'T'HH:mm:ss",
-        "yyyy-MM-dd'T'HH:mm:ss.S", "yyyy-MM-dd'T'HH:mm:ss.SS",
-        "yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss.SSSS"};
-
-    final TimestampParser tsp = new TimestampParser(patterns);
-    Assert.assertNull(tsp.parseTimestamp("1945-12-31-23:59:59"));
   }
 
   @Test
@@ -150,6 +146,9 @@ public class TestTimestampParser {
 
     Assert.assertEquals(Timestamp.ofEpochMilli(1420509274123L),
         tsp.parseTimestamp("1420509274123.456789"));
+  
+      Assert.assertEquals(new Timestamp(LocalDateTime.of(LocalDate.of(345,9,25), LocalTime.MIDNIGHT)),
+        tsp.parseTimestamp("345-9-25-23:59:59"));
 
   }
 
@@ -159,15 +158,6 @@ public class TestTimestampParser {
 
     final TimestampParser tsp = new TimestampParser(patterns);
     Assert.assertNull(tsp.parseTimestamp("1420509274123-"));
-  }
-
-  @Test
-  public void testMillisParserInvalid2() {
-    // Also try other patterns
-    final String[] patterns = {"millis", "yyyy-MM-dd'T'HH:mm:ss"};
-
-    final TimestampParser tsp = new TimestampParser(patterns);
-    Assert.assertNull(tsp.parseTimestamp("1945-12-31-23:59:59"));
   }
 
   /**
