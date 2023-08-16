@@ -207,10 +207,10 @@ final class CommandAuthorizerV2 {
       if (table.getStorageHandler() != null && HiveConf.getBoolVar(SessionState.getSessionConf(),
           HiveConf.ConfVars.HIVE_AUTHORIZATION_TABLES_ON_STORAGEHANDLERS)) {
         //TODO: add hive privilege object for storage based handlers for create and alter table commands.
-        if(hiveOpType == HiveOperationType.CREATETABLE ||
+        if(privObject instanceof WriteEntity && (hiveOpType == HiveOperationType.CREATETABLE ||
                 hiveOpType == HiveOperationType.ALTERTABLE_PROPERTIES ||
                 hiveOpType == HiveOperationType.CREATETABLE_AS_SELECT ||
-                hiveOpType == HiveOperationType.DROPTABLE){
+                hiveOpType == HiveOperationType.DROPTABLE)) {
           String storageuri = null;
           Map<String, String> tableProperties = new HashMap<>();
           Configuration conf = new Configuration();
