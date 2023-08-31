@@ -33,7 +33,9 @@ import org.apache.hadoop.hive.metastore.api.EnvironmentContext;
 import org.apache.hadoop.hive.metastore.api.InvalidOperationException;
 import org.apache.hadoop.hive.metastore.utils.StringUtils;
 import org.apache.hadoop.hive.ql.ErrorMsg;
+import org.apache.hadoop.hive.ql.ddl.DDLOperation;
 import org.apache.hadoop.hive.ql.ddl.DDLWork;
+import org.apache.hadoop.hive.ql.ddl.table.create.CreateTableOperation;
 import org.apache.hadoop.hive.ql.ddl.table.misc.properties.AlterTableSetPropertiesDesc;
 import org.apache.hadoop.hive.ql.ddl.table.partition.PartitionUtils;
 import org.apache.hadoop.hive.ql.exec.Task;
@@ -354,6 +356,14 @@ public class ReplUtils {
       }
     }
     return errorCode;
+  }
+
+  public static boolean shouldIgnoreOnError(DDLOperation<?> ddlOperation, Throwable e) {
+    return ReplUtils.isCreateOperation(ddlOperation) && e.getMessage().contains("java.lang.NumberFormatException");
+  }
+
+  public static boolean isCreateOperation(DDLOperation<?> ddlOperation) {
+    return ddlOperation instanceof CreateTableOperation;
   }
 
   private static String getMetricStageName(String stageName, ReplicationMetricCollector metricCollector) {
