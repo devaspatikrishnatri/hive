@@ -103,6 +103,7 @@ abstract class QueryCompactor {
     conf.setBoolVar(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS, true);
     String user = compactionInfo.runAs;
     SessionState sessionState = DriverUtils.setUpSessionState(conf, user, true);
+    sessionState.setCompaction(true);
     long compactorTxnId = CompactorMR.CompactorMap.getCompactorTxnId(conf);
     try {
       for (String query : createQueries) {
@@ -152,6 +153,9 @@ abstract class QueryCompactor {
         LOG.error("Unable to drop temp table {} which was created for running {} compaction", tmpTableName,
             compactionInfo.isMajorCompaction() ? "major" : "minor");
         LOG.error(ExceptionUtils.getStackTrace(e));
+      } finally {
+        //restore sessionState
+        sessionState.setCompaction(false);
       }
     }
   }
