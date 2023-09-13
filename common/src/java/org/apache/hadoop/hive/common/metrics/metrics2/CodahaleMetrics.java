@@ -93,6 +93,8 @@ public class CodahaleMetrics implements org.apache.hadoop.hive.common.metrics.co
   private LoadingCache<String, Meter> meters;
   private ConcurrentHashMap<String, Gauge> gauges;
 
+  private boolean hadoopMetricsStarted = false;
+
   private HiveConf conf;
   private final Set<Closeable> reporters = new HashSet<Closeable>();
 
@@ -206,6 +208,10 @@ public class CodahaleMetrics implements org.apache.hadoop.hive.common.metrics.co
     }
     for (Map.Entry<String, Metric> metric : metricRegistry.getMetrics().entrySet()) {
       metricRegistry.remove(metric.getKey());
+    }
+    if (hadoopMetricsStarted) {
+      DefaultMetricsSystem.shutdown();
+      hadoopMetricsStarted = false;
     }
     timers.invalidateAll();
     counters.invalidateAll();
@@ -414,7 +420,8 @@ public class CodahaleMetrics implements org.apache.hadoop.hive.common.metrics.co
       return false;
     }
 
-    for (String reporterClass : reporterClasses) {
+    Set<String> reporterClassesSet = new HashSet<>(reporterClasses);
+    for (String reporterClass : reporterClassesSet) {
       Class name = null;
       try {
         name = conf.getClassByName(reporterClass);
@@ -429,6 +436,11 @@ public class CodahaleMetrics implements org.apache.hadoop.hive.common.metrics.co
         CodahaleReporter reporter = (CodahaleReporter) constructor.newInstance(metricRegistry, conf);
         reporter.start();
         reporters.add(reporter);
+        // hadoopMetricsStarted flag is set to true when Metrics2Reporter is initialised
+        // so that we could gracefully shutdown DefaultMetricsSystem in close() method
+        if (name.getName().equals(Metrics2Reporter.class.getName())) {
+          hadoopMetricsStarted = true;
+        }
       } catch (NoSuchMethodException | InstantiationException |
           IllegalAccessException | InvocationTargetException e) {
         LOGGER.error("Unable to instantiate using constructor(MetricRegistry, HiveConf) for"

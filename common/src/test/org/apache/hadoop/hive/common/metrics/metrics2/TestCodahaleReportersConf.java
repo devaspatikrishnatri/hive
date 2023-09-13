@@ -27,6 +27,8 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -36,6 +38,7 @@ import java.io.File;
 @org.junit.Ignore("hive-test-kube migration")
 public class TestCodahaleReportersConf {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestCodahaleReportersConf.class);
   private static File workDir = new File(System.getProperty("test.tmp.dir"));
   private static File jsonReportFile;
 
@@ -142,5 +145,31 @@ public class TestCodahaleReportersConf {
     }
 
     Assert.assertFalse(jsonReportFile.exists());
+  }
+
+  /**
+   * Tests if MetricsFactory is initialised properly when Metrics2Reporter is tried to add more than once.
+   *
+   */
+  @Test
+  public void testMetricsFactoryInitMetrics2ReporterAddedTwice() throws Exception {
+    HiveConf conf = new HiveConf();
+
+    jsonReportFile = File.createTempFile("TestCodahaleMetrics", ".json");
+    LOGGER.info("Json metrics saved in {}", jsonReportFile.getAbsolutePath());
+
+    conf.setVar(HiveConf.ConfVars.HIVE_METRICS_CLASS, CodahaleMetrics.class.getCanonicalName());
+    conf.setVar(HiveConf.ConfVars.HIVE_CODAHALE_METRICS_REPORTER_CLASSES,
+            "org.apache.hadoop.hive.common.metrics.metrics2.Metrics2Reporter, "
+                    + "org.apache.hadoop.hive.common.metrics.metrics2.Metrics2Reporter");
+    conf.setVar(HiveConf.ConfVars.HIVE_METRICS_JSON_FILE_LOCATION, jsonReportFile.toString());
+    conf.setVar(HiveConf.ConfVars.HIVE_METRICS_JSON_FILE_INTERVAL, "2000ms");
+
+    MetricsFactory.init(conf);
+    Assert.assertNotNull(MetricsFactory.getInstance());
+    // closing MetricsFactory and re-initiating it to check if everything works fine
+    MetricsFactory.close();
+    MetricsFactory.init(conf);
+    Assert.assertNotNull(MetricsFactory.getInstance());
   }
 }
