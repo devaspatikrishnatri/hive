@@ -35,13 +35,10 @@ import org.apache.hadoop.hive.metastore.parser.ExpressionTree.LogicalOperator;
 @lexer::header {
 package org.apache.hadoop.hive.metastore.parser;
 
+import org.apache.hadoop.hive.metastore.utils.MetaStoreUtils;
+
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.ResolverStyle;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 }
@@ -52,15 +49,6 @@ import java.util.regex.Pattern;
   private static final Pattern datePattern = Pattern.compile(".*(\\d\\d\\d\\d-\\d\\d-\\d\\d).*");
   private static final Pattern timestampPattern =
       Pattern.compile(".*(\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d).*");
-
-  private static final DateTimeFormatter dateFormat = createDateTimeFormatter("uuuu-MM-dd");
-  private static final DateTimeFormatter timestampFormat = createDateTimeFormatter("uuuu-MM-dd HH:mm:ss");
-
-  public static DateTimeFormatter createDateTimeFormatter(String format) {
-    return DateTimeFormatter.ofPattern(format)
-                     .withZone(TimeZone.getTimeZone("UTC").toZoneId())
-                     .withResolverStyle(ResolverStyle.STRICT);
-  }
 
   public static Object extractDate(String input) {
     // Date literal is a suffix of timestamp. Try to parse it as a timestamp first
@@ -74,8 +62,7 @@ import java.util.regex.Pattern;
       return null;
     }
     try {
-       LocalDate val = LocalDate.parse(m.group(1), dateFormat);
-       return java.sql.Date.valueOf(val);
+       return MetaStoreUtils.convertStringToDate(m.group(1));
     } catch (Exception ex) {
       return null;
     }
@@ -87,8 +74,7 @@ import java.util.regex.Pattern;
       return null;
     }
     try {
-       LocalDateTime val = LocalDateTime.from(timestampFormat.parse(m.group(1)));
-       return Timestamp.valueOf(val);
+       return MetaStoreUtils.convertStringToTimestamp(m.group(1));
     } catch (Exception ex) {
       return null;
     }
