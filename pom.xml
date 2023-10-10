@@ -205,7 +205,7 @@
     <scala.version>2.11.12</scala.version>
     <spark.scala.version>2.11</spark.scala.version>
     <tempus-fugit.version>1.1</tempus-fugit.version>
-    <snappy.version>1.1.4</snappy.version>
+    <snappy.version>1.1.10.5</snappy.version>
     <wadl-resourcedoc-doclet.version>1.4</wadl-resourcedoc-doclet.version>
     <velocity.version>2.3</velocity.version>
     <xerces.version>2.12.2</xerces.version>
