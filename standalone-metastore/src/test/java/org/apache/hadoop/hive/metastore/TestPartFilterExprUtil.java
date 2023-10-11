@@ -63,6 +63,12 @@ public class TestPartFilterExprUtil {
             "TreeNode{lhs=TreeNode{lhs=TreeNode{lhs=LeafNode{keyName='a', operator='=', value=10}, andOr='OR', rhs=LeafNode{keyName='a', operator='=', value=20}}, andOr='AND', rhs=TreeNode{lhs=LeafNode{keyName='a', operator='<', value=10}, andOr='OR', rhs=LeafNode{keyName='a', operator='>', value=15}}}, andOr='AND', rhs=LeafNode{keyName='b', operator='<', value=10}}");
   }
 
+ @Test
+ public void testSJC() throws MetaException {
+  checkFilter("date='2000-01-01'",
+   "LeafNode{keyName='date', operator='=', value=2000-01-01}");
+ }
+
   @Test
   public void testSingleColInExpressionWhenDateLiteralTypeIsNotSpecifiedNorQuoted() throws MetaException {
     checkFilter("(j) in (1990-11-10, 1990-11-11, 1990-11-12)",

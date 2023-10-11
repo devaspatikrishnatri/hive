@@ -159,30 +159,41 @@ binOpExpression
 @init {
     boolean isReverseOrder = false;
     Object val = null;
+    String key2 = null;
 }
     :
     (
        (
+         (key = KW_DATE op = operator value = StringLiteral)
+         |
+           (value = StringLiteral op = operator key = KW_DATE) { isReverseOrder = true; }
+           ) { val = TrimQuotes(value.getText());
+           key2 = "date";}
+         |
+       (
          (key = Identifier op = operator  value = DateTimeLiteral)
          |
          (value = DateTimeLiteral  op = operator key = Identifier) { isReverseOrder = true; }
-       ) { val = FilterLexer.extractDate(value.getText()); }
+       ) { val = FilterLexer.extractDate(value.getText());
+          key2 = key.getText();}
        |
        (
          (key = Identifier op = operator  value = StringLiteral)
          |
          (value = StringLiteral  op = operator key = Identifier) { isReverseOrder = true; }
-       ) { val = TrimQuotes(value.getText()); }
+       ) { val = TrimQuotes(value.getText());
+         key2 = key.getText();}
        |
        (
          (key = Identifier op = operator value = IntegralLiteral)
          |
          (value = IntegralLiteral op = operator key = Identifier) { isReverseOrder = true; }
-       ) { val = Long.parseLong(value.getText()); }
+       ) { val = Long.parseLong(value.getText());
+         key2 = key.getText();}
     )
     {
         LeafNode node = new LeafNode();
-        node.keyName = key.getText();
+        node.keyName = key2;
         node.value = val;
         node.operator = op;
         node.isReverseOrder = isReverseOrder;
