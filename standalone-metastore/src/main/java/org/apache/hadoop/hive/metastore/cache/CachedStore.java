@@ -103,6 +103,7 @@ import org.apache.hadoop.hive.metastore.api.ReplicationMetricList;
 import org.apache.hadoop.hive.metastore.api.GetReplicationMetricsRequest;
 import org.apache.hadoop.hive.metastore.api.Package;
 import org.apache.hadoop.hive.metastore.cache.SharedCache.StatsType;
+import org.apache.hadoop.hive.metastore.client.builder.GetPartitionsArgs;
 import org.apache.hadoop.hive.metastore.columnstats.aggr.ColumnStatsAggregator;
 import org.apache.hadoop.hive.metastore.columnstats.aggr.ColumnStatsAggregatorFactory;
 import org.apache.hadoop.hive.metastore.api.Role;
@@ -1446,21 +1447,20 @@ public class CachedStore implements RawStore, Configurable {
     sharedCache.removePartitionsFromCache(catName, dbName, tblName, partVals);
   }
 
-  @Override
-  public List<Partition> getPartitions(String catName, String dbName, String tblName, int max,
-      boolean skipColumnSchemaForPartition) throws MetaException, NoSuchObjectException {
+  @Override public List<Partition> getPartitions(String catName, String dbName, String tblName, GetPartitionsArgs args)
+      throws MetaException, NoSuchObjectException {
     catName = normalizeIdentifier(catName);
     dbName = StringUtils.normalizeIdentifier(dbName);
     tblName = StringUtils.normalizeIdentifier(tblName);
     if (!shouldCacheTable(catName, dbName, tblName) || (canUseEvents && rawStore.isActiveTransaction())) {
-      return rawStore.getPartitions(catName, dbName, tblName, max);
+      return rawStore.getPartitions(catName, dbName, tblName, args);
     }
     Table tbl = sharedCache.getTableFromCache(catName, dbName, tblName);
     if (tbl == null) {
       // The table containing the partitions is not yet loaded in cache
-      return rawStore.getPartitions(catName, dbName, tblName, max);
+      return rawStore.getPartitions(catName, dbName, tblName, args);
     }
-    List<Partition> parts = sharedCache.listCachedPartitions(catName, dbName, tblName, max);
+    List<Partition> parts = sharedCache.listCachedPartitions(catName, dbName, tblName, args.getMax());
     return parts;
   }
 
@@ -1704,9 +1704,9 @@ public class CachedStore implements RawStore, Configurable {
   }
 
   @Override
-  public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
-                                               String filter, short maxParts, boolean skipColSchemaForPartitions) throws MetaException, NoSuchObjectException {
-    return rawStore.getPartitionsByFilter(catName, dbName, tblName, filter, maxParts, skipColSchemaForPartitions);
+  public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName, GetPartitionsArgs args)
+      throws MetaException, NoSuchObjectException {
+    return rawStore.getPartitionsByFilter(catName, dbName, tblName, args);
   }
 
   @Override
@@ -1719,23 +1719,23 @@ public class CachedStore implements RawStore, Configurable {
     return rawStore.getPartitionSpecsByFilterAndProjection(table, projectionSpec, filterSpec);
   }
 
-  @Override
-  public boolean getPartitionsByExpr(String catName, String dbName, String tblName, byte[] expr,
-       String defaultPartitionName, short maxParts, List<Partition> result, boolean skipColSchemaForPartitions) throws TException {
+  @Override public boolean getPartitionsByExpr(String catName, String dbName, String tblName,
+      List<Partition> result, GetPartitionsArgs args) throws TException {
     catName = StringUtils.normalizeIdentifier(catName);
     dbName = StringUtils.normalizeIdentifier(dbName);
     tblName = StringUtils.normalizeIdentifier(tblName);
     if (!shouldCacheTable(catName, dbName, tblName) || (canUseEvents && rawStore.isActiveTransaction())) {
-      return rawStore.getPartitionsByExpr(catName, dbName, tblName, expr, defaultPartitionName, maxParts, result, skipColSchemaForPartitions);
+      return rawStore.getPartitionsByExpr(catName, dbName, tblName, result, args);
     }
     List<String> partNames = new LinkedList<>();
     Table table = sharedCache.getTableFromCache(catName, dbName, tblName);
     if (table == null) {
       // The table is not yet loaded in cache
-      return rawStore.getPartitionsByExpr(catName, dbName, tblName, expr, defaultPartitionName, maxParts, result, skipColSchemaForPartitions);
+      return rawStore.getPartitionsByExpr(catName, dbName, tblName, result, args);
     }
     boolean hasUnknownPartitions =
-            getPartitionNamesPrunedByExprNoTxn(table, expr, defaultPartitionName, maxParts, partNames, sharedCache);
+        getPartitionNamesPrunedByExprNoTxn(table, args.getExpr(), args.getDefaultPartName(),
+            (short) args.getMax(), partNames, sharedCache);
     for (String partName : partNames) {
       Partition part = sharedCache.getPartitionFromCache(catName, dbName, tblName, partNameToVals(partName));
       part.unsetPrivileges();
@@ -1784,22 +1784,21 @@ public class CachedStore implements RawStore, Configurable {
     return vals;
   }
 
-  @Override
-  public List<Partition> getPartitionsByNames(String catName, String dbName, String tblName,
-      List<String> partNames, boolean skipColSchemaForPartitions) throws MetaException, NoSuchObjectException {
+  @Override public List<Partition> getPartitionsByNames(String catName, String dbName, String tblName,
+      GetPartitionsArgs args) throws MetaException, NoSuchObjectException {
     catName = StringUtils.normalizeIdentifier(catName);
     dbName = StringUtils.normalizeIdentifier(dbName);
     tblName = StringUtils.normalizeIdentifier(tblName);
     if (!shouldCacheTable(catName, dbName, tblName) || (canUseEvents && rawStore.isActiveTransaction())) {
-      return rawStore.getPartitionsByNames(catName, dbName, tblName, partNames, skipColSchemaForPartitions);
+      return rawStore.getPartitionsByNames(catName, dbName, tblName, args);
     }
     Table table = sharedCache.getTableFromCache(catName, dbName, tblName);
     if (table == null) {
       // The table is not yet loaded in cache
-      return rawStore.getPartitionsByNames(catName, dbName, tblName, partNames, skipColSchemaForPartitions);
+      return rawStore.getPartitionsByNames(catName, dbName, tblName, args);
     }
     List<Partition> partitions = new ArrayList<>();
-    for (String partName : partNames) {
+    for (String partName : args.getPartNames()) {
       Partition part = sharedCache.getPartitionFromCache(catName, dbName, tblName, partNameToVals(partName));
       if (part!=null) {
         partitions.add(part);
@@ -1998,36 +1997,6 @@ public class CachedStore implements RawStore, Configurable {
   }
 
   @Override
-  public List<Partition> getPartitionsWithAuth(String catName, String dbName, String tblName,
-          short maxParts, String userName, List<String> groupNames, boolean skipColSchemaForPartitions)
-          throws MetaException, NoSuchObjectException, InvalidObjectException {
-    catName = StringUtils.normalizeIdentifier(catName);
-    dbName = StringUtils.normalizeIdentifier(dbName);
-    tblName = StringUtils.normalizeIdentifier(tblName);
-    if (!shouldCacheTable(catName, dbName, tblName) || (canUseEvents && rawStore.isActiveTransaction())) {
-      return rawStore.getPartitionsWithAuth(catName, dbName, tblName, maxParts, userName, groupNames, skipColSchemaForPartitions);
-    }
-    Table table = sharedCache.getTableFromCache(catName, dbName, tblName);
-    if (table == null) {
-      // The table is not yet loaded in cache
-      return rawStore.getPartitionsWithAuth(catName, dbName, tblName, maxParts, userName, groupNames, skipColSchemaForPartitions);
-    }
-    List<Partition> partitions = new ArrayList<>();
-    int count = 0;
-    for (Partition part : sharedCache.listCachedPartitions(catName, dbName, tblName, maxParts)) {
-      if (maxParts == -1 || count < maxParts) {
-        String partName = Warehouse.makePartName(table.getPartitionKeys(), part.getValues());
-        PrincipalPrivilegeSet privs = getPartitionPrivilegeSet(catName, dbName, tblName, partName,
-                userName, groupNames);
-        part.setPrivileges(privs);
-        partitions.add(part);
-        count++;
-      }
-    }
-    return partitions;
-  }
-
-  @Override
   public List<String> listPartitionNamesPs(String catName, String dbName, String tblName, List<String> partSpecs,
       short maxParts) throws MetaException, NoSuchObjectException {
     catName = StringUtils.normalizeIdentifier(catName);
@@ -2061,30 +2030,32 @@ public class CachedStore implements RawStore, Configurable {
     return rawStore.getNumPartitionsByPs(catName, dbName, tblName, partSpecs);
   }
 
-  @Override
-  public List<Partition> listPartitionsPsWithAuth(String catName, String dbName, String tblName, List<String> partSpecs,
-      short maxParts, String userName, List<String> groupNames, boolean skipColSchemaForPartitions)
-      throws MetaException, InvalidObjectException, NoSuchObjectException {
+  @Override public List<Partition> listPartitionsPsWithAuth(String catName, String dbName, String tblName,
+      GetPartitionsArgs args) throws MetaException, InvalidObjectException, NoSuchObjectException {
     catName = StringUtils.normalizeIdentifier(catName);
     dbName = StringUtils.normalizeIdentifier(dbName);
     tblName = StringUtils.normalizeIdentifier(tblName);
     if (!shouldCacheTable(catName, dbName, tblName) || (canUseEvents && rawStore.isActiveTransaction())) {
-      return rawStore.listPartitionsPsWithAuth(catName, dbName, tblName, partSpecs, maxParts, userName, groupNames, skipColSchemaForPartitions);
+      return rawStore.listPartitionsPsWithAuth(catName, dbName, tblName, args);
     }
     Table table = sharedCache.getTableFromCache(catName, dbName, tblName);
     if (table == null) {
       // The table is not yet loaded in cache
-      return rawStore.listPartitionsPsWithAuth(catName, dbName, tblName, partSpecs, maxParts, userName, groupNames, skipColSchemaForPartitions);
+      return rawStore.listPartitionsPsWithAuth(catName, dbName, tblName, args);
     }
-    String partNameMatcher = getPartNameMatcher(table, partSpecs);
+    String partNameMatcher = null;
+    if (args.getPart_vals() != null && !args.getPart_vals().isEmpty()) {
+      partNameMatcher = getPartNameMatcher(table, args.getPart_vals());
+    }
+    int maxParts = args.getMax();
     List<Partition> partitions = new ArrayList<>();
     List<Partition> allPartitions = sharedCache.listCachedPartitions(catName, dbName, tblName, maxParts);
     int count = 0;
     for (Partition part : allPartitions) {
       String partName = Warehouse.makePartName(table.getPartitionKeys(), part.getValues());
-      if (partName.matches(partNameMatcher) && (maxParts == -1 || count < maxParts)) {
+      if ((partNameMatcher == null || partName.matches(partNameMatcher)) && (maxParts == -1 || count < maxParts)) {
         PrincipalPrivilegeSet privs =
-            getPartitionPrivilegeSet(catName, dbName, tblName, partName, userName, groupNames);
+            getPartitionPrivilegeSet(catName, dbName, tblName, partName, args.getUserName(), args.getGroupNames());
         part.setPrivileges(privs);
         partitions.add(part);
         count++;

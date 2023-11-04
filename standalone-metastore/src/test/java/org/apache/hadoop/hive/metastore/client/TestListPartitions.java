@@ -87,6 +87,16 @@ public class TestListPartitions extends MetaStoreClientTest {
   protected static final String USER_NAME = "user0";
   protected static final String GROUP = "group0";
 
+  public static class ReturnTable {
+    public Table table;
+    public List<List<String>> testValues;
+
+    public ReturnTable(Table table, List<List<String>> testValues) {
+      this.table = table;
+      this.testValues = testValues;
+    }
+  }
+
   public TestListPartitions(String name, AbstractMetaStoreService metaStore) {
     this.metaStore = metaStore;
   }
@@ -169,6 +179,11 @@ public class TestListPartitions extends MetaStoreClientTest {
     client.add_partition(partitionBuilder.build(metaStore.getConf()));
   }
 
+  protected void addPartitions(IMetaStoreClient client, List<Partition> partitions)
+      throws TException{
+    client.add_partitions(partitions);
+  }
+
   private void createTable3PartCols1PartGeneric(IMetaStoreClient client, boolean authOn)
           throws TException {
     Table t = createTestTable(client, DB_NAME, TABLE_NAME, Lists.newArrayList("yyyy", "mm",
@@ -180,7 +195,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     createTable3PartCols1PartGeneric(client, false);
   }
 
-  private List<List<String>> createTable4PartColsPartsGeneric(IMetaStoreClient client,
+  private ReturnTable createTable4PartColsPartsGeneric(IMetaStoreClient client,
                                                                      boolean authOn) throws
           Exception {
     Table t = createTestTable(client, DB_NAME, TABLE_NAME, Lists.newArrayList("yyyy", "mm", "dd"),
@@ -195,17 +210,22 @@ public class TestListPartitions extends MetaStoreClientTest {
       addPartition(client, t, vals);
     }
 
-    return testValues;
+    return new ReturnTable(t, testValues);
   }
 
   protected List<List<String>> createTable4PartColsParts(IMetaStoreClient client) throws
           Exception {
-    return createTable4PartColsPartsGeneric(client, false);
+    return createTable4PartColsPartsGeneric(client, false).testValues;
   }
 
   protected List<List<String>> createTable4PartColsPartsAuthOn(IMetaStoreClient client) throws
           Exception {
-    return createTable4PartColsPartsGeneric(client, true);
+    return createTable4PartColsPartsGeneric(client, true).testValues;
+  }
+
+  protected ReturnTable createTablePartColsParts(IMetaStoreClient client) throws
+      Exception {
+    return createTable4PartColsPartsGeneric(client, false);
   }
 
   protected void assertAuthInfoReturned(String user, String group, Partition partition) {
@@ -228,7 +248,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     }
   }
 
-  private void assertCorrectPartitionNames(List<String> names,
+  protected void assertCorrectPartitionNames(List<String> names,
                                                   List<List<String>> testValues,
                                                   List<String>partCols) throws Exception {
     assertEquals(testValues.size(), names.size());
@@ -266,7 +286,9 @@ public class TestListPartitions extends MetaStoreClientTest {
     }
   }
 
+  protected void assertPartitionsHaveCorrectParams(List<Partition> partitions) {
 
+  }
 
   /**
    * Testing listPartitions(String,String,short) ->
@@ -277,9 +299,11 @@ public class TestListPartitions extends MetaStoreClientTest {
     List<List<String>> testValues = createTable4PartColsParts(client);
     List<Partition> partitions = client.listPartitions(DB_NAME, TABLE_NAME, (short)-1);
     assertPartitionsHaveCorrectValues(partitions, testValues);
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitions(DB_NAME, TABLE_NAME, (short)1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(0, 1));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitions(DB_NAME, TABLE_NAME, (short) 0);
     assertTrue(partitions.isEmpty());
@@ -300,10 +324,12 @@ public class TestListPartitions extends MetaStoreClientTest {
     req.setMaxParts((short)-1);
     PartitionsResponse res = client.getPartitionsRequest(req);
     assertPartitionsHaveCorrectValues(res.getPartitions(), testValues);
+    assertPartitionsHaveCorrectParams(res.getPartitions());
 
     req.setMaxParts((short)1);
     res = client.getPartitionsRequest(req);
     assertPartitionsHaveCorrectValues(res.getPartitions(), testValues.subList(0, 1));
+    assertPartitionsHaveCorrectParams(res.getPartitions());
 
     req.setMaxParts((short)0);
     res = client.getPartitionsRequest(req);
@@ -385,11 +411,13 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(2, partitions.size());
     assertEquals(testValues.get(2), partitions.get(0).getValues());
     assertEquals(testValues.get(3), partitions.get(1).getValues());
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitions(DB_NAME, TABLE_NAME,
             Lists.newArrayList("2017", "11"), (short)-1);
     assertEquals(1, partitions.size());
     assertEquals(testValues.get(3), partitions.get(0).getValues());
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitions(DB_NAME, TABLE_NAME,
             Lists.newArrayList("20177", "11"), (short)-1);
@@ -537,11 +565,13 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(4, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues);
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, (short)2, USER_NAME, groups);
     assertEquals(2, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(0, 2));
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
   @Test(expected = MetaException.class)
@@ -558,10 +588,12 @@ public class TestListPartitions extends MetaStoreClientTest {
         getClient().listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, (short) 2, USER_NAME, Lists.newArrayList(GROUP));
     assertTrue(partitions.size() == 2);
     partitions.forEach(p -> assertAuthInfoReturned(USER_NAME, GROUP, p));
+    assertPartitionsHaveCorrectParams(partitions);
     partitions = getClient().listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, (short) -1, USER_NAME,
         Lists.newArrayList(GROUP));
     assertTrue(partitions.size() == 4);
     partitions.forEach(p -> assertAuthInfoReturned(USER_NAME, GROUP, p));
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
   @Test
@@ -573,6 +605,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(4, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues);
     partitions.forEach(partition -> assertNull(partition.getPrivileges()));
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
   @Test(expected = NoSuchObjectException.class)
@@ -623,13 +656,15 @@ public class TestListPartitions extends MetaStoreClientTest {
   @Test
   public void testListPartitionsWithAuthNullUser() throws Exception {
     createTable4PartColsPartsAuthOn(client);
-    client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, (short)-1, null, Lists.newArrayList());
+    assertPartitionsHaveCorrectParams(client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, (short)-1,
+        null, Lists.newArrayList()));
   }
 
   @Test
   public void testListPartitionsWithAuthNullGroup() throws Exception {
     createTable4PartColsPartsAuthOn(client);
-    client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, (short)-1, "user0", null);
+    assertPartitionsHaveCorrectParams(client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, (short)-1,
+        "user0", null));
   }
 
   /**
@@ -656,6 +691,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(1, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(3, 4));
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
 
     req.setPartVals(Lists
         .newArrayList("2017"));
@@ -664,6 +700,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(2, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(2, 4));
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
 
     req.setMaxParts((short)1);
     res = client.listPartitionsWithAuthInfoRequest(req);
@@ -671,6 +708,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(1, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(2, 3));
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
 
     req.setMaxParts((short)-1);
     req.setPartVals(Lists
@@ -694,18 +732,21 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(1, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(3, 4));
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, Lists
         .newArrayList("2017"), (short)-1, USER_NAME, groups);
     assertEquals(2, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(2, 4));
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, Lists
         .newArrayList("2017"), (short)1, USER_NAME, groups);
     assertEquals(1, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(2, 3));
     partitions.forEach(partition -> assertAuthInfoReturned(USER_NAME, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, Lists
         .newArrayList("2013"), (short)-1, USER_NAME, groups);
@@ -753,6 +794,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     assertEquals(1, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(3, 4));
     partitions.forEach(partition -> assertAuthInfoReturned(user, groups.get(0), partition));
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
   @Test(expected = NoSuchObjectException.class)
@@ -819,6 +861,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     List<Partition> partitions = client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, Lists
             .newArrayList("2017", "11", "27"), (short)-1, null, Lists.newArrayList());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(3, 4));
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
   @Test
@@ -827,6 +870,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     List<Partition> partitions = client.listPartitionsWithAuthInfo(DB_NAME, TABLE_NAME, Lists
             .newArrayList("2017", "11", "27"), (short)-1, "", null);
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(3, 4));
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
 
@@ -843,15 +887,18 @@ public class TestListPartitions extends MetaStoreClientTest {
             "yyyy=\"2017\" OR " + "mm=\"02\"", (short)-1);
     assertEquals(3, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(1, 4));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, TABLE_NAME,
             "yyyy=\"2017\" OR " + "mm=\"02\"", (short)2);
     assertEquals(2, partitions.size());
     assertPartitionsHaveCorrectValues(partitions, partValues.subList(1, 3));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, TABLE_NAME,
             "yyyy=\"2017\" OR " + "mm=\"02\"", (short)0);
     assertTrue(partitions.isEmpty());
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, TABLE_NAME,
             "yyyy=\"2017\" AND mm=\"99\"", (short)-1);
@@ -877,26 +924,32 @@ public class TestListPartitions extends MetaStoreClientTest {
     List<Partition> partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "yYyY=\"2017\"", (short) -1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(0, 3));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "yYyY=\"2017\" AND mOnTh=\"may\"", (short) -1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(2, 3));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "yYyY!=\"2017\"", (short) -1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(3, 5));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "mOnTh=\"september\"", (short) -1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(4, 5));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "mOnTh like \"m.*\"", (short) -1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(0, 4));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "yYyY=\"2018\" AND mOnTh like \"m.*\"", (short) -1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(3, 4));
+    assertPartitionsHaveCorrectParams(partitions);
     client.dropTable(DB_NAME, tableName);
   }
 
@@ -919,6 +972,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     List<Partition> partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "month=\"mArCh\"", (short) -1);
     Assert.assertTrue(partitions.isEmpty());
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "yyyy=\"2017\" AND month=\"May\"", (short) -1);
@@ -927,12 +981,13 @@ public class TestListPartitions extends MetaStoreClientTest {
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "yyyy=\"2017\" AND month!=\"mArCh\"", (short) -1);
     assertPartitionsHaveCorrectValues(partitions, testValues.subList(0, 3));
+    assertPartitionsHaveCorrectParams(partitions);
 
     partitions = client.listPartitionsByFilter(DB_NAME, tableName,
         "month like \"M.*\"", (short) -1);
     Assert.assertTrue(partitions.isEmpty());
     client.dropTable(DB_NAME, tableName);
-
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
   @Test(expected = MetaException.class)
@@ -999,6 +1054,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     List<Partition> partitions = client.listPartitionsByFilter(DB_NAME, TABLE_NAME, null,
             (short)-1);
     assertEquals(4, partitions.size());
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
   @Test
@@ -1006,6 +1062,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     createTable4PartColsParts(client);
     List<Partition> partitions = client.listPartitionsByFilter(DB_NAME, TABLE_NAME, "", (short)-1);
     assertEquals(4, partitions.size());
+    assertPartitionsHaveCorrectParams(partitions);
   }
 
 
@@ -1600,16 +1657,18 @@ public class TestListPartitions extends MetaStoreClientTest {
           .addValue("a" + i)
           .build(metaStore.getConf());
     }
-    client.add_partitions(Arrays.asList(parts));
+    addPartitions(client, Arrays.asList(parts));
 
     List<Partition> fetched = client.listPartitions(catName, dbName, tableName, -1);
     Assert.assertEquals(parts.length, fetched.size());
     Assert.assertEquals(catName, fetched.get(0).getCatName());
+    assertPartitionsHaveCorrectParams(fetched);
 
     fetched = client.listPartitions(catName, dbName, tableName,
         Collections.singletonList("a0"), -1);
     Assert.assertEquals(1, fetched.size());
     Assert.assertEquals(catName, fetched.get(0).getCatName());
+    assertPartitionsHaveCorrectParams(fetched);
 
     PartitionSpecProxy proxy = client.listPartitionSpecs(catName, dbName, tableName, -1);
     Assert.assertEquals(parts.length, proxy.size());
@@ -1618,6 +1677,7 @@ public class TestListPartitions extends MetaStoreClientTest {
     fetched = client.listPartitionsByFilter(catName, dbName, tableName, "partcol=\"a0\"", -1);
     Assert.assertEquals(1, fetched.size());
     Assert.assertEquals(catName, fetched.get(0).getCatName());
+    assertPartitionsHaveCorrectParams(fetched);
 
     proxy = client.listPartitionSpecsByFilter(catName, dbName, tableName, "partcol=\"a0\"", -1);
     Assert.assertEquals(1, proxy.size());

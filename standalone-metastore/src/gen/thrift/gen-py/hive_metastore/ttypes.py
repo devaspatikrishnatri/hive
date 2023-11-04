@@ -8649,11 +8649,13 @@ class PartitionsByExprRequest(object):
      - validWriteIdList
      - id
      - skipColumnSchemaForPartition
+     - includeParamKeyPattern
+     - excludeParamKeyPattern
 
     """
 
 
-    def __init__(self, dbName=None, tblName=None, expr=None, defaultPartitionName=None, maxParts=-1, catName=None, order=None, validWriteIdList=None, id=-1, skipColumnSchemaForPartition=None,):
+    def __init__(self, dbName=None, tblName=None, expr=None, defaultPartitionName=None, maxParts=-1, catName=None, order=None, validWriteIdList=None, id=-1, skipColumnSchemaForPartition=None, includeParamKeyPattern=None, excludeParamKeyPattern=None,):
         self.dbName = dbName
         self.tblName = tblName
         self.expr = expr
@@ -8664,6 +8666,8 @@ class PartitionsByExprRequest(object):
         self.validWriteIdList = validWriteIdList
         self.id = id
         self.skipColumnSchemaForPartition = skipColumnSchemaForPartition
+        self.includeParamKeyPattern = includeParamKeyPattern
+        self.excludeParamKeyPattern = excludeParamKeyPattern
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -8724,6 +8728,16 @@ class PartitionsByExprRequest(object):
                     self.skipColumnSchemaForPartition = iprot.readBool()
                 else:
                     iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.STRING:
+                    self.includeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 12:
+                if ftype == TType.STRING:
+                    self.excludeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -8773,6 +8787,14 @@ class PartitionsByExprRequest(object):
         if self.skipColumnSchemaForPartition is not None:
             oprot.writeFieldBegin('skipColumnSchemaForPartition', TType.BOOL, 10)
             oprot.writeBool(self.skipColumnSchemaForPartition)
+            oprot.writeFieldEnd()
+        if self.includeParamKeyPattern is not None:
+            oprot.writeFieldBegin('includeParamKeyPattern', TType.STRING, 11)
+            oprot.writeString(self.includeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.includeParamKeyPattern)
+            oprot.writeFieldEnd()
+        if self.excludeParamKeyPattern is not None:
+            oprot.writeFieldBegin('excludeParamKeyPattern', TType.STRING, 12)
+            oprot.writeString(self.excludeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.excludeParamKeyPattern)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -10229,12 +10251,16 @@ class GetPartitionsByNamesRequest(object):
      - processorIdentifier
      - engine
      - validWriteIdList
+     - getFileMetadata
+     - id
      - skipColumnSchemaForPartition
+     - includeParamKeyPattern
+     - excludeParamKeyPattern
 
     """
 
 
-    def __init__(self, db_name=None, tbl_name=None, names=None, get_col_stats=None, processorCapabilities=None, processorIdentifier=None, engine=None, validWriteIdList=None, skipColumnSchemaForPartition=None,):
+    def __init__(self, db_name=None, tbl_name=None, names=None, get_col_stats=None, processorCapabilities=None, processorIdentifier=None, engine=None, validWriteIdList=None, getFileMetadata=None, id=-1, skipColumnSchemaForPartition=None, includeParamKeyPattern=None, excludeParamKeyPattern=None,):
         self.db_name = db_name
         self.tbl_name = tbl_name
         self.names = names
@@ -10243,7 +10269,11 @@ class GetPartitionsByNamesRequest(object):
         self.processorIdentifier = processorIdentifier
         self.engine = engine
         self.validWriteIdList = validWriteIdList
+        self.getFileMetadata = getFileMetadata
+        self.id = id
         self.skipColumnSchemaForPartition = skipColumnSchemaForPartition
+        self.includeParamKeyPattern = includeParamKeyPattern
+        self.excludeParamKeyPattern = excludeParamKeyPattern
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -10306,7 +10336,27 @@ class GetPartitionsByNamesRequest(object):
                     iprot.skip(ftype)
             elif fid == 9:
                 if ftype == TType.BOOL:
+                    self.getFileMetadata = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 10:
+                if ftype == TType.I64:
+                    self.id = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.BOOL:
                     self.skipColumnSchemaForPartition = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 12:
+                if ftype == TType.STRING:
+                    self.includeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 13:
+                if ftype == TType.STRING:
+                    self.excludeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -10357,9 +10407,25 @@ class GetPartitionsByNamesRequest(object):
             oprot.writeFieldBegin('validWriteIdList', TType.STRING, 8)
             oprot.writeString(self.validWriteIdList.encode('utf-8') if sys.version_info[0] == 2 else self.validWriteIdList)
             oprot.writeFieldEnd()
+        if self.getFileMetadata is not None:
+            oprot.writeFieldBegin('getFileMetadata', TType.BOOL, 9)
+            oprot.writeBool(self.getFileMetadata)
+            oprot.writeFieldEnd()
+        if self.id is not None:
+            oprot.writeFieldBegin('id', TType.I64, 10)
+            oprot.writeI64(self.id)
+            oprot.writeFieldEnd()
         if self.skipColumnSchemaForPartition is not None:
-            oprot.writeFieldBegin('skipColumnSchemaForPartition', TType.BOOL, 9)
+            oprot.writeFieldBegin('skipColumnSchemaForPartition', TType.BOOL, 11)
             oprot.writeBool(self.skipColumnSchemaForPartition)
+            oprot.writeFieldEnd()
+        if self.includeParamKeyPattern is not None:
+            oprot.writeFieldBegin('includeParamKeyPattern', TType.STRING, 12)
+            oprot.writeString(self.includeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.includeParamKeyPattern)
+            oprot.writeFieldEnd()
+        if self.excludeParamKeyPattern is not None:
+            oprot.writeFieldBegin('excludeParamKeyPattern', TType.STRING, 13)
+            oprot.writeString(self.excludeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.excludeParamKeyPattern)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -24181,11 +24247,13 @@ class PartitionsRequest(object):
      - validWriteIdList
      - id
      - skipColumnSchemaForPartition
+     - includeParamKeyPattern
+     - excludeParamKeyPattern
 
     """
 
 
-    def __init__(self, catName=None, dbName=None, tblName=None, maxParts=-1, validWriteIdList=None, id=-1, skipColumnSchemaForPartition=None,):
+    def __init__(self, catName=None, dbName=None, tblName=None, maxParts=-1, validWriteIdList=None, id=-1, skipColumnSchemaForPartition=None, includeParamKeyPattern=None, excludeParamKeyPattern=None,):
         self.catName = catName
         self.dbName = dbName
         self.tblName = tblName
@@ -24193,6 +24261,8 @@ class PartitionsRequest(object):
         self.validWriteIdList = validWriteIdList
         self.id = id
         self.skipColumnSchemaForPartition = skipColumnSchemaForPartition
+        self.includeParamKeyPattern = includeParamKeyPattern
+        self.excludeParamKeyPattern = excludeParamKeyPattern
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -24238,6 +24308,16 @@ class PartitionsRequest(object):
                     self.skipColumnSchemaForPartition = iprot.readBool()
                 else:
                     iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.includeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.STRING:
+                    self.excludeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -24276,6 +24356,14 @@ class PartitionsRequest(object):
             oprot.writeFieldBegin('skipColumnSchemaForPartition', TType.BOOL, 7)
             oprot.writeBool(self.skipColumnSchemaForPartition)
             oprot.writeFieldEnd()
+        if self.includeParamKeyPattern is not None:
+            oprot.writeFieldBegin('includeParamKeyPattern', TType.STRING, 8)
+            oprot.writeString(self.includeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.includeParamKeyPattern)
+            oprot.writeFieldEnd()
+        if self.excludeParamKeyPattern is not None:
+            oprot.writeFieldBegin('excludeParamKeyPattern', TType.STRING, 9)
+            oprot.writeString(self.excludeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.excludeParamKeyPattern)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -24307,17 +24395,21 @@ class GetPartitionsByFilterRequest(object):
      - filter
      - maxParts
      - skipColumnSchemaForPartition
+     - includeParamKeyPattern
+     - excludeParamKeyPattern
 
     """
 
 
-    def __init__(self, catName=None, dbName=None, tblName=None, filter=None, maxParts=-1, skipColumnSchemaForPartition=None,):
+    def __init__(self, catName=None, dbName=None, tblName=None, filter=None, maxParts=-1, skipColumnSchemaForPartition=None, includeParamKeyPattern=None, excludeParamKeyPattern=None,):
         self.catName = catName
         self.dbName = dbName
         self.tblName = tblName
         self.filter = filter
         self.maxParts = maxParts
         self.skipColumnSchemaForPartition = skipColumnSchemaForPartition
+        self.includeParamKeyPattern = includeParamKeyPattern
+        self.excludeParamKeyPattern = excludeParamKeyPattern
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -24358,6 +24450,16 @@ class GetPartitionsByFilterRequest(object):
                     self.skipColumnSchemaForPartition = iprot.readBool()
                 else:
                     iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.STRING:
+                    self.includeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.excludeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -24391,6 +24493,14 @@ class GetPartitionsByFilterRequest(object):
         if self.skipColumnSchemaForPartition is not None:
             oprot.writeFieldBegin('skipColumnSchemaForPartition', TType.BOOL, 6)
             oprot.writeBool(self.skipColumnSchemaForPartition)
+            oprot.writeFieldEnd()
+        if self.includeParamKeyPattern is not None:
+            oprot.writeFieldBegin('includeParamKeyPattern', TType.STRING, 7)
+            oprot.writeString(self.includeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.includeParamKeyPattern)
+            oprot.writeFieldEnd()
+        if self.excludeParamKeyPattern is not None:
+            oprot.writeFieldBegin('excludeParamKeyPattern', TType.STRING, 8)
+            oprot.writeString(self.excludeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.excludeParamKeyPattern)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -24693,11 +24803,13 @@ class GetPartitionsPsWithAuthRequest(object):
      - validWriteIdList
      - id
      - skipColumnSchemaForPartition
+     - includeParamKeyPattern
+     - excludeParamKeyPattern
 
     """
 
 
-    def __init__(self, catName=None, dbName=None, tblName=None, partVals=None, maxParts=-1, userName=None, groupNames=None, validWriteIdList=None, id=-1, skipColumnSchemaForPartition=None,):
+    def __init__(self, catName=None, dbName=None, tblName=None, partVals=None, maxParts=-1, userName=None, groupNames=None, validWriteIdList=None, id=-1, skipColumnSchemaForPartition=None, includeParamKeyPattern=None, excludeParamKeyPattern=None,):
         self.catName = catName
         self.dbName = dbName
         self.tblName = tblName
@@ -24708,6 +24820,8 @@ class GetPartitionsPsWithAuthRequest(object):
         self.validWriteIdList = validWriteIdList
         self.id = id
         self.skipColumnSchemaForPartition = skipColumnSchemaForPartition
+        self.includeParamKeyPattern = includeParamKeyPattern
+        self.excludeParamKeyPattern = excludeParamKeyPattern
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -24778,6 +24892,16 @@ class GetPartitionsPsWithAuthRequest(object):
                     self.skipColumnSchemaForPartition = iprot.readBool()
                 else:
                     iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.STRING:
+                    self.includeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 12:
+                if ftype == TType.STRING:
+                    self.excludeParamKeyPattern = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -24833,6 +24957,14 @@ class GetPartitionsPsWithAuthRequest(object):
         if self.skipColumnSchemaForPartition is not None:
             oprot.writeFieldBegin('skipColumnSchemaForPartition', TType.BOOL, 10)
             oprot.writeBool(self.skipColumnSchemaForPartition)
+            oprot.writeFieldEnd()
+        if self.includeParamKeyPattern is not None:
+            oprot.writeFieldBegin('includeParamKeyPattern', TType.STRING, 11)
+            oprot.writeString(self.includeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.includeParamKeyPattern)
+            oprot.writeFieldEnd()
+        if self.excludeParamKeyPattern is not None:
+            oprot.writeFieldBegin('excludeParamKeyPattern', TType.STRING, 12)
+            oprot.writeString(self.excludeParamKeyPattern.encode('utf-8') if sys.version_info[0] == 2 else self.excludeParamKeyPattern)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -27825,6 +27957,8 @@ PartitionsByExprRequest.thrift_spec = (
     (8, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 8
     (9, TType.I64, 'id', None, -1, ),  # 9
     (10, TType.BOOL, 'skipColumnSchemaForPartition', None, None, ),  # 10
+    (11, TType.STRING, 'includeParamKeyPattern', 'UTF8', None, ),  # 11
+    (12, TType.STRING, 'excludeParamKeyPattern', 'UTF8', None, ),  # 12
 )
 all_structs.append(TableStatsResult)
 TableStatsResult.thrift_spec = (
@@ -27946,7 +28080,11 @@ GetPartitionsByNamesRequest.thrift_spec = (
     (6, TType.STRING, 'processorIdentifier', 'UTF8', None, ),  # 6
     (7, TType.STRING, 'engine', 'UTF8', None, ),  # 7
     (8, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 8
-    (9, TType.BOOL, 'skipColumnSchemaForPartition', None, None, ),  # 9
+    (9, TType.BOOL, 'getFileMetadata', None, None, ),  # 9
+    (10, TType.I64, 'id', None, -1, ),  # 10
+    (11, TType.BOOL, 'skipColumnSchemaForPartition', None, None, ),  # 11
+    (12, TType.STRING, 'includeParamKeyPattern', 'UTF8', None, ),  # 12
+    (13, TType.STRING, 'excludeParamKeyPattern', 'UTF8', None, ),  # 13
 )
 all_structs.append(GetPartitionsByNamesResult)
 GetPartitionsByNamesResult.thrift_spec = (
@@ -29083,6 +29221,8 @@ PartitionsRequest.thrift_spec = (
     (5, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 5
     (6, TType.I64, 'id', None, -1, ),  # 6
     (7, TType.BOOL, 'skipColumnSchemaForPartition', None, None, ),  # 7
+    (8, TType.STRING, 'includeParamKeyPattern', 'UTF8', None, ),  # 8
+    (9, TType.STRING, 'excludeParamKeyPattern', 'UTF8', None, ),  # 9
 )
 all_structs.append(GetPartitionsByFilterRequest)
 GetPartitionsByFilterRequest.thrift_spec = (
@@ -29093,6 +29233,8 @@ GetPartitionsByFilterRequest.thrift_spec = (
     (4, TType.STRING, 'filter', 'UTF8', None, ),  # 4
     (5, TType.I16, 'maxParts', None, -1, ),  # 5
     (6, TType.BOOL, 'skipColumnSchemaForPartition', None, None, ),  # 6
+    (7, TType.STRING, 'includeParamKeyPattern', 'UTF8', None, ),  # 7
+    (8, TType.STRING, 'excludeParamKeyPattern', 'UTF8', None, ),  # 8
 )
 all_structs.append(PartitionsResponse)
 PartitionsResponse.thrift_spec = (
@@ -29128,6 +29270,8 @@ GetPartitionsPsWithAuthRequest.thrift_spec = (
     (8, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 8
     (9, TType.I64, 'id', None, -1, ),  # 9
     (10, TType.BOOL, 'skipColumnSchemaForPartition', None, None, ),  # 10
+    (11, TType.STRING, 'includeParamKeyPattern', 'UTF8', None, ),  # 11
+    (12, TType.STRING, 'excludeParamKeyPattern', 'UTF8', None, ),  # 12
 )
 all_structs.append(GetPartitionsPsWithAuthResponse)
 GetPartitionsPsWithAuthResponse.thrift_spec = (
