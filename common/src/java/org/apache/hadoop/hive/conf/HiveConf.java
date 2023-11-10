@@ -430,6 +430,8 @@ public class HiveConf extends Configuration {
    */
   public static enum ConfVars {
     // QL execution stuff
+    DFS_XATTR_ONLY_SUPPORTED_ON_RESERVED_NAMESPACE("dfs.xattr.supported.only.on.reserved.namespace", false,
+      "DFS supports xattr only on Reserved Name space (/.reserved/raw)"),
     SCRIPTWRAPPER("hive.exec.script.wrapper", null, ""),
     PLAN("hive.exec.plan", "", ""),
     STAGINGDIR("hive.exec.stagingdir", ".hive-staging",

@@ -117,7 +117,7 @@ public class CopyUtils {
   void copyFilesBetweenFS(FileSystem srcFS, Path[] paths, FileSystem dstFS,
                           Path dst, boolean deleteSource, boolean overwrite) throws IOException {
     retryableFxn(() -> {
-      boolean preserveXAttrs = FileUtils.shouldPreserveXAttrs(hiveConf, srcFS, dstFS);
+      boolean preserveXAttrs = FileUtils.shouldPreserveXAttrs(hiveConf, srcFS, dstFS, paths[0]);
       FileUtils.copy(srcFS, paths, dstFS, dst, deleteSource, overwrite, preserveXAttrs, hiveConf);
       return null;
     });
