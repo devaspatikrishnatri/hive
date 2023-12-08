@@ -23,6 +23,9 @@ import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlTypeFamily;
+
+import static org.apache.calcite.sql.type.OperandTypes.family;
 
 /**
  * Sql UNIX_TIMESTAMP calcite operator.
@@ -31,7 +34,7 @@ public class HiveUnixTimestampSqlOperator {
   public static final SqlFunction INSTANCE =
       new SqlFunction("UNIX_TIMESTAMP", SqlKind.OTHER_FUNCTION, ReturnTypes.BIGINT, null,
           OperandTypes.or(OperandTypes.NILADIC,
-              OperandTypes.STRING,
+              OperandTypes.or(OperandTypes.STRING, family(SqlTypeFamily.TIMESTAMP), family(SqlTypeFamily.DATE)),
               OperandTypes.STRING_STRING), SqlFunctionCategory.NUMERIC) {
         @Override
         public boolean isDynamicFunction() {
