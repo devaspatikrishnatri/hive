@@ -1218,8 +1218,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       ASTNode cteQry = (ASTNode) cte.getChild(0);
       String alias = unescapeIdentifier(cte.getChild(1).getText());
 
-      String qName = qb.getId() == null ? "" : qb.getId() + ":";
-      qName += alias.toLowerCase();
+      String qName = getAliasId(alias, qb);
 
       if ( aliasToCTEs.containsKey(qName)) {
         throw new SemanticException(ErrorMsg.AMBIGUOUS_TABLE_ALIAS.getMsg(cte.getChild(1)));
@@ -2074,11 +2073,6 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
 
       CTEClause cte = findCTEFromName(qb, cteName);
       if (cte != null) {
-        if (ctesExpanded.contains(cteName)) {
-          throw new SemanticException("Recursive cte " + cteName +
-              " detected (cycle: " + StringUtils.join(ctesExpanded, " -> ") +
-              " -> " + cteName + ").");
-        }
         cte.reference++;
         current.parents.add(cte);
         if (cte.qbExpr != null) {
@@ -2087,9 +2081,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         cte.qbExpr = new QBExpr(cteName);
         doPhase1QBExpr(cte.cteNode, cte.qbExpr, qb.getId(), cteName);
 
-        ctesExpanded.add(cteName);
         gatherCTEReferences(cte.qbExpr, cte);
-        ctesExpanded.remove(ctesExpanded.size() - 1);
       }
     }
     for (String alias : qb.getSubqAliases()) {
@@ -2097,6 +2089,19 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     }
   }
 
+  private void checkRecursiveCTE(CTEClause current, Set<String> path) throws SemanticException {
+
+    for (CTEClause child : current.parents) {
+      if (path.contains(child.alias)) {
+        throw new SemanticException("Recursive cte " + child.alias +
+            " detected (cycle: " + StringUtils.join(path, " -> ") +
+            " -> " + child.alias + ").");
+      }
+      path.add(child.alias);
+      checkRecursiveCTE(child, path);
+      path.remove(child.alias);
+    }
+  }
   void getMetaData(QB qb) throws SemanticException {
     getMetaData(qb, false);
   }
@@ -2106,6 +2111,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       if (enableMaterialization) {
         getMaterializationMetadata(qb);
       }
+      checkRecursiveCTE(rootClause, new HashSet<>());
       getMetaData(qb, null);
     } catch (HiveException e) {
       // Has to use full name to make sure it does not conflict with
