@@ -101,7 +101,6 @@ import org.apache.hadoop.hive.metastore.api.UnknownTableException;
 import org.apache.hadoop.hive.metastore.api.WMMapping;
 import org.apache.hadoop.hive.metastore.api.WMPool;
 import org.apache.hadoop.hive.metastore.api.WriteEventInfo;
-import org.apache.hadoop.hive.metastore.client.builder.GetPartitionsArgs;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.partition.spec.PartitionSpecProxy;
 import org.apache.hadoop.hive.metastore.utils.MetaStoreUtils;
@@ -302,8 +301,8 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   }
 
   @Override
-  public List<Partition> getPartitions(String catName, String dbName, String tblName,
-      GetPartitionsArgs args) throws MetaException, NoSuchObjectException {
+  public List<Partition> getPartitions(String catName, String dbName, String tblName, int max,
+      boolean skipColumnSchemaForPartition) throws MetaException, NoSuchObjectException {
     return Collections.emptyList();
   }
 
@@ -416,16 +415,16 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   }
 
   @Override
-  public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
-       GetPartitionsArgs args)
-       throws MetaException, NoSuchObjectException {
+  public List<Partition> getPartitionSpecsByFilterAndProjection(Table table,
+      GetProjectionsSpec projectSpec, GetPartitionsFilterSpec filterSpec)
+      throws MetaException, NoSuchObjectException {
     return Collections.emptyList();
   }
 
   @Override
-  public List<Partition> getPartitionSpecsByFilterAndProjection(Table table,
-      GetProjectionsSpec projectSpec, GetPartitionsFilterSpec filterSpec)
-      throws MetaException, NoSuchObjectException {
+  public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
+                                               String filter, short maxParts, boolean skipColSchemaForPartitions)
+          throws MetaException, NoSuchObjectException {
     return Collections.emptyList();
   }
 
@@ -438,7 +437,7 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<Partition> getPartitionsByNames(String catName, String dbName, String tblName,
-      GetPartitionsArgs args) throws MetaException, NoSuchObjectException {
+       List<String> partNames, boolean skipColSchemaForPartitions) throws MetaException, NoSuchObjectException {
     return Collections.emptyList();
   }
 
@@ -449,8 +448,8 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   }
 
   @Override
-  public boolean getPartitionsByExpr(String catName, String dbName, String tblName,
-      List<Partition> result, GetPartitionsArgs args) throws TException {
+  public boolean getPartitionsByExpr(String catName, String dbName, String tblName, byte[] expr,
+                                     String defaultPartitionName, short maxParts, List<Partition> result, boolean skipColSchemaForPartitions) throws TException {
     return false;
   }
 
@@ -663,6 +662,14 @@ public class DummyRawStoreForJdoConnection implements RawStore {
   }
 
   @Override
+  public List<Partition> getPartitionsWithAuth(String catName, String dbName, String tblName, short maxParts,
+                                               String userName, List<String> groupNames, boolean isColumnSchemaRequired) throws MetaException, NoSuchObjectException,
+          InvalidObjectException {
+
+    return Collections.emptyList();
+  }
+
+  @Override
   public List<String> listPartitionNamesPs(String catName, String db_name, String tbl_name, List<String> part_vals,
       short max_parts) throws MetaException, NoSuchObjectException {
 
@@ -679,8 +686,8 @@ public class DummyRawStoreForJdoConnection implements RawStore {
 
   @Override
   public List<Partition> listPartitionsPsWithAuth(String catName, String db_name, String tbl_name,
-       GetPartitionsArgs args)
-       throws MetaException, InvalidObjectException, NoSuchObjectException {
+      List<String> part_vals, short max_parts, String userName, List<String> groupNames, boolean skipColSchemaForPartitions)
+      throws MetaException, InvalidObjectException, NoSuchObjectException {
     return Collections.emptyList();
   }
 

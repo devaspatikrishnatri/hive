@@ -230,12 +230,8 @@ public class TestGetPartitionsUsingProjectionAndFilterSpecs {
       Assert.assertEquals(origPartition.getLastAccessTime(), retPartition.getLastAccessTime());
       Assert.assertEquals(origPartition.getSd().getLocation(),
           sharedSD.getLocation() + retPartition.getRelativePath());
-      Assert.assertFalse("excluded parameter key is found in the response",
-          retPartition.getParameters().containsKey(EXCLUDE_KEY_PREFIX + "key1"));
-      Assert.assertFalse("excluded parameter key is found in the response",
-          retPartition.getParameters().containsKey(EXCLUDE_KEY_PREFIX + "key2"));
-      Assert.assertEquals("Additional parameters returned",
-          3, retPartition.getParameters().size());
+      validateMap(origPartition.getParameters(), retPartition.getParameters());
+      validateList(origPartition.getValues(), retPartition.getValues());
     }
   }
 

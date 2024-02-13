@@ -56,16 +56,6 @@ class PartitionsRequest
             'isRequired' => false,
             'type' => TType::BOOL,
         ),
-        8 => array(
-            'var' => 'includeParamKeyPattern',
-            'isRequired' => false,
-            'type' => TType::STRING,
-        ),
-        9 => array(
-            'var' => 'excludeParamKeyPattern',
-            'isRequired' => false,
-            'type' => TType::STRING,
-        ),
     );
 
     /**
@@ -96,14 +86,6 @@ class PartitionsRequest
      * @var bool
      */
     public $skipColumnSchemaForPartition = null;
-    /**
-     * @var string
-     */
-    public $includeParamKeyPattern = null;
-    /**
-     * @var string
-     */
-    public $excludeParamKeyPattern = null;
 
     public function __construct($vals = null)
     {
@@ -128,12 +110,6 @@ class PartitionsRequest
             }
             if (isset($vals['skipColumnSchemaForPartition'])) {
                 $this->skipColumnSchemaForPartition = $vals['skipColumnSchemaForPartition'];
-            }
-            if (isset($vals['includeParamKeyPattern'])) {
-                $this->includeParamKeyPattern = $vals['includeParamKeyPattern'];
-            }
-            if (isset($vals['excludeParamKeyPattern'])) {
-                $this->excludeParamKeyPattern = $vals['excludeParamKeyPattern'];
             }
         }
     }
@@ -206,20 +182,6 @@ class PartitionsRequest
                         $xfer += $input->skip($ftype);
                     }
                     break;
-                case 8:
-                    if ($ftype == TType::STRING) {
-                        $xfer += $input->readString($this->includeParamKeyPattern);
-                    } else {
-                        $xfer += $input->skip($ftype);
-                    }
-                    break;
-                case 9:
-                    if ($ftype == TType::STRING) {
-                        $xfer += $input->readString($this->excludeParamKeyPattern);
-                    } else {
-                        $xfer += $input->skip($ftype);
-                    }
-                    break;
                 default:
                     $xfer += $input->skip($ftype);
                     break;
@@ -267,16 +229,6 @@ class PartitionsRequest
         if ($this->skipColumnSchemaForPartition !== null) {
             $xfer += $output->writeFieldBegin('skipColumnSchemaForPartition', TType::BOOL, 7);
             $xfer += $output->writeBool($this->skipColumnSchemaForPartition);
-            $xfer += $output->writeFieldEnd();
-        }
-        if ($this->includeParamKeyPattern !== null) {
-            $xfer += $output->writeFieldBegin('includeParamKeyPattern', TType::STRING, 8);
-            $xfer += $output->writeString($this->includeParamKeyPattern);
-            $xfer += $output->writeFieldEnd();
-        }
-        if ($this->excludeParamKeyPattern !== null) {
-            $xfer += $output->writeFieldBegin('excludeParamKeyPattern', TType::STRING, 9);
-            $xfer += $output->writeString($this->excludeParamKeyPattern);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

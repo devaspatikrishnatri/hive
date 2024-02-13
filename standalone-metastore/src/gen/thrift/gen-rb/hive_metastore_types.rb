@@ -2790,8 +2790,6 @@ class PartitionsByExprRequest
   VALIDWRITEIDLIST = 8
   ID = 9
   SKIPCOLUMNSCHEMAFORPARTITION = 10
-  INCLUDEPARAMKEYPATTERN = 11
-  EXCLUDEPARAMKEYPATTERN = 12
 
   FIELDS = {
     DBNAME => {:type => ::Thrift::Types::STRING, :name => 'dbName'},
@@ -2803,9 +2801,7 @@ class PartitionsByExprRequest
     ORDER => {:type => ::Thrift::Types::STRING, :name => 'order', :optional => true},
     VALIDWRITEIDLIST => {:type => ::Thrift::Types::STRING, :name => 'validWriteIdList', :optional => true},
     ID => {:type => ::Thrift::Types::I64, :name => 'id', :default => -1, :optional => true},
-    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true},
-    INCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'includeParamKeyPattern', :optional => true},
-    EXCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'excludeParamKeyPattern', :optional => true}
+    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true}
   }
 
   def struct_fields; FIELDS; end
@@ -3158,11 +3154,7 @@ class GetPartitionsByNamesRequest
   PROCESSORIDENTIFIER = 6
   ENGINE = 7
   VALIDWRITEIDLIST = 8
-  GETFILEMETADATA = 9
-  ID = 10
-  SKIPCOLUMNSCHEMAFORPARTITION = 11
-  INCLUDEPARAMKEYPATTERN = 12
-  EXCLUDEPARAMKEYPATTERN = 13
+  SKIPCOLUMNSCHEMAFORPARTITION = 9
 
   FIELDS = {
     DB_NAME => {:type => ::Thrift::Types::STRING, :name => 'db_name'},
@@ -3173,11 +3165,7 @@ class GetPartitionsByNamesRequest
     PROCESSORIDENTIFIER => {:type => ::Thrift::Types::STRING, :name => 'processorIdentifier', :optional => true},
     ENGINE => {:type => ::Thrift::Types::STRING, :name => 'engine', :optional => true},
     VALIDWRITEIDLIST => {:type => ::Thrift::Types::STRING, :name => 'validWriteIdList', :optional => true},
-    GETFILEMETADATA => {:type => ::Thrift::Types::BOOL, :name => 'getFileMetadata', :optional => true},
-    ID => {:type => ::Thrift::Types::I64, :name => 'id', :default => -1, :optional => true},
-    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true},
-    INCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'includeParamKeyPattern', :optional => true},
-    EXCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'excludeParamKeyPattern', :optional => true}
+    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true}
   }
 
   def struct_fields; FIELDS; end
@@ -6721,8 +6709,6 @@ class PartitionsRequest
   VALIDWRITEIDLIST = 5
   ID = 6
   SKIPCOLUMNSCHEMAFORPARTITION = 7
-  INCLUDEPARAMKEYPATTERN = 8
-  EXCLUDEPARAMKEYPATTERN = 9
 
   FIELDS = {
     CATNAME => {:type => ::Thrift::Types::STRING, :name => 'catName', :optional => true},
@@ -6731,9 +6717,7 @@ class PartitionsRequest
     MAXPARTS => {:type => ::Thrift::Types::I16, :name => 'maxParts', :default => -1, :optional => true},
     VALIDWRITEIDLIST => {:type => ::Thrift::Types::STRING, :name => 'validWriteIdList', :optional => true},
     ID => {:type => ::Thrift::Types::I64, :name => 'id', :default => -1, :optional => true},
-    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true},
-    INCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'includeParamKeyPattern', :optional => true},
-    EXCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'excludeParamKeyPattern', :optional => true}
+    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true}
   }
 
   def struct_fields; FIELDS; end
@@ -6754,8 +6738,6 @@ class GetPartitionsByFilterRequest
   FILTER = 4
   MAXPARTS = 5
   SKIPCOLUMNSCHEMAFORPARTITION = 6
-  INCLUDEPARAMKEYPATTERN = 7
-  EXCLUDEPARAMKEYPATTERN = 8
 
   FIELDS = {
     CATNAME => {:type => ::Thrift::Types::STRING, :name => 'catName', :optional => true},
@@ -6763,9 +6745,7 @@ class GetPartitionsByFilterRequest
     TBLNAME => {:type => ::Thrift::Types::STRING, :name => 'tblName'},
     FILTER => {:type => ::Thrift::Types::STRING, :name => 'filter'},
     MAXPARTS => {:type => ::Thrift::Types::I16, :name => 'maxParts', :default => -1, :optional => true},
-    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true},
-    INCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'includeParamKeyPattern', :optional => true},
-    EXCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'excludeParamKeyPattern', :optional => true}
+    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true}
   }
 
   def struct_fields; FIELDS; end
@@ -6852,8 +6832,6 @@ class GetPartitionsPsWithAuthRequest
   VALIDWRITEIDLIST = 8
   ID = 9
   SKIPCOLUMNSCHEMAFORPARTITION = 10
-  INCLUDEPARAMKEYPATTERN = 11
-  EXCLUDEPARAMKEYPATTERN = 12
 
   FIELDS = {
     CATNAME => {:type => ::Thrift::Types::STRING, :name => 'catName', :optional => true},
@@ -6865,9 +6843,7 @@ class GetPartitionsPsWithAuthRequest
     GROUPNAMES => {:type => ::Thrift::Types::LIST, :name => 'groupNames', :element => {:type => ::Thrift::Types::STRING}, :optional => true},
     VALIDWRITEIDLIST => {:type => ::Thrift::Types::STRING, :name => 'validWriteIdList', :optional => true},
     ID => {:type => ::Thrift::Types::I64, :name => 'id', :default => -1, :optional => true},
-    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true},
-    INCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'includeParamKeyPattern', :optional => true},
-    EXCLUDEPARAMKEYPATTERN => {:type => ::Thrift::Types::STRING, :name => 'excludeParamKeyPattern', :optional => true}
+    SKIPCOLUMNSCHEMAFORPARTITION => {:type => ::Thrift::Types::BOOL, :name => 'skipColumnSchemaForPartition', :optional => true}
   }
 
   def struct_fields; FIELDS; end

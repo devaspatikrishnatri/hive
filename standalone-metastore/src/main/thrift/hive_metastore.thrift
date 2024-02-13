@@ -29,7 +29,7 @@ namespace php metastore
 namespace cpp Apache.Hadoop.Hive
 
 const string DDL_TIME = "transient_lastDdlTime"
-const string HMS_API = "1.2.26"
+const string HMS_API = "1.2.25"
 const byte ACCESSTYPE_NONE       = 1;
 const byte ACCESSTYPE_READONLY   = 2;
 const byte ACCESSTYPE_WRITEONLY  = 4;
@@ -758,9 +758,7 @@ struct PartitionsByExprRequest {
   7: optional string order
   8: optional string validWriteIdList,
   9: optional i64 id=-1, // table id
-  10: optional bool skipColumnSchemaForPartition,
-  11: optional string includeParamKeyPattern,
-  12: optional string excludeParamKeyPattern
+  10: optional bool skipColumnSchemaForPartition
 }
 
 struct TableStatsResult {
@@ -873,11 +871,7 @@ struct GetPartitionsByNamesRequest {
   6: optional string processorIdentifier,
   7: optional string engine,
   8: optional string validWriteIdList,
-  9: optional bool getFileMetadata,
-  10: optional i64 id=-1,  // table id
-  11: optional bool skipColumnSchemaForPartition,
-  12: optional string includeParamKeyPattern,
-  13: optional string excludeParamKeyPattern
+  9: optional bool skipColumnSchemaForPartition
 }
 
 struct GetPartitionsByNamesResult {
@@ -2008,9 +2002,7 @@ struct PartitionsRequest { // Not using Get prefix as that name is already used 
    4: optional i16 maxParts=-1,
    5: optional string validWriteIdList,
    6: optional i64 id=-1, // table id
-   7: optional bool skipColumnSchemaForPartition,
-   8: optional string includeParamKeyPattern,
-   9: optional string excludeParamKeyPattern
+   7: optional bool skipColumnSchemaForPartition
 }
 
 struct GetPartitionsByFilterRequest {
@@ -2019,9 +2011,7 @@ struct GetPartitionsByFilterRequest {
    3: string tblName,
    4: string filter,
    5: optional i16 maxParts=-1,
-   6: optional bool skipColumnSchemaForPartition,
-   7: optional string includeParamKeyPattern,
-   8: optional string excludeParamKeyPattern
+   6: optional bool skipColumnSchemaForPartition
 }
 
 struct PartitionsResponse { // Not using Get prefix as that name is already used for a different method
@@ -2052,9 +2042,7 @@ struct GetPartitionsPsWithAuthRequest {
    7: optional list<string> groupNames,
    8: optional string validWriteIdList,
    9: optional i64 id=-1, // table id
-   10: optional bool skipColumnSchemaForPartition,
-   11: optional string includeParamKeyPattern,
-   12: optional string excludeParamKeyPattern
+   10: optional bool skipColumnSchemaForPartition
 }
 
 struct GetPartitionsPsWithAuthResponse {

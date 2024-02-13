@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.hadoop.hive.metastore.client.builder.GetPartitionsArgs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.hive.metastore.api.ColumnStatistics;
@@ -53,12 +52,12 @@ public class VerifyingObjectStore extends ObjectStore {
 
   @Override
   public List<Partition> getPartitionsByFilter(String catName, String dbName, String tblName,
-                                               GetPartitionsArgs args)
+                                               String filter, short maxParts)
       throws MetaException, NoSuchObjectException {
     List<Partition> sqlResults = getPartitionsByFilterInternal(
-        catName, dbName, tblName, true, false, args);
+        catName, dbName, tblName, filter, maxParts, true, false, false);
     List<Partition> ormResults = getPartitionsByFilterInternal(
-        catName, dbName, tblName, false, true, args);
+        catName, dbName, tblName, filter, maxParts, false, true, false);
     verifyLists(sqlResults, ormResults, Partition.class);
     return sqlResults;
   }
@@ -66,23 +65,22 @@ public class VerifyingObjectStore extends ObjectStore {
   @Override
   public List<Partition> getPartitionsByNames(String catName, String dbName, String tblName,
       List<String> partNames) throws MetaException, NoSuchObjectException {
-    GetPartitionsArgs args = new GetPartitionsArgs.GetPartitionsArgsBuilder().partNames(partNames).build();
     List<Partition> sqlResults = getPartitionsByNamesInternal(
-        catName, dbName, tblName, true, false, args);
+        catName, dbName, tblName, partNames, true, false, false);
     List<Partition> ormResults = getPartitionsByNamesInternal(
-        catName, dbName, tblName, false, true, args);
+        catName, dbName, tblName, partNames, false, true, false);
     verifyLists(sqlResults, ormResults, Partition.class);
     return sqlResults;
   }
 
   @Override
-  public boolean getPartitionsByExpr(String catName, String dbName, String tblName, List<Partition> result,
-      GetPartitionsArgs args) throws TException {
+  public boolean getPartitionsByExpr(String catName, String dbName, String tblName, byte[] expr,
+      String defaultPartitionName, short maxParts, List<Partition> result) throws TException {
     List<Partition> ormParts = new LinkedList<>();
     boolean sqlResult = getPartitionsByExprInternal(
-        catName, dbName, tblName, result, true, false, args);
+        catName, dbName, tblName, expr, defaultPartitionName, maxParts, result, true, false, false);
     boolean ormResult = getPartitionsByExprInternal(
-        catName, dbName, tblName, ormParts, false, true, args);
+        catName, dbName, tblName, expr, defaultPartitionName, maxParts, ormParts, false, true, false);
     if (sqlResult != ormResult) {
       String msg = "The unknown flag is different - SQL " + sqlResult + ", ORM " + ormResult;
       LOG.error(msg);
@@ -94,10 +92,10 @@ public class VerifyingObjectStore extends ObjectStore {
 
   @Override
   public List<Partition> getPartitions(
-      String catName, String dbName, String tableName, GetPartitionsArgs args) throws MetaException, NoSuchObjectException {
+      String catName, String dbName, String tableName, int maxParts) throws MetaException, NoSuchObjectException {
     openTransaction();
-    List<Partition> sqlResults = getPartitionsInternal(catName, dbName, tableName, true, false, args);
-    List<Partition> ormResults = getPartitionsInternal(catName, dbName, tableName, false, true, args);
+    List<Partition> sqlResults = getPartitionsInternal(catName, dbName, tableName, maxParts, true, false);
+    List<Partition> ormResults = getPartitionsInternal(catName, dbName, tableName, maxParts, false, true);
     verifyLists(sqlResults, ormResults, Partition.class);
     commitTransaction();
     return sqlResults;
