@@ -1644,8 +1644,7 @@ public abstract class BaseSemanticAnalyzer {
       throw new SemanticException("Unexpected date type " + colValue.getClass());
     }
     try {
-      return MetaStoreUtils.convertDateToString(
-          MetaStoreUtils.convertStringToDate(value.toString()));
+      return MetaStoreUtils.normalizeDate(value.toString());
     } catch (Exception e) {
       throw new SemanticException(e);
     }

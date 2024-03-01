@@ -62,19 +62,21 @@ import java.util.regex.Pattern;
       return null;
     }
     try {
-       return MetaStoreUtils.convertStringToDate(m.group(1));
+      MetaStoreUtils.convertStringToDate(m.group(1));
+      return m.group(1);
     } catch (Exception ex) {
       return null;
     }
   }
 
-  public static java.sql.Timestamp extractTimestamp(String input) {
+  public static Object extractTimestamp(String input) {
     Matcher m = timestampPattern.matcher(input);
     if (!m.matches()) {
       return null;
     }
     try {
-       return MetaStoreUtils.convertStringToTimestamp(m.group(1));
+      MetaStoreUtils.convertStringToTimestamp(m.group(1));
+      return m.group(1);
     } catch (Exception ex) {
       return null;
     }
