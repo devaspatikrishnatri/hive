@@ -29,7 +29,7 @@
     <powermock.version>1.6.6</powermock.version>
     <reflections.version>0.10.2</reflections.version>
     <atlas.version>3.0.0.7.1.9.1000-SNAPSHOT</atlas.version>
-    <commons-configuration.version>1.10</commons-configuration.version>
+    <commons-configuration.version>2.10.1</commons-configuration.version>
     <jetbrains-annotation.version>16.0.2</jetbrains-annotation.version>
   </properties>
 
@@ -87,8 +87,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-configuration2</artifactId>
       <version>${commons-configuration.version}</version>
     </dependency>
     <dependency>
